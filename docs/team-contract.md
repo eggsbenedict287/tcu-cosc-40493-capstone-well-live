@@ -1,14 +1,15 @@
-# Team Contract: <team name>
+# Team Contract: Team 7
 
-**Project:** <client project name>
-**Members:** <every member's name>
-**Repository:** <url>, owned by <name>
+**Project:** Well Live
+**Members:** Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
+**Repository:** , owned by Esteban Hernandez-Anguiano
 **Signed:** <date>
 
 ## 1. Meeting time
 
-We meet every **<day>** at **<time>** in **<place or link>**, for <duration>.
-A member who cannot attend tells the team **<how far ahead>** and reads the minutes.
+We meet every **MW** at **5:30PM - 6:30PM** and **F** at **9:00AM - 10:00AM**
+Other times can be arranged where other 
+A member who cannot attend tells the team **2 hours** and reads the minutes.
 
 ## 2. Communication
 
