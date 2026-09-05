@@ -58,3 +58,4 @@ Still unresolved: we escalate to our TA, then to the instructor. **We escalate e
 Each member adds their own line, in their own commit.
 
 - Esteban Hernandez-Anguiano, <Sep 4th 2026>
+- Angelette Munoz, <Sep 4th, 2026>
