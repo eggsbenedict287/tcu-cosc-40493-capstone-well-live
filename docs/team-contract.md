@@ -61,3 +61,4 @@ Each member adds their own line, in their own commit.
 - Angelette Munoz, <Sep 4th, 2026>
 - An Cao, <Sep 4th, 2026>
 - Nikola Koltin, <Sep 5th, 2026>
+- Will Schuller, <Sep 10th, 2026>
