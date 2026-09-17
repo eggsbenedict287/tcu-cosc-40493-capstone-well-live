@@ -1,8 +1,8 @@
 # Vision and Scope
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** _Well Live_
+**Team:** An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, William Schuller, Angelette Munoz
+**Client:** Sarah Becan
 **Version:** 0.1
 
 ---
@@ -33,23 +33,34 @@ _Why this matters more with an agent than it used to: ask an agent to insert a n
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| _[YYYY-MM-DD]_ | 0.1 | Initial draft from the client brief and first client meeting | _[Name]_ |
+| 2026-09-16 | 0.1 | Initial draft from the client brief and first client meeting | Well Live team |
 
 ---
 
 ## 1. Introduction
 
-_[This document defines the goals, purpose, and boundaries of the project. It gives every stakeholder a shared understanding of what the software is for and the context it operates in: the business problem being solved, how the software fits into the client's world, and where the line falls between what is in scope and what is not.]_
+_[This document defines the goals, purpose, and boundaries of Well Live. It gives every stakeholder a shared understanding of what the software is for and the context it operates in: the business problem being solved, how the software fits into the client's world, and where the line falls between what is in scope and what is not.]_
 
 ### 1.1 Background
 
-_[Summarize the rationale and context for the new product, or for the changes to an existing one. Describe the situation that led to the decision to build it.]_
+Well Live is a proposed subscription-based health and wellness application created for people who want trustworthy health information, practical self-care education, and support from a community with similar experiences. The product is intended to combine familiar social-media features with educational health and wellness content.
 
-_**Step 1: Describe the business.** Introduce the organization. Cover what it does (industry, products, services), its size (employees, locations), and the goals that relate to the problem you are solving._
+The proposed audience includes people with a wide range of health and wellness needs, including individuals managing serious illnesses, teenagers experiencing body-image concerns, families with limited financial resources, and people who want more approachable information about their health. The product should not be centered only on highly polished fitness influencers or unrealistic wellness lifestyles. Instead, it should provide an inclusive environment where users can find useful information and support that reflects real-life circumstances.
 
-_Example: "The client, XYZ Logistics, is a mid-sized shipping company that specializes in last-mile delivery services for e-commerce businesses. The company operates in five major cities, employs 200 delivery staff, and handles over 10,000 deliveries per day. The goal is to optimize delivery efficiency and customer satisfaction."_
+Well Live is intended to address the gap between information and support available at home, in clinics, and in hospitals. Users should be able to share health-related experiences, participate in discussions, and find educational materials related to topics such as nutrition, fitness, financial wellness, mental health, and spiritual health.
 
-_**Checklist:** Would a reader who has never heard of this organization understand what it does and why this project exists?]_
+The client’s stated objectives are to:
+
+-Enhance patient health outcomes.
+-Make truthful self-care feel approachable and motivating.
+-Increase health education and health literacy.
+-Engage users in discussions about health and wellness.
+-Promote community and engagement.
+-Educate users about health topics, devices, and services.
+
+The initial product concept includes personalized content based on a user’s interests, goals, and potentially their health history. It also includes educational content in multiple formats, such as articles, pictures, videos, and podcasts, along with community features such as discussion areas and a chat room for social support.
+
+The project must balance usefulness and personalization with credibility, privacy, security, accessibility, and user safety. Health information should be presented as education and support rather than as a diagnosis, prescription, or replacement for professional medical care. The exact health information collected, the role of medical review, the subscription model, and the level of community moderation remain open questions for discussion with the client.
 
 ### 1.2 Current Process Flows (As-Is Process Flows)
 
@@ -59,38 +70,83 @@ _**Step 1: Diagram the current process.** Draw the process people execute **toda
 
 _Diagrams in this project are authored as mermaid inside the Markdown file, never exported from a drawing tool as an image. A picture of a diagram is invisible to your AI teammate and unreadable in a diff; a mermaid block is text it can read and revise. A skeleton to start from:_
 
-    ```mermaid
-    flowchart TD
-      subgraph Student
-        A[Open the shared spreadsheet] --> B[Type last week's activities]
-      end
-      subgraph Instructor
-        C[Review the updated sheets] --> D{Complete?}
-        D -- No --> E[Email the student]
-        D -- Yes --> F[Enter the grade in the LMS]
-      end
-      B --> C
-    ```
+flowchart TD
+  subgraph User["Person seeking health and wellness information"]
+    A[Recognize a health or wellness question] --> B[Search the internet or social media]
+    B --> C[Review articles, videos, podcasts, posts, or discussions]
+    C --> D{Information appears useful and trustworthy?}
+    D -- No --> B
+    D -- Yes --> E[Save, remember, or share the information]
+    E --> F[Apply information to personal self-care or discuss it with others]
+  end
 
-_**Step 2: Write the prose.** Not every reader reads diagrams. Explain the flow in a paragraph underneath it._
+  subgraph ExistingSources["Existing websites and social platforms"]
+    G[Publish health articles, videos, podcasts, or social posts]
+    H[Host comments, groups, or informal discussions]
+  end
 
-_**Step 3: List the current tools.** Enumerate what the process runs on today (spreadsheets, paper schedules, email, a legacy system) and give the limitation of each._
+  subgraph PersonalNetwork["Friends, family, or personal networks"]
+    I[Share personal experiences]
+    J[Offer informal advice or emotional support]
+  end
 
-_Example: "XYZ Logistics relies heavily on Excel spreadsheets for order management. Printed delivery schedules are distributed to drivers daily. These tools lack automation, making the process prone to human error and delays."_
+  B --> G
+  B --> H
+  C --> I
+  C --> J
+  I --> F
+  J --> F
 
-_**Step 4: Name the pain points.** Highlight the inefficient, slow, or error-prone steps, using one or two specific examples rather than a general complaint._
 
-_Inefficiency example: "Manual entry of order details into Excel causes delays and transcription errors. During peak season, order entries pile up, delaying processing and delivery."_
+Currently, a person seeking health and wellness information may begin with a question, concern, or personal goal. They may search across general websites, social-media platforms, video services, podcasts, online communities, or conversations with friends and family. The person must decide for themselves whether the information is trustworthy, relevant, understandable, and appropriate for their situation.
 
-_Time example: "Printing and distributing delivery schedules to drivers takes 2 hours daily, cutting into time available for deliveries."_
+People may also share their own experiences or ask for support through existing social platforms. These platforms can make discussion easy, but they are not necessarily designed specifically for health education. Educational material and personal opinions may appear together, making it difficult for users to distinguish evidence-based information from unsupported claims.
 
-_**Step 5: Write for an outsider.** Assume your reader knows nothing about this domain. Define every domain term on first use and add it to the [project glossary](project-glossary.md)._
+The current process does not provide one confirmed location where users can:
 
-_**Checklist:** Is the business context clear to someone unfamiliar with it? Does the flow give step-by-step detail? Are all actors and tools described? Are the inefficiencies illustrated with specific examples? Is there a mermaid diagram with one subgraph per actor?]_
+- find health education organized around their interests and goals;
+- distinguish educational material from personal opinion;
+- review the source or credibility of health information;
+- participate in a health-focused community;
+- receive content in several formats;
+- control how personal information affects content recommendations; or
+- report and receive a response to harmful or misleading health content.
+
+Current tools and limitations
+- Current tool or source: General internet search engines | Current Use: Locate health and wellness information | Limitation: Results vary in quality, may be difficult to evaluate, and are not necessarily personalized. |
+- Current tool or source: Social-media platforms | Current use: Share experiences and participate in discussions | Limitation: Health information, personal opinions, advertising, and misinformation may appear together. |
+- Current tool or source: Video and podcast platforms | Current use: Consume educational or motivational content | Limitation: Content may not be reviewed for accuracy, accessibility, or suitability for the user. |
+- Current tool or source: Online health communities | Current use: Ask questions and receive peer support | Limitation: Moderation standards and the reliability of advice vary by community. |
+- Current tool or source: Friends, family, and personal networks | Current use: Receive informal support and personal experiences | Limitation: Advice may be incomplete, inaccurate, or unsuitable for a person’s health situation. |
+- Current tool or source: Clinics and hospitals | Current use: Receive professional health information and care | Limitation: Access may be limited by appointment availability, location, cost, or the user’s ability to ask questions during a visit. |
+
+Current pain points
+The current process creates several problems:
+
+- Users must search across multiple websites and platforms instead of finding education and support in one health-focused environment.
+- It can be difficult to determine whether information is evidence-based, current, or appropriate for a particular user.
+- People may encounter health claims, body-image messages, or self-care advice that does not reflect their financial situation, culture, age, or medical circumstances.
+- Personal experiences and professional health education may be mixed together without clearly identifying the difference.
+- Users who need emotional or social support may have to use general-purpose platforms that were not designed around health-related safety and moderation.
+- People may not have an easy way to report dangerous, misleading, abusive, or privacy-violating content.
+- Health education may not be equally accessible to users who prefer articles, images, videos, podcasts, or other formats.
+- Collecting health history, medication information, and personal goals without clear privacy rules could create additional risks.
+
+Well Live is intended to improve this situation by providing a more organized health and wellness environment that combines educational content, community participation, and personalized discovery. However, the client must confirm which existing tools and processes are most important to replace or improve before the MVP scope is finalized.
+
+**_Time example: "Printing and distributing delivery schedules to drivers takes 2 hours daily, cutting into time available for deliveries."_
+
+**_**Step 5: Write for an outsider.** Assume your reader knows nothing about this domain. Define every domain term on first use and add it to the [project glossary](project-glossary.md)._
+
+**_**Checklist:** Is the business context clear to someone unfamiliar with it? Does the flow give step-by-step detail? Are all actors and tools described? Are the inefficiencies illustrated with specific examples? Is there a mermaid diagram with one subgraph per actor?]_
 
 ### 1.3 References
 
-_[List every document referenced elsewhere in this one: the client's project brief, existing forms and reports, regulations, standards, competing products. Identify each by title, date, and where it can be obtained. The spreadsheet or screenshot your client showed you belongs here.]_
+- Well Live Project Brief by Sarah Becan | Date: 09-01-2026 | Defines the initial product vision, target audience, objectives, proposed implementation activities, and major capabilities. | Location: Provided by the client and included in the project requirements materials. |
+- Well Live Pitch Summary | Date: Current Repository version at the time of drafting | Summarizes the project brief, candidate user classes, possible MVP scope, quality and safety concerns, open risks, and client questions. | Location: docs/well-live-pitch-summary.md |
+- Team Contract Well Live | Date: September 2026 | Defines the team members, communication expectations, decision-making process, Git workflow, review requirements, and responsibilities when using AI tools. | Location: docs/team-contract.md |
+-  Healthy People 2030 | Date: Specific source and publication date to be confirmed | Identified in the client brief as a research source for understanding current health needs and priorities. | Location: Client/team must confirm the specific Healthy People 2030 objectives or materials to be used. |
+-  Well Live project repository | Date: Current project repository | Contains the project requirements, planning documents, source materials, and future implementation artifacts. | Location: https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live |
 
 ---
 
