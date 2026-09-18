@@ -237,7 +237,7 @@ _[The section you will cite most often. Scope is what keeps a friendly client's 
 
 ### 4.1 Product Perspective
 
-Well Live is a subscription-based health and wellness platform that users access through a web or mobile client. It combines user onboarding and wellness profiles, personalized educational content, and moderated asynchronous community discussions in one system. Administrators and moderators manage users, content, and reports. The MVP is intended to use a relational database for user and subscription records, object or media storage for content, and external payment and authentication services where approved.
+Well Live is a subscription-based health and wellness platform that users access through a web or mobile client. It combines user onboarding and wellness profiles, personalized educational content, and moderated community discussions in one system. Administrators and moderators manage users, content, and reports. The MVP is intended to use a relational database for user accounts and serve general health content to the user in a scrollable social media style.
 
 ```mermaid
 flowchart LR
@@ -253,27 +253,26 @@ flowchart LR
 
 `FEAT-account-profile`: Users create accounts and maintain a wellness profile containing relevant health history, medications, interests, and goals. Access to sensitive profile information is limited according to the user's role and permissions.
 
-`FEAT-personalized-content`: The system presents curated articles, images, videos, and podcasts matched to a user's profile and wellness interests. MVP personalization uses profile-to-content tag matching rather than deep-learning recommendations.
+`FEAT-personalized-content`: The system presents curated articles matched to a user's profile and wellness interests. MVP personalization uses non personalized content before adding on personalization later
 
-`FEAT-community-discussions`: Users participate in asynchronous support discussions by creating posts, comments, and threads around health and wellness experiences.
+`FEAT-community-discussions`: Users participate in discussions by creating posts, comments, and threads around health and wellness experiences.
 
-`FEAT-content-moderation`: Moderators review reported or potentially harmful content and enforce community guidelines. The feature supports a human review process for health misinformation and other policy violations.
+`FEAT-content-moderation`: Moderators review content and enforce community guidelines. The feature supports a human review process for health misinformation and other policy violations.
 
-`FEAT-subscriptions`: Users can access subscription-based Well Live services and manage their subscription status through an approved payment provider.
+`FEAT-subscriptions`: Users can access subscription-based Well Live and manage their subscription status through an approved payment provider.
 
-`FEAT-administration`: Administrators manage users, curated educational content, categories, community guidelines, and moderation permissions.
+`FEAT-administration`: Administrators manage users, content, categories, and community guidelines
 
 ### 4.3 MVP Scope
 
-**In scope for the MVP:** `FEAT-account-profile`, `FEAT-personalized-content`, and `FEAT-community-discussions`.
+**In scope for the MVP:** `FEAT-account-profile`, `FEAT-general-content`.
 
-**Explicitly out of scope:** `FEAT-content-moderation`, `FEAT-administration`, and `FEAT-subscriptions` are excluded from the MVP, as confirmed with the client during the first meeting. Real-time live chat rooms and direct/group chat are excluded from `FEAT-community-discussions` because they require continuous moderation and real-time infrastructure. Automated AI content scraping or dynamic health-content generation is excluded from `FEAT-personalized-content` because MVP content will be manually curated and vetted. Deep-learning recommendations are excluded from `FEAT-personalized-content` because deterministic profile-to-tag matching is sufficient for the first release. Full clinical diagnosis, treatment decisions, and emergency medical services are outside the product's purpose.
-
+**Explicitly out of scope:** `FEAT-content-moderation`, `FEAT-administration`, and `FEAT-subscriptions` are excluded from the MVP, as confirmed with the client during the first meeting. Real-time live chat rooms and direct/group chat are excluded from `FEAT-community-discussions` because they require continuous moderation and real-time infrastructure. Automated AI content scraping or dynamic health-content generation is excluded from `FEAT-personalized-content` because the client stated that the MVP would be a generic content delivery system to create a basic demo of what the app should look like.
 _Ask your client the question directly: "If we can deliver only one of these in December, which one is it?" The answer is worth more than the rest of the meeting. A client who cannot choose has not thought about it yet, which is itself something you need to know now rather than in November._
 
 ### 4.4 Deployment Considerations
 
-Users should reach Well Live through a responsive web application, with mobile support considered as the platform is validated. The MVP requires hosted application infrastructure, a protected relational database, encrypted media storage, authentication, backups, monitoring, and an approved payment service if subscriptions are enabled. Existing user or health data migration is not currently defined and should be treated as out of scope unless the client provides a source and retention requirements.
+Users should reach Well Live through a responsive web application, with mobile support considered as the platform is validated. The MVP requires hosted application infrastructure, a protected relational database, and authentication. 
 
 The client or designated moderators will need training on content approval, community reports, and account administration. Before handling real health information, the deployment must receive appropriate privacy and compliance review, including confirmation of HIPAA-related responsibilities and access auditing. The long-term maintainer, hosting owner, supported browsers and devices, backup policy, and operating budget remain open deployment decisions.
 
