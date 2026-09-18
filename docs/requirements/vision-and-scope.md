@@ -45,7 +45,7 @@ _[This document defines the goals, purpose, and boundaries of Well Live. It give
 
 Well Live is a proposed subscription-based health and wellness application created for people who want trustworthy health information, practical self-care education, and support from a community with similar experiences. The product is intended to combine familiar social-media features with educational health and wellness content.
 
-The proposed audience includes people with a wide range of health and wellness needs, including individuals managing serious illnesses, teenagers experiencing body-image concerns, families with limited financial resources, and people who want more approachable information about their health. The product should not be centered only on highly polished fitness influencers or unrealistic wellness lifestyles. Instead, it should provide an inclusive environment where users can find useful information and support that reflects real-life circumstances.
+The proposed audience includes people with a wide range of health and wellness needs, including individuals managing serious illnesses, families with limited financial resources, and people who want more approachable information about their health. At the moment, Well Live will be for only 18+. The product should not be centered only on highly polished fitness influencers or unrealistic wellness lifestyles. Instead, it should provide an inclusive environment where users can find useful information and support that reflects real-life circumstances.
 
 Well Live is intended to address the gap between information and support available at home, in clinics, and in hospitals. Users should be able to share health-related experiences, participate in discussions, and find educational materials related to topics such as nutrition, fitness, financial wellness, mental health, and spiritual health.
 
@@ -138,7 +138,7 @@ Well Live is intended to improve this situation by providing a more organized he
 
 **_**Step 5: Write for an outsider.** Assume your reader knows nothing about this domain. Define every domain term on first use and add it to the [project glossary](project-glossary.md)._
 
-**_**Checklist:** Is the business context clear to someone unfamiliar with it? Does the flow give step-by-step detail? Are all actors and tools described? Are the inefficiencies illustrated with specific examples? Is there a mermaid diagram with one subgraph per actor?]_
+**_**Checklist:** Is the business context clear to someone unfamiliar with it? Does the floteew give step-by-step detail? Are all actors and tools described? Are the inefficiencies illustrated with specific examples? Is there a mermaid diagram with one subgraph per actor?]_
 
 ### 1.3 References
 
