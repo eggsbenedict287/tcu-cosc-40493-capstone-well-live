@@ -237,49 +237,43 @@ _[The section you will cite most often. Scope is what keeps a friendly client's 
 
 ### 4.1 Product Perspective
 
-_[Put the product in context relative to other systems and the user's environment. If it is independent and self-contained, say so. If it is one component of something larger, describe how they interact and identify the interfaces between them. A context diagram shows this most clearly: your system as one box, every external actor and system around it, and a labeled arrow for each thing that crosses the boundary.]_
+Well Live is a subscription-based health and wellness platform that users access through a web or mobile client. It combines user onboarding and wellness profiles, personalized educational content, and moderated community discussions in one system. Administrators and moderators manage users, content, and reports. The MVP is intended to use a relational database for user accounts and serve general health content to the user in a scrollable social media style.
 
-    ```mermaid
-    flowchart LR
-      Student[Student] --> PP[Project Pulse]
-      Instructor[Instructor] --> PP
-      PP --> Gmail[(Gmail)]
-      PP --> LMS[(Learning management system)]
-    ```
+```mermaid
+flowchart LR
+  User[User] --> WL[Well Live]
+  Moderator[Moderator] --> WL
+  Admin[Administrator] --> WL
+  WL --> Payment[Payment provider]
+  WL --> Auth[Authentication service]
+  WL --> Storage[(Database and media storage)]
+```
 
 ### 4.2 Major Features and Scope
 
-_[List and briefly describe the major product features. A feature is a high-level **capability** the system provides in order to deliver a benefit: an externally visible service, not an implementation detail.]_
+`FEAT-account-profile`: Users create accounts and maintain a wellness profile containing relevant health history, medications, interests, and goals. Access to sensitive profile information is limited according to the user's role and permissions.
 
-_Because this document is read by a wide range of people, keep the detail general enough for everyone to follow while giving your team enough to build a use-case model from. **Use cases are derived from these features**, so a feature too vague to decompose is too vague._
+`FEAT-personalized-content`: The system presents curated articles matched to a user's profile and wellness interests. MVP personalization uses non personalized content before adding on personalization later
 
-_Guidelines:_
+`FEAT-community-discussions`: Users participate in discussions by creating posts, comments, and threads around health and wellness experiences.
 
-- _State features at the level of product capabilities._
-- _One to three sentences each._
-- _No detailed workflows, user interface behavior, or algorithms._
-- _Do not describe how the feature will be implemented._
-- _Focus on what capability is needed and why, not how._
-- _Understandable by a non-technical stakeholder, including your client._
+`FEAT-content-moderation`: Moderators review content and enforce community guidelines. The feature supports a human review process for health misinformation and other policy violations.
 
-_Examples:_
+`FEAT-subscriptions`: Users can access subscription-based Well Live and manage their subscription status through an approved payment provider.
 
-- _`FEAT-administration`: Manage senior design sections, teams, and student rosters._
-- _`FEAT-performance-tracking`: Submit and review weekly activity reports and peer evaluations._
-- _`FEAT-grade-generation`: Generate weekly activity report and peer evaluation grades for an entire section._
+`FEAT-administration`: Administrators manage users, content, categories, and community guidelines
 
 ### 4.3 MVP Scope
 
-_[Of the features above, which ones ship in the release you actually deliver in December? Name them by identifier. Then name what is explicitly **out**, also by identifier, so it is on the record.]_
+**In scope for the MVP:** `FEAT-account-profile`, `FEAT-general-content`.
 
-_**In scope for the MVP:** `FEAT-...`, `FEAT-...`_
-
-_**Explicitly out of scope:** `FEAT-...` (reason), `FEAT-...` (reason)_
-
+**Explicitly out of scope:** `FEAT-content-moderation`, `FEAT-administration`, and `FEAT-subscriptions` are excluded from the MVP, as confirmed with the client during the first meeting. Real-time live chat rooms and direct/group chat are excluded from `FEAT-community-discussions` because they require continuous moderation and real-time infrastructure. Automated AI content scraping or dynamic health-content generation is excluded from `FEAT-personalized-content` because the client stated that the MVP would be a generic content delivery system to create a basic demo of what the app should look like.
 _Ask your client the question directly: "If we can deliver only one of these in December, which one is it?" The answer is worth more than the rest of the meeting. A client who cannot choose has not thought about it yet, which is itself something you need to know now rather than in November._
 
 ### 4.4 Deployment Considerations
 
-_[Summarize what it takes to get this into its operating environment. How will users reach it? Are they spread across locations or time zones? What infrastructure has to change for capacity, network access, data storage, or data migration? Who trains the users? Who maintains it after this team graduates, and what does that person already know how to run?]_
+Users should reach Well Live through a responsive web application, with mobile support considered as the platform is validated. The MVP requires hosted application infrastructure, a protected relational database, and authentication. 
+
+The client or designated moderators will need training on content approval, community reports, and account administration. Before handling real health information, the deployment must receive appropriate privacy and compliance review, including confirmation of HIPAA-related responsibilities and access auditing. The long-term maintainer, hosting owner, supported browsers and devices, backup policy, and operating budget remain open deployment decisions.
 
 _That last question shapes your architecture, so ask it in the first client meeting rather than the last._
