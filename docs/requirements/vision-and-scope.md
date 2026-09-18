@@ -134,7 +134,7 @@ The current process creates several problems:
 
 Well Live is intended to improve this situation by providing a more organized health and wellness environment that combines educational content, community participation, and personalized discovery. However, the client must confirm which existing tools and processes are most important to replace or improve before the MVP scope is finalized.
 
-**_Time example: "Printing and distributing delivery schedules to drivers takes 2 hours daily, cutting into time available for deliveries."_
+*_Time example: "Printing and distributing delivery schedules to drivers takes 2 hours daily, cutting into time available for deliveries."_
 
 **_**Step 5: Write for an outsider.** Assume your reader knows nothing about this domain. Define every domain term on first use and add it to the [project glossary](project-glossary.md)._
 
