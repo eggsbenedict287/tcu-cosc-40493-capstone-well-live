@@ -58,49 +58,61 @@ _Rules:_
 
 ### Assessment
 
-The initial collection of information from a user about their health history, medications, goals, and other relevant information. Well Live uses this information to help determine what educational content may be relevant to the user.
+The initial collection of information from a member about their health history, medications, goals, and other relevant information. Well Live uses this information to help determine what educational content may be relevant to the member.
 
 **Not to be confused with:** a medical examination or professional diagnosis.
 
 ### Community
 
-The social portion of Well Live where users can interact with and support other users through shared health and wellness experiences. The community is intended to encourage discussion, education, and social support.
+The social portion of Well Live where members can interact with and support other members through shared health and wellness experiences. The community is intended to encourage discussion, education, and social support.
 
 ### Educational Content
 
-Health and wellness information provided through Well Live to help users improve their health knowledge and make informed decisions about self-care. Educational content may include text, pictures, videos, podcasts, and other media.
+Health and wellness information provided through Well Live to help members improve their health knowledge and make informed decisions about self-care. Educational content may include text, pictures, videos, podcasts, and other media.
 
 **Not to be confused with:** medical advice, diagnosis, or treatment provided by a healthcare professional.
 
 ### Evidence-Based Content
 
-Health and wellness information supported by credible evidence or trustworthy sources rather than unsupported claims. Well Live aims to use evidence-based information when educating users about health topics, devices, services, and self-care.
+Health and wellness information supported by credible evidence or trustworthy sources rather than unsupported claims. Well Live aims to use evidence-based information when educating members about health topics, devices, services, and self-care.
 
 ### Health Goal
 
-An outcome related to health or wellness that a user identifies as something they want to work toward. Health goals may be collected during the user's assessment and used to help personalize their experience.
+An outcome related to health or wellness that a member identifies as something they want to work toward. Health goals may be collected during the member's assessment and used to help personalize their experience.
 
 ### Health History
 
-Information supplied by a user about their previous and current health-related experiences. Health history is part of the information Well Live may use to personalize educational content.
+Information supplied by a member about their previous and current health-related experiences. Health history is part of the information Well Live may use to personalize educational content.
 
 ### Health Literacy
 
-A user's ability to understand and use health-related information. Improving health literacy is one of the objectives of Well Live.
+A member's ability to understand and use health-related information. Improving health literacy is one of the objectives of Well Live.
 
 ### Medication
 
-A medicine or drug that a user reports as part of their health information. Medication information may be considered when determining which educational content is relevant to the user.
+A medicine or drug that a member reports as part of their health information. Medication information may be considered when determining which educational content is relevant to the member.
+
+### Member
+
+A person with an active Well Live subscription who can access the platform's subscription-gated educational and community features.
+
+**Not to be confused with:** a visitor, who does not have subscription-based access.
 
 ### Personalized Content
 
-Educational health and wellness content selected or presented based on information associated with a particular user, such as their health history, medications, interests, or health goals.
+Educational health and wellness content selected or presented based on information associated with a particular member, such as their health history, medications, interests, or health goals.
 
 **Not to be confused with:** individualized medical advice or a diagnosis.
 
+### Post
+
+Content created by a member and shared within the Well Live community to communicate experiences, information, or support related to health and wellness.
+
+**Not to be confused with:** educational content provided through Well Live's official content process.
+
 ### Profile
 
-The representation of a user within Well Live. A profile contains information associated with the user and supports the user's personalized and social experience within the platform.
+The representation of a member within Well Live. A profile contains information associated with the member and supports the member's personalized and social experience within the platform.
 
 ### Self-Care
 
@@ -108,12 +120,24 @@ Actions a person takes to support their own health and wellness. Well Live aims 
 
 ### Social Support
 
-Interaction between Well Live users intended to provide encouragement, discussion, shared experiences, or a sense of community around health and wellness topics.
+Interaction between Well Live members intended to provide encouragement, discussion, shared experiences, or a sense of community around health and wellness topics.
 
-### User
+### Subscription
 
-A person who uses Well Live to access health and wellness education, personalized content, community features, or other services provided by the platform.
+The access entitlement that allows a member to use Well Live's subscription-gated features.
+
+**Not to be confused with:** visitor access, which does not require an active subscription.
+
+### Topic
+
+A health or wellness subject used to organize content and community discussion within Well Live. Topics may cover physical, mental, or financial health subjects.
+
+### Visitor
+
+A person who accesses Well Live without an active subscription. A visitor has more limited access than a member.
+
+**Not to be confused with:** a member, who has subscription-based access to Well Live.
 
 ### Well Live
 
-A subscription-based health and wellness platform that combines personalized, evidence-based education with social and community features. Well Live is intended to help users improve health literacy, support informed self-care, and participate in health-related discussions.
+A subscription-based health and wellness platform that combines personalized, evidence-based education with social and community features. Well Live is intended to help members improve health literacy, support informed self-care, and participate in health-related discussions.
