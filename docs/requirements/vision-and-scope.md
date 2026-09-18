@@ -200,11 +200,18 @@ _A stakeholder is not always a user. The person paying for the software, the per
 
 ### 3.1 Stakeholder Profiles
 
+_**Draft status:** the roles below are carried over from the candidate user classes in [`well-live-pitch-summary.md`](../well-live-pitch-summary.md). None have been confirmed with Sarah Becan. Attitude, in particular, is a guess dressed up as a table cell until a client meeting says otherwise — see the open issues this section raises._
+
 | Stakeholder | Major value or benefit from this product | Attitude | Major features of interest | Constraints | End user? |
 |---|---|---|---|---|---|
-| _[Role]_ | _[What they get out of it]_ | _[Supportive, skeptical, unaware, opposed]_ | _[What they care about]_ | _[What limits them]_ | _[Yes or no]_ |
+| Member | Understandable, evidence-based health and wellness education plus peer support, organized around their own goals, without the polished-influencer aesthetic the pitch explicitly rejects. | Unconfirmed — the pitch names the target member (a mother in cancer treatment, a teenager with body-image concerns, a family on food assistance) but no member has been interviewed. | Personalized content feed, community posts/comments, evidence-based articles, video, and podcasts. | May be reluctant to disclose health history; may have limited time, data connectivity, or digital literacy; some are minors (age policy not yet set). | Yes |
+| Content contributor | A channel to reach the target audience with material the client considers evidence-based. | Unconfirmed — the pitch implies this role but never names a person or organization who would fill it. | Authoring workflow, visibility into review/publication status. | Content must clear a review step before publishing (workflow not yet designed); compensation and credentialing are undecided. | Yes, if content authoring is confirmed in scope (`FR` TBD) |
+| Moderator | Protects the community and the platform's credibility from harm the client cares about (medical misinformation, harassment). | Likely supportive of the mission, but workload is a real risk: `RI-peer-misinformation` above already names moderators as the mitigation for unverified peer advice. | Report queue, moderation actions (hide/warn/suspend/ban), escalation path. | Unclear if moderators are staff, volunteers, or health professionals; expected report volume is unknown. | Yes |
+| Health professional / subject-matter reviewer | Wants harmful or inaccurate content caught before it reaches a vulnerable user; is the clinical sign-off named in `RI-ai-hallucination`'s mitigation above. | Unconfirmed and possibly cautious — reviewing user-adjacent health content carries liability exposure for whoever signs off on it. | Review/approval queue, citation and source display, a correction workflow for content later found wrong. | Time-limited; may require a credentialing or legal agreement with the client before this role can exist at all. | Uncertain — role is a candidate, not yet confirmed by the client |
+| Platform administrator | Keeps the platform operating and safe day to day. | Supportive in principle, but nobody has been named to hold this role after the team graduates. | User, content, and moderation management; configuration; audit visibility. | Undetermined who this is post-graduation — a deployment-considerations question (section 4.4), not just a stakeholder-table blank. | Yes |
+| Sarah Becan (Founder / Client) | Sees the Well Live vision — bridging home, clinic, and hospital through trustworthy education and peer support — actually built and validated. | Supportive; she is the source of the vision, so treat any daylight between this table and her expectations as the highest-priority open issue. | Brand tone ("truthful self-care," not influencer culture), safety, and credibility — matching the vision statement above. | Not a technical stakeholder — needs plain-language explanations, not implementation detail; a one-semester build timeline. | No, unless she also acts as a platform administrator |
 
-_**Attitude is the column students leave blank, and the one that predicts trouble.** A stakeholder whose workload increases because of your software is not automatically supportive, and finding that out in December is too late._
+_Open issues this table raises for [`OPEN-ISSUES.md`](OPEN-ISSUES.md): whether health-professional review is in scope at all, who actually fills the moderator and platform-administrator roles, and Sarah's attitude toward each row — none of this should stay a guess past the next client meeting._
 
 ### 3.2 User Environment
 
@@ -216,15 +223,31 @@ _[Describe the working environment of the target users:_
 - _Which platforms are in use today, and which are planned?_
 - _What other applications are in use, and does yours have to integrate with them?]_
 
+There is no "today" for this task yet — Well Live is a new product, not a replacement for an internal process — so this section describes the environment the client's brief implies rather than one the team observed.
+
+Members act mostly alone: opening the app, browsing a personalized feed, and optionally posting or commenting, in short, interrupted sessions rather than one long sitting. Neither the pitch brief nor the business objectives above give a session-length or frequency number, so `SM-*` metrics like `SM-chat-participation` will need real usage data to validate once the product launches.
+
+The named target users — someone in cancer treatment, a teenager dealing with body image, a family on food assistance — point to real environmental constraints: unreliable data connectivity, shared or borrowed devices, limited time and energy, and content read in stressful settings such as a clinic waiting room. Members may also be minors, which the pitch summary flags as unresolved (age verification, consent, and content rules are all open). None of this is confirmed; it is inferred from who the client says the product is for.
+
+Planned platforms, per the client's technical assessment, are responsive web and native mobile (React / React Native or Next.js) — no legacy system to migrate from or integrate with. `AS-app-store-clearance` above already flags the App Store/Play Store review as a dependency. Payment (Stripe/Apple/Google Pay) and any clinic, hospital, wearable, or EHR integration are explicitly named as post-MVP, not day-one, so they should not be assumed into the MVP's user environment.
+
+_**Open issues:** expected number of concurrent members; typical session length and frequency; whether native mobile apps or mobile-web is sufficient for the first release; the platform's accessibility target._
+
 ### 3.3 Alternatives and Competition
 
 _[Identify the alternatives your stakeholders see as available: buying a competitor's product, building something in-house, or keeping the status quo. Give the major strengths and weaknesses of each **as the stakeholder perceives them**, not as you do.]_
 
 | Alternative | Strengths | Weaknesses for this client |
 |---|---|---|
-| _[Tool, or "the current manual process"]_ | | |
+| General social media health communities (Facebook and Reddit groups, as the pitch itself names) | Free; the target audience is already there; strong existing network effects. | No health-specific credibility review, so misinformation spreads unchecked (`RI-peer-misinformation` above); no personalization to a member's own goals; nothing enforces the "truthful self-care" tone from the vision statement. |
+| Consumer health information sites (e.g. WebMD) | Trusted, evidence-oriented, already widely used for health questions. | No community or peer support; generic content, not organized around a member's own profile or goals. |
+| Fitness-influencer platforms and apps (Instagram wellness accounts, mainstream fitness/diet apps) | Polished, motivating, large existing audiences. | This is precisely the curated, unrealistic aesthetic the vision statement says Well Live exists to reject; likely to alienate the named target users rather than serve them. |
+| Condition-specific support communities (e.g. CaringBridge, single-disease forums) | Deep, trusted community around one specific condition. | Siloed to one topic; does not cover the breadth of nutrition, fitness, financial, mental, and spiritual health the business opportunity statement spans. |
+| The status quo — no dedicated platform | Costs nothing; nothing to build, learn, or maintain. | Leaves the exact gap `BO-health-literacy` and the business opportunity statement are funding this project to close: no single place bridging home, clinic, and hospital with education and peer support together. |
 
 _Always include the status quo as a row. It is the alternative that wins most often, and the one your product actually has to beat._
+
+_**Draft status:** these alternatives are the team's own read of the competitive landscape from the pitch brief, not the client's. Section 3.3's own instruction is to give strengths and weaknesses **as the stakeholder perceives them** — ask Sarah directly which of these she has actually evaluated, and whether she sees competitors this list is missing._
 
 ---
 
