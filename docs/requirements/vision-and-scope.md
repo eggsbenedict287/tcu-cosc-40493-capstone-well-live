@@ -33,7 +33,7 @@ _Why this matters more with an agent than it used to: ask an agent to insert a n
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| 2026-09-16 | 0.1 | Initial draft from the client brief and first client meeting | Well Live team |
+| 2026-09-16 | 0.1 | Initial draft from the client brief and first client meeting | Well Live Team |
 
 ---
 
