@@ -96,102 +96,101 @@ _[List every document referenced elsewhere in this one: the client's project bri
 
 ## 2. Business Requirements
 
-_[Projects are launched in the belief that creating or changing a product will provide worthwhile benefits for someone. Business requirements describe the primary benefits the new system will provide to its sponsors, buyers, and users. Input comes from the people who know **why** the project is being undertaken: your client, their management, a subject matter expert, a product visionary. Business requirements determine which user requirements get implemented and in what order, so take this section seriously.]_
-
 ### 2.1 Business Opportunity or Problem Statement
 
-_[State the problem being solved or the opportunity being exploited, in the client's own terms. One or two paragraphs. This is the answer to "why is anyone paying for this?"]_
+Most wellness apps are built around gym influencers, unrealistic beauty standards, and unvetted advice. Real people, a mother going through cancer treatments, or a family budgeting on food stamps, are often left out. At the same time, medically accurate health information is stuck behind dry academic papers or scattered across scary, generic internet searches. 
+
+Well Live fills this gap by giving people a relatable, subscription-based community that pairs honest peer support with real, evidence-based education. Members get a space where they can talk to others walking the same road, while getting practical, vetted videos, podcasts, and articles tailored to their actual health needs and life situations. 
 
 ### 2.2 Business Objectives
 
-_[Summarize the business benefits the product will provide, **quantitatively and measurably**. Platitudes ("become recognized as a world-class provider") and vague improvements ("provide a more rewarding customer experience") are neither helpful nor verifiable.]_
-
-_Examples:_
-
-- _`BO-grading-time`: Reduce the instructor's time to grade peer evaluations by 50%._
-- _`BO-submission-rate`: Increase the weekly activity report and peer evaluation submission rate by 20%._
-- _`BO-student-effort`: Reduce the time a student spends completing a weekly activity report and peer evaluation by 25%._
-
-_**How to elicit these.** Clients rarely volunteer numbers. Ask: What business problem are you trying to solve? What is the motivation for solving it now? What would a highly successful solution do for you? What is a successful solution worth? If the answer contains no number, ask what the number is today._
-
-_**Checklist:** A year from now, could someone tell whether each objective was met? Does each one contain a quantity?]_
+* **`BO-health-literacy`**: Increase member health literacy scores by 25% within 90 days of joining.
+* **`BO-retention-rate`**: Keep at least 70% of paid subscribers active after their first 3 months.
+* **`BO-peer-engagement`**: Have 60% of active members post or chat in community rooms at least twice a week.
+* **`BO-intake-completion`**: Hit an 85% completion rate on the onboarding health and goals assessment.
+* **`BO-content-credibility`**: Maintain a 95%+ credibility approval rating on all automated and curated materials, verified by licensed professionals.
 
 ### 2.3 Success Metrics
 
-_[Business objectives say what should improve. Success metrics tell you **whether you are on track to get there**, and they can be measured far sooner. That gap is the reason this section exists. A business objective often cannot be measured until well after the project ends, and sometimes depends on projects beyond yours, but you still need to know during the semester whether you are heading the right way.]_
-
-_Specify the indicators stakeholders will use to define and measure success on this project. Identify the factors with the greatest impact on achieving it, including factors outside the organization's control._
-
-_A success metric is sometimes the same statement as a business objective, when the objective happens to be measurable early. "Reduce time spent ordering chemicals to 10 minutes on 80 percent of orders" serves as both, because average order time can be measured during testing or shortly after release. Where an objective is measured a year out, write a metric that tracks the same thing on a shorter timeline: against an adoption objective measured annually, "track 60 percent of commercial chemical containers and 50 percent of proprietary chemicals within 4 weeks"._
-
-_For each metric give the indicator, where the number comes from, what it is today (the baseline), and what counts as success by when. A metric with no baseline is not measurable, and "we do not track that today" is a finding worth recording rather than a gap to paper over._
-
-_Examples:_
-
-- _`SM-cafeteria-adoption`: 75% of employees who used the cafeteria at least 3 times per week during Q3 2013 use the Cafeteria Ordering System at least once a week, within 6 months following initial release._
-- _`SM-satisfaction`: The average rating on the quarterly cafeteria satisfaction survey increases by 0.5 on a scale of 1 to 6 from the Q3 2013 rating within 3 months following initial release, and by 1.0 within 12 months._
-
-_**How to elicit these.** Ask "how will you know this worked?", then ask what that number is today. If your client cannot say, ask who would know and whether the number is recorded anywhere. Clients often propose a metric the software cannot influence (revenue, headcount); trace it back to something your system actually changes._
-
-_**Choose your success metrics wisely. Make sure they measure what is important to the business, not just what is easy to measure.** "Reduce product development costs by 20 percent" is easy to measure, and also easy to achieve by laying off employees or investing less in innovation, neither of which is the intended outcome. Prefer a metric that gets worse if you build the wrong thing._
-
-_**Checklist:** Does each metric name its source, its baseline, and its deadline? Can this software actually move it? Can it be measured during testing or shortly after release, rather than a year later? Does every business objective have at least one metric behind it, and does every metric trace back to an objective?]_
+| Metric ID | Indicator | Source | Current Baseline | Target Success | Deadline |
+|---|---|---|---|---|---|
+| **`SM-onboard-complete`** | New signups finishing the health assessment | App onboarding analytics | 0% (New product) | ≥ 80% completion | 4 weeks post-launch |
+| **`SM-active-retention`** | Month-over-month paid renewal rate | Stripe / billing records | 0% (New product) | ≥ 65% monthly renewal | 90 days post-launch |
+| **`SM-chat-participation`** | Weekly active users chatting or posting | App database logs | 0% (New product) | ≥ 50% of WAU | 60 days post-launch |
+| **`SM-content-trust`** | User rating of content trustworthiness | In-app feedback survey | 0% (Industry avg ~35%) | Avg ≥ 4.2 / 5.0 | End of Q1 post-launch |
+| **`SM-search-satisfaction`** | Searches leading to a viewed article or episode | Search query analytics | 0% (New product) | ≥ 70% click-through | 4 weeks post-beta |
 
 ### 2.4 Vision Statement
 
-_[One statement summarizing, at the highest level, the position this product intends to fill. Fill in the table.]_
-
 | | |
 |---|---|
-| **For** | _[target customer]_ |
-| **Who** | _[the need or opportunity]_ |
-| **The** _[product name]_ | _[is a ...]_ |
-| **That** | _[major capabilities, key benefit, compelling reason to use it]_ |
-| **Unlike** | _[the current process, or the competing alternative]_ |
-| **Our product** | _[primary differentiation and advantage]_ |
-
-_Worked example:_
-
-| | |
-|---|---|
-| **For** | _students in the TCU senior design course_ |
-| **Who** | _need an easier way to submit and update weekly activity reports and peer evaluations_ |
-| **The** _Project Pulse_ | _is a web application_ |
-| **That** | _lets students submit reports and evaluations in one place, and lets instructors view and grade them without downloading anything_ |
-| **Unlike** | _the current process of spreadsheets and manual uploads to the learning management system_ |
-| **Our product** | _keeps the whole cycle in one system, so nothing is transcribed by hand_ |
-
-_**Use this in the meeting.** Read the filled-in table back to your client out loud and watch what they correct. It is the fastest way to discover you misunderstood the project, and it costs ninety seconds. Corrections go straight into [OPEN-ISSUES.md](OPEN-ISSUES.md)._
+| **For** | Everyday people and families dealing with real-world health and wellness hurdles |
+| **Who** | Need trustworthy medical guidance and judgment-free community without influencer hype |
+| **The** *Well Live* | Is a subscription-based health education and community app |
+| **That** | Delivers vetted educational media (podcasts, video, reads) and private peer chat rooms matched to your personal health background |
+| **Unlike** | Commercial social networks (Instagram, Reddit) and static clinical websites (WebMD) |
+| **Our product** | Normalizes truthful, accessible self-care by pairing vetted clinical information with genuine human connection |
 
 ### 2.5 Proposed Process Flows (To-Be Process Flows)
 
-_[Draw the improved process, with your software in it, as a second mermaid flowchart in the same shape as the as-is flow. Show how the software interacts with each actor, which steps it automates, and which pain point from section 1.2 each change addresses. Label the steps that are new or significantly changed, and say plainly which manual steps **remain** and why. There may be several major flows.]_
+```mermaid
+flowchart TD
+    classDef manual fill:#f9f9f9,stroke:#666,stroke-width:1px;
+    classDef automated fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef newStep fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
 
-_The point of drawing both is the comparison. If the two diagrams look alike, either you have not understood the current process or the software is not worth building._
+    User([Subscribing User]) --> A["Sign Up & Open App"]:::manual
+    A --> B["Complete Health & Goals Assessment"]:::newStep
+    B --> C{"Elect to Post Anonymously?"}:::newStep
+    
+    C -- Yes --> D["Generate Anonymous Handle"]:::automated
+    C -- No --> E["Display Chosen Public Handle"]:::manual
+    
+    B --> F["Personalization Engine Maps User Tags"]:::automated
+    F --> G["Deliver Personalized For You Feed"]:::automated
+    
+    D --> H["Enter Topic Community Chat Rooms"]:::automated
+    E --> H
+    
+    G --> I["Engage with Articles, Audio, and Video"]:::manual
+    H --> J["Share Health Journey & Give Peer Support"]:::manual
 
+    K[("Clinical Sources & Medical Reviewers")] --> L["Curate & Manually Verify Content"]:::manual
+    L --> M["Automated Ingestion Pipeline"]:::automated
+    M --> G
+```
+
+
+ 
+    
 ### 2.6 Risks
 
-_[Summarize the major business risks of building this product, and of not building it. Categories include competition, timing, user acceptance, implementation, and negative impact on the business. Business risks are not project risks: "a teammate might drop the course" is a project risk and does not belong here. Give probability and impact for each, and a mitigation where you have one.]_
-
-_Examples:_
-
-- _`RI-union-contract`: The Cafeteria Employees Union might require its contract be renegotiated to reflect the new employee roles and operating hours. (Probability 0.6, Impact 3)_
-- _`RI-low-adoption`: Too few employees might use the system, reducing the return on the development investment and on the changes to cafeteria operating procedures. (Probability 0.3, Impact 9)_
-- _`RI-no-delivery-partners`: Local restaurants might not agree to offer delivery, reducing employee satisfaction with the system and their use of it. (Probability 0.3, Impact 3)_
-
-_**State risks as mechanisms, not categories.** "Security risk" names a category and tells nobody anything. "The peer evaluation database holds student grades, is reachable from the public internet, and has no rate limiting" names a mechanism someone can act on._
+* **`RI-privacy-breach`**: Sensitive user health conditions and medication records stored in the database could be exposed via insecure API endpoints or misconfigured cloud access, causing legal liabilities and destroying subscriber trust.  
+  *(Probability: 0.3, Impact: 9)*  
+  *Mitigation:* Isolate medical assessment data from user profile records, enforce role-based access control, encrypt data both at rest and in transit, and offer fully pseudonymous public profiles.
+* **`RI-peer-misinformation`**: Users in community rooms might recommend unverified home remedies or dangerous prescription adjustments that vulnerable members follow without consulting a physician.  
+  *(Probability: 0.6, Impact: 8)*  
+  *Mitigation:* Implement automated keyword filters for high-risk medication terms, display sticky medical disclaimers in all chat rooms, and train community moderators to review flagged conversations quickly.
+* **`RI-subscription-churn`**: Subscribers might treat the app as a short-term reference tool, completing their initial educational track and canceling their subscription within 30 days.  
+  *(Probability: 0.5, Impact: 7)*  
+  *Mitigation:* Continuously publish weekly multi-format media (expert Q&As, podcasts, webinars) across the five core wellness pillars and use automated check-ins to keep peer threads active.
+* **`RI-ai-hallucination`**: Automated content scraping tools or support chatbots could retrieve outdated, contextually inappropriate, or unverified health advice from the open web.  
+  *(Probability: 0.4, Impact: 9)*  
+  *Mitigation:* Restrict AI retrieval pipelines strictly to approved clinical databases (e.g., Healthy People 2030, PubMed, CDC) and require clinical sign-off before publishing new modules to user feeds.
 
 ### 2.7 Business Assumptions and Dependencies
 
-_[An assumption is something you believe without proof, which would force this document to change if it turned out false. A dependency is something outside your control that the project relies on. Both live here under `AS-*`.]_
+* **`AS-intake-disclosure`**: Users are willing to share detailed medical histories, current prescriptions, and personal struggles during initial onboarding if promised anonymity and personalized content.  
+  *Impact if false:* We cannot personalize feeds or match chat rooms accurately, forcing a pivot to a generic forum model.
+* **`AS-subscription-viability`**: Everyday individuals and low-income families will pay a monthly subscription fee for an ad-free, vetted health space rather than relying entirely on free social media.  
+  *Impact if false:* The direct-to-consumer subscription model fails, requiring a shift to employer-sponsored wellness or non-profit grant funding.
+* **`AS-clinician-sourcing`**: The business can consistently recruit and retain licensed medical and wellness professionals to review content pipelines and maintain clinical credibility.  
+  *Impact if false:* The platform loses its primary differentiator over Reddit and Instagram, eroding member trust.
+* **`AS-app-store-clearance`**: Apple and Google review teams will classify the app as a wellness and education platform rather than a regulated medical device or telehealth diagnostic service.  
+  *Impact if false:* Distribution will be blocked or delayed until costly legal and regulatory compliance audits are completed.
+* **`AS-continuous-maintenance`**: Dedicated engineering resources and operational funding will be permanently available to maintain both client-side apps (iOS/Android) and backend server infrastructure (security patches, API updates, cloud hosting, and database scaling).  
+  *Impact if false:* Infrastructure will degrade, mobile OS updates will break core functionality, and unresolved vulnerabilities will risk health data privacy breaches.
 
-_Examples:_
-
-- _`AS-ui-capacity`: Systems with appropriate user interfaces will be available for cafeteria employees to process the expected volume of meals ordered._
-- _`AS-delivery-staffing`: Cafeteria staff and vehicles will be available to deliver all meals within 15 minutes of the requested delivery time._
-- _`AS-restaurant-integration`: If a restaurant has its own online ordering system, the Cafeteria Ordering System must be able to communicate with it bi-directionally._
-
-_**Checklist:** For each assumption, what happens to this project if it is false? If the answer is "nothing", it is not worth recording. If the answer is "we start over", raise it with your client this week._
 
 ---
 
