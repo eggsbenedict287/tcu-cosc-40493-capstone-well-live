@@ -98,9 +98,9 @@ _[List every document referenced elsewhere in this one: the client's project bri
 
 ### 2.1 Business Opportunity or Problem Statement
 
-Most wellness apps are built around gym influencers, unrealistic beauty standards, and unvetted advice. Real people, a mother going through cancer treatments, a teen dealing with body image, or a family budgeting on food stamps, are often left out. At the same time, medically accurate health information is stuck behind dry academic papers or scattered across scary, generic internet searches. 
+Most wellness apps are built around gym influencers, unrealistic beauty standards, and unvetted advice. Real people, a mother going through cancer treatments, or a family budgeting on food stamps, are often left out. At the same time, medically accurate health information is stuck behind dry academic papers or scattered across scary, generic internet searches. 
 
-Well Live fills this gap by giving people a relatable, subscription-based community that pairs honest peer support with real, evidence-based education. Members get an ad-free space where they can talk to others walking the same road, while getting practical, vetted videos, podcasts, and articles tailored to their actual health needs and life situations.
+Well Live fills this gap by giving people a relatable, subscription-based community that pairs honest peer support with real, evidence-based education. Members get a space where they can talk to others walking the same road, while getting practical, vetted videos, podcasts, and articles tailored to their actual health needs and life situations. 
 
 ### 2.2 Business Objectives
 
@@ -188,6 +188,8 @@ flowchart TD
   *Impact if false:* The platform loses its primary differentiator over Reddit and Instagram, eroding member trust.
 * **`AS-app-store-clearance`**: Apple and Google review teams will classify the app as a wellness and education platform rather than a regulated medical device or telehealth diagnostic service.  
   *Impact if false:* Distribution will be blocked or delayed until costly legal and regulatory compliance audits are completed.
+* **`AS-continuous-maintenance`**: Dedicated engineering resources and operational funding will be permanently available to maintain both client-side apps (iOS/Android) and backend server infrastructure (security patches, API updates, cloud hosting, and database scaling).  
+  *Impact if false:* Infrastructure will degrade, mobile OS updates will break core functionality, and unresolved vulnerabilities will risk health data privacy breaches.
 
 
 ---
