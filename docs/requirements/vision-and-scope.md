@@ -51,11 +51,11 @@ Well Live is intended to address the gap between information and support availab
 
 The client’s stated objectives are to:
 
--Enhance patient health outcomes.
--Make truthful self-care feel approachable and motivating.
--Increase health education and health literacy.
--Engage users in discussions about health and wellness.
--Promote community and engagement.
+- Enhance patient health outcomes.
+- Make truthful self-care feel approachable and motivating.
+- Increase health education and health literacy.
+- Engage users in discussions about health and wellness.
+- Promote community and engagement.
 -Educate users about health topics, devices, and services.
 
 The initial product concept includes personalized content based on a user’s interests, goals, and potentially their health history. It also includes educational content in multiple formats, such as articles, pictures, videos, and podcasts, along with community features such as discussion areas and a chat room for social support.
