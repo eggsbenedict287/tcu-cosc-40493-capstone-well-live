@@ -1,8 +1,8 @@
 # Business Rules
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** Well Live Application
+**Team:** Team 07 - Well Live
+**Client:** Ms. Sarah Becan
 **Version:** 0.1
 
 ---
@@ -90,12 +90,17 @@ _The Source column is the defense. Every rule traces to a document or a person, 
 
 ### 1.1 Purpose
 
-_[One paragraph: this document collects the policies, regulations, standards, and formulas that govern the business your software operates in, so the specification can cite them rather than restate them.]_
+This document establishes the official policies, regulatory baselines, content standards, and business constraints that govern Well Live as an organization. These rules exist independently of software architecture or interface choices—they define how Well Live operates commercially, clinically, and ethically. System requirement specifications, software architecture designs, and development sprints must directly trace back to and comply with the rules established here.
 
 ### 1.2 Scope
 
-_[Which parts of the client's business these rules cover, and which are out of scope. If your client's organization has rules that your system does not touch, say so here rather than silently omitting them.]_
+This document governs platform monetization, content vetting standards, user health data consent, identity protection, and the boundaries of peer community engagement across the five wellness pillars: nutrition, fitness, finance, mental health, and spiritual health. 
 
+Explicitly out of scope are:
+* Direct clinical medical procedures and doctor-patient telehealth consultations.
+* Formal psychiatric crisis intervention and emergency dispatch workflows.
+* Third-party electronic health record (EHR) integrations with hospital networks.
+* Pharmaceutical prescription fulfillment and physical medical device sales.
 ---
 
 ## 2. Rules
