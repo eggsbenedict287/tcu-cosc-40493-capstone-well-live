@@ -39,7 +39,7 @@ _Within one use case, `PRE-1`, `POST-1`, and the step numbers are local and may 
 
 _[One paragraph: this document specifies the goals users can accomplish with the system, in enough detail that a developer knows what to build and a tester knows what to check.]_
 
-This document specifies the goals that members, moderators, and administrators can accomplish with Well Live, in enough detail that a developer knows what to build and a tester knows what to check. It is a **draft**: the goals come from the candidate list in the [requirements guide](requirements-guide.md) (§4.3), which summarizes the September 11, 2026 client meeting, and from the `FEAT-*` entries in the [vision and scope](vision-and-scope.md). No use case below has been confirmed with Sarah Becan yet. Anything the meeting did not settle is recorded under **Open Issues** in each use case rather than filled in with a guess.
+This document specifies the goals that members, moderators, and administrators can accomplish with Well Live, in enough detail that a developer knows what to build and a tester knows what to check. It is a **draft**: the goals come from the candidate list in the [requirements guide](../guides/requirements-guide.md) (§4.3), which summarizes the September 11, 2026 client meeting, and from the `FEAT-*` entries in the [vision and scope](vision-and-scope.md). No use case below has been confirmed with Sarah Becan yet. Anything the meeting did not settle is recorded under **Open Issues** in each use case rather than filled in with a guess.
 
 ### 1.2 Scope
 
