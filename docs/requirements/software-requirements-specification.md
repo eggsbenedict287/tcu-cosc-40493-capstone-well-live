@@ -189,73 +189,74 @@ _[Where the data comes from, how it is kept correct, how long it is kept, and ho
 
 ### 8.1 User interfaces
 
-_[The user-facing surfaces, at requirement level: which views exist, standards they must conform to, accessibility requirements. Link to wireframes or prototypes rather than describing pixel layouts.]_
+The user interface will be simple, readable, and usable on common desktop and mobile browsers.
 
 ### 8.2 Hardware interfaces
 
-_[Any hardware the system talks to, or "none".]_
+The system does not require custom hardware. It runs on standard user devices with internet access and on hosted server infrastructure for the application, database, and media storage.
 
 ### 8.3 Software interfaces
 
-_[Other software systems yours connects to: what crosses the boundary, in which direction, in what format, and what happens when the other side is unavailable.]_
-
+The application shall integrate with a standard authentication service, a relational database, object storage for media files, and an approved payment provider for subscriptions. If an external dependency is unavailable, the system will notify the user. 
 ### 8.4 API document
 
-_[Link to your API documentation. It is generated from the code, so link it rather than transcribing endpoints that will be stale within a week.]_
+No formal API document exists yet. As implementation begins, the team shall create and maintain an API specification that lists endpoints, authentication requirements, and request/response formats.
 
 ### 8.5 Communications interfaces
 
-_[Email, notifications, messaging, and the protocols involved.]_
+The system should use HTTPS for browser-to-server communication and secure connections to backend services. It may also send account, moderation, or subscription notifications by email or in-app messaging.
 
 ---
 
 ## 9. Quality Attributes
 
-_[How well the system does what it does. **This is the section that decides whether your client is happy with software that meets every functional requirement**, so do not treat it as a formality.]_
-
-_The rule for every entry: an adjective is not a requirement. "Fast", "easy", "secure", and "user-friendly" are the starting point of a conversation, not the end of one. Each entry needs a number and a way to measure it._
-
-_Write one subsection per attribute your project actually has, and say "not applicable" with a reason for the ones it does not. An explicit "not applicable" is information; silence is not._
-
 ### 9.1 Usability
 
-_Example: `USE-wcag-aa`: All user-facing views shall conform to WCAG 2.1 level AA._
+`USE-responsive-ui`: All major screens shall be usable on common desktop and mobile browsers and shall be easy to read and navigate.
 
 ### 9.2 Performance
 
-_Example: `PER-report-load`: A peer evaluation report for a section of 80 students shall render within 2 seconds at the 95th percentile._
+`PER-feed-load`: A typical user shall be able to open the main content feed in under 3 seconds on a standard broadband connection.
 
 ### 9.3 Security
 
-_Example: `SEC-authentication`: The system shall authenticate every request to a non-public endpoint, and shall reject unauthenticated requests without disclosing whether the requested resource exists._
+`SEC-protected-data`: Sensitive health and profile information shall be protected by access control, encryption, and secure storage, and only authorized users shall be able to view it.
 
 ### 9.4 Safety
 
-_[Conditions under which the system could contribute to harm, and what prevents it. For most projects in this course the honest answer is `SAF-not-applicable`, with a sentence saying why.]_
+`SAF-moderation`: The system shall support human moderation and review of health-related content to reduce the risk of harmful or false medical guidance.
 
 ### 9.5 Availability
 
-_Example: `AVL-uptime`: The system shall be available 99% of the time during the academic term, excluding announced maintenance windows._
+`AVL-uptime`: The application shall be available at least 99% of the time outside scheduled maintenance windows.
 
 ### 9.6 Robustness
 
-_Example: `ROB-edit-loss-bound`: On an unexpected client disconnect, the system shall lose no more than 30 seconds of a student's in-progress edits._
+`ROB-data-preservation`: User profile changes and content submissions shall be saved reliably so that brief network interruptions do not cause major data loss.
 
 ### 9.7 Scalability, interoperability, maintainability
 
-_[Add the ones that apply, with `SCA-`, `INT-`, and `MNT-` identifiers. Maintainability is the one this course cares about most, because someone inherits your code in January.]_
+`SCA-growth`: The architecture shall support growth in users, content, and moderator activity without requiring a major redesign.
+
+`INT-standard-integration`: The system shall integrate with standard authentication, database, storage, and payment services.
+
+`MNT-maintainability`: The system shall be organized so that future team members can update content, profiles, and moderation workflows without large rework.
 
 ---
 
 ## 10. Internationalization and Localization
 
-_[Languages, character sets, time zones, date and currency formats. If the answer is a single locale, say so and say why, because that is a real constraint on who can use the system.]_
+The MVP is intended for a single English-language deployment. Time zone, currency, and locale support are not required for the initial release, but the system should be structured so these can be added later if the product expands.
 
 ---
 
 ## 11. Other Requirements
 
-_[Anything real that fits nowhere above: legal, licensing, installation, training, documentation. Delete this section if it is empty rather than leaving it as a placeholder.]_
+- The product shall undergo privacy and compliance review before handling real health information.
+- Moderators and administrators shall receive training on content approval, community reporting, and account management.
+- The long-term maintainer, hosting owner, and operating budget shall be identified before full deployment.
+- The platform shall use evidence-based content and human review to reduce misinformation and protect user safety.
+- The MVP shall not include fully real-time chat or advanced AI-generated medical advice features.
 
 ---
 
