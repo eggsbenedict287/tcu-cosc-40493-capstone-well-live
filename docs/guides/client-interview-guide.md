@@ -204,7 +204,7 @@ _**Never skip. 5 min.** The part teams cut when they run late, and the highest-v
 
 _Read back four things: the problem in one sentence, the objectives with any numbers you got, the top three things you heard are hard, and one thing you believe is **out** of scope. The last produces more correction than the other three together._
 
-_Fill in the [vision-and-scope.md](vision-and-scope.md) vision statement table during the meeting, read its six rows aloud, and see what they fix. Ninety seconds._
+_Fill in the [vision-and-scope.md](../requirements/vision-and-scope.md) vision statement table during the meeting, read its six rows aloud, and see what they fix. Ninety seconds._
 
 **What we read back, and what they corrected:** _[Corrections first. They matter more than the agreements.]_
 
@@ -228,15 +228,15 @@ _File everything within 24 hours, while you still remember why each answer matte
 
 | Section | Feeds |
 |---|---|
-| 1, 2 | [project-glossary.md](project-glossary.md), and Background in [vision-and-scope.md](vision-and-scope.md) |
-| 3 | Business Opportunity, Objectives, and Success Metrics in [vision-and-scope.md](vision-and-scope.md) |
-| 4, 6 | Background and the process flow in [vision-and-scope.md](vision-and-scope.md); use cases in week 4 |
+| 1, 2 | [project-glossary.md](../requirements/project-glossary.md), and Background in [vision-and-scope.md](../requirements/vision-and-scope.md) |
+| 3 | Business Opportunity, Objectives, and Success Metrics in [vision-and-scope.md](../requirements/vision-and-scope.md) |
+| 4, 6 | Background and the process flow in [vision-and-scope.md](../requirements/vision-and-scope.md); use cases in week 4 |
 | 5 | Business rules catalog, week 4 |
 | 7, 9, 10 | Quality attributes, constraints, and external interfaces in the specification, week 4 |
-| 8, 12 | Stakeholder Profiles in [vision-and-scope.md](vision-and-scope.md) |
-| 8, 11 | Risks (`RI-<slug>`) and assumptions (`AS-<slug>`) in [vision-and-scope.md](vision-and-scope.md) |
-| 14 | Scope and the vision statement in [vision-and-scope.md](vision-and-scope.md) |
-| Anything unanswered | [OPEN-ISSUES.md](OPEN-ISSUES.md) |
+| 8, 12 | Stakeholder Profiles in [vision-and-scope.md](../requirements/vision-and-scope.md) |
+| 8, 11 | Risks (`RI-<slug>`) and assumptions (`AS-<slug>`) in [vision-and-scope.md](../requirements/vision-and-scope.md) |
+| 14 | Scope and the vision statement in [vision-and-scope.md](../requirements/vision-and-scope.md) |
+| Anything unanswered | [OPEN-ISSUES.md](../requirements/OPEN-ISSUES.md) |
 
 ## Initial ideas
 
@@ -248,7 +248,7 @@ _[The observer's section, and the one that evaporates fastest. Two participants 
 
 ## Open questions
 
-_[Everything you could not answer, and everything they answered with "I would have to check". Copy each into [OPEN-ISSUES.md](OPEN-ISSUES.md) as an `OI-*` with the person who can answer it, then sort them before the next meeting by what it costs you to stay wrong.]_
+_[Everything you could not answer, and everything they answered with "I would have to check". Copy each into [OPEN-ISSUES.md](../requirements/OPEN-ISSUES.md) as an `OI-*` with the person who can answer it, then sort them before the next meeting by what it costs you to stay wrong.]_
 
 ---
 
