@@ -1,8 +1,8 @@
 # Business Rules
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** Well Live Application
+**Team:** Team 07 - Well Live
+**Client:** Ms. Sarah Becan
 **Version:** 0.1
 
 ---
@@ -90,12 +90,17 @@ _The Source column is the defense. Every rule traces to a document or a person, 
 
 ### 1.1 Purpose
 
-_[One paragraph: this document collects the policies, regulations, standards, and formulas that govern the business your software operates in, so the specification can cite them rather than restate them.]_
+This document establishes the official policies, regulatory baselines, content standards, and business constraints that govern Well Live as an organization. These rules exist independently of software architecture or interface choices—they define how Well Live operates commercially, clinically, and ethically. System requirement specifications, software architecture designs, and development sprints must directly trace back to and comply with the rules established here.
 
 ### 1.2 Scope
 
-_[Which parts of the client's business these rules cover, and which are out of scope. If your client's organization has rules that your system does not touch, say so here rather than silently omitting them.]_
+This document governs platform monetization, content vetting standards, user health data consent, identity protection, and the boundaries of peer community engagement across the five wellness pillars: nutrition, fitness, finance, mental health, and spiritual health. 
 
+Explicitly out of scope are:
+* Direct clinical medical procedures and doctor-patient telehealth consultations.
+* Formal psychiatric crisis intervention and emergency dispatch workflows.
+* Third-party electronic health record (EHR) integrations with hospital networks.
+* Pharmaceutical prescription fulfillment and physical medical device sales.
 ---
 
 ## 2. Rules
@@ -104,14 +109,42 @@ _[Group rules under topic headings that fit your project. The Project Pulse head
 
 _Format each rule as a bold identifier, the rule in one sentence, then its source. Worked examples:]_
 
-### 2.1 _[Topic]_
+### 2.1 Health, Safety, and Clinical Boundaries
 
-- **`BR-active-weeks`:** A student may submit or edit a weekly activity report only during a week that the course section has marked active.
-  **Source:** course policy, confirmed by the instructor 2026-09-10.
-- **`BR-section-admin-only`:** Only a course admin may create or edit a course section, configure its active-weeks window (see `BR-active-weeks`), or assign a rubric to it.
-  **Source:** department policy on grade-bearing records.
-- **`BR-artifact-key-unique`:** Every artifact key is unique within a team and remains stable across edits to the artifact's content.
-  **Source:** team decision, 2026-09-10. **Candidate for the specification instead of this file**, since the team, not the client, would approve a change.
+- **`BR-non-diagnostic`:** Well Live's educational content, community discussion, and personalized recommendations must never be presented as a medical diagnosis, prescription, or substitute for professional care.
+  **Source:** technical assessment (`napkin.md`, "The Hard Part" — building the platform "without acting as an unlicensed diagnostic medical device") and the pitch summary's Candidate Quality and Safety Requirements, "Safety." **Candidate** — a working rule until the client confirms the platform's clinical boundary directly.
+- **`BR-no-clinical-services`:** Well Live does not provide direct clinical medical procedures, doctor-patient telehealth consultations, psychiatric crisis intervention or emergency dispatch, electronic health record (EHR) integration, or prescription fulfillment or medical device sales.
+  **Source:** `business-rules.md` §1.2 Scope, drafted from the original client brief; the same exclusions appear under "Potential Post-MVP Scope" in `well-live-pitch-summary.md`.
+- **`BR-content-review`:** All member-facing educational content must pass a clinical or evidence-based review step before it is published.
+  **Source:** technical assessment (`napkin.md`, system architecture — "Human-in-the-Loop Clinical Review") and the pitch summary's Candidate Quality and Safety Requirements, "Credibility." **Candidate** — who performs this review, and how often content is revalidated, are both still open client questions per the pitch summary.
+
+### 2.2 Content and Topic Scope
+
+- **`BR-five-pillars`:** Educational content and community discussion topics are limited to the five wellness pillars named in the founding brief: nutrition, fitness, financial health, mental health, and spiritual health.
+  **Source:** original project brief (`napkin.md` §7, "Educational topics encompass").
+- **`BR-ad-free`:** Subscribed members are not shown third-party advertising.
+  **Source:** vision-and-scope.md, business opportunity statement ("Members get an ad-free space..."). **Candidate** — stated as part of the product pitch, not yet confirmed as a binding client policy.
+
+### 2.3 Subscription and Access
+
+- **`BR-subscription-model`:** Well Live's core business model is subscription-based access, not a free or one-time-purchase model.
+  **Source:** original project brief (`napkin.md` §7 Overview — "a subscription-based application").
+- **`BR-account-required`:** A person must hold a member account to access personalized content, post, or participate in community discussion. An unauthenticated visitor may view only introductory information about the service.
+  **Source:** `well-live-pitch-summary.md`, Candidate MVP Scope — Account and Subscription Access. **Candidate** — the summary itself notes the MVP scope "must be validated with the client."
+
+### 2.4 Privacy, Identity, and Data Handling
+
+- **`BR-health-data-protection`:** Any sensitive health data collected (history, medications, goals) must be encrypted at rest and in transit and restricted by role-based access control.
+  **Source:** technical assessment (`napkin.md` §1, "HIPAA-compliant Session & Token Management") and vision-and-scope.md, `RI-privacy-breach` mitigation.
+- **`BR-no-mandatory-health-disclosure`:** The system must not require a member to disclose sensitive health information unless the client explicitly confirms this is necessary.
+  **Source:** `well-live-pitch-summary.md`, Candidate MVP Scope — Member Profile and Goals.
+- **`BR-pseudonymous-option`:** A member may choose to participate in community spaces (posts, comments, chat) under a pseudonymous handle rather than their account's real identity.
+  **Source:** vision-and-scope.md improved-process flow ("Elect to Post Anonymously? → Generate Anonymous Handle"). **Candidate for the specification instead of this file** — this was a team design choice, not a client mandate; `well-live-pitch-summary.md` still lists "Should members be able to post anonymously or pseudonymously?" as an open client question.
+
+### 2.5 Regulatory and Platform Constraints
+
+- **`BR-not-medical-device`:** The platform must be designed and operated so that it is not classified as a regulated medical device or telehealth diagnostic service, to remain eligible for distribution through the Apple App Store and Google Play Store.
+  **Source:** technical assessment (`napkin.md`, Kill Risks — "Regulatory & Privacy Non-Compliance") and vision-and-scope.md, `AS-app-store-clearance` assumption.
 
 _[That third entry is deliberate. Flag rules you are not sure about rather than dropping them; deciding whether something is a rule or a requirement is a conversation to have with your client, and it is worth having.]_
 
