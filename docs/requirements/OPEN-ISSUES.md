@@ -30,6 +30,8 @@ _[Send the shortlist to your client the day before. A client who has seen the qu
 | ID | Question | Why it matters | Who can answer | Raised |
 |---|---|---|---|---|
 | OI-1 | _[The question, phrased so it has a definite answer. Not "tell us about reporting" but "who is allowed to see another student's evaluation scores?"]_ | _[What we get wrong if we guess. Name the artifact or decision it blocks.]_ | _[Client, instructor, a specific user, or the team itself]_ | _[YYYY-MM-DD]_ |
+| OI-2 |_[How is the data going to be stored?]_  |_[If wrong blocks the ability to have user logins]_  | _[Client]_ | _[2026-09-25]_ |
+| OI-3 |_[Where is the backend going to be hosted]_  | _[If wrong we have no ability to have a running backend]_ | _[Client]_ |_[2026-09-26]_  |
 
 ## Resolved
 
