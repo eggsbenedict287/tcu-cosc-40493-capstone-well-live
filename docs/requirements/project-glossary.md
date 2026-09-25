@@ -1,8 +1,8 @@
 # Project Glossary
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
+**Project:** Well Live
+**Team:** 07
+**Client:** Sarah Becan / Well Live
 **Version:** 0.1
 
 ---
@@ -50,34 +50,94 @@ _Rules:_
 
 | Date | Version | Description | Author |
 |---|---|---|---|
-| _[YYYY-MM-DD]_ | 0.1 | Initial terms from the client brief and first client meeting | _[Name]_ |
+| 2026-09-17 | 0.1 | Initial terms from the client brief, first client meeting, and early requirements work | Team 07 |
 
 ---
 
 ## Definitions
 
-_[One `###` heading per term, alphabetical. Follow the heading with a definition of one to three sentences. Add **Synonyms**, **Not to be confused with**, or **Source** lines where they help. Where a term only makes sense with an example, give one._
+### Assessment
 
-_Worked examples of the format:_
+The initial collection of information from a member about their health history, medications, goals, and other relevant information. Well Live uses this information to help determine what educational content may be relevant to the member.
 
-### Active Week
+**Not to be confused with:** a medical examination or professional diagnosis.
 
-_A week in which the course is in session and submissions are open. A student can submit a weekly activity report only during an active week, which makes this term the subject of a business rule rather than a piece of trivia._
+### Community
 
-_**Not to be confused with:** the current calendar week, which continues during breaks when no week is active._
+The social portion of Well Live where members can interact with and support other members through shared health and wellness experiences. The community is intended to encourage discussion, education, and social support.
 
-### City-Pair
+### Educational Content
 
-_The origin and destination airports of a passenger journey, treated as an unordered pair. Used in International Civil Aviation Organization statistics._
+Health and wellness information provided through Well Live to help members improve their health knowledge and make informed decisions about self-care. Educational content may include text, pictures, videos, podcasts, and other media.
 
-_**Synonyms:** O and D (the International Air Transport Association's term for the same concept). Both appear in source data, so any report that combines the two sources has to normalize them first._
+**Not to be confused with:** medical advice, diagnosis, or treatment provided by a healthcare professional.
 
-### Weekly Activity Report
+### Evidence-Based Content
 
-_A record of what one student did for their team during one week, submitted once per week by that student._
+Health and wellness information supported by credible evidence or trustworthy sources rather than unsupported claims. Well Live aims to use evidence-based information when educating members about health topics, devices, services, and self-care.
 
-_**Synonyms:** WAR, used conversationally by the client and in the existing spreadsheets. Spell it out on first use in any document._
+### Health Goal
 
-_**Source:** the client's existing Google Sheets process, described in [vision-and-scope.md](vision-and-scope.md) section 1.2._
+An outcome related to health or wellness that a member identifies as something they want to work toward. Health goals may be collected during the member's assessment and used to help personalize their experience.
 
-_[End of worked examples. Delete them and write your own terms below.]_
+### Health History
+
+Information supplied by a member about their previous and current health-related experiences. Health history is part of the information Well Live may use to personalize educational content.
+
+### Health Literacy
+
+A member's ability to understand and use health-related information. Improving health literacy is one of the objectives of Well Live.
+
+### Medication
+
+A medicine or drug that a member reports as part of their health information. Medication information may be considered when determining which educational content is relevant to the member.
+
+### Member
+
+A person with an active Well Live subscription who can access the platform's subscription-gated educational and community features.
+
+**Not to be confused with:** a visitor, who does not have subscription-based access.
+
+### Personalized Content
+
+Educational health and wellness content selected or presented based on information associated with a particular member, such as their health history, medications, interests, or health goals.
+
+**Not to be confused with:** individualized medical advice or a diagnosis.
+
+### Post
+
+Content created by a member and shared within the Well Live community to communicate experiences, information, or support related to health and wellness.
+
+**Not to be confused with:** educational content provided through Well Live's official content process.
+
+### Profile
+
+The representation of a member within Well Live. A profile contains information associated with the member and supports the member's personalized and social experience within the platform.
+
+### Self-Care
+
+Actions a person takes to support their own health and wellness. Well Live aims to promote truthful and informed self-care through education rather than replacing professional healthcare.
+
+### Social Support
+
+Interaction between Well Live members intended to provide encouragement, discussion, shared experiences, or a sense of community around health and wellness topics.
+
+### Subscription
+
+The access entitlement that allows a member to use Well Live's subscription-gated features.
+
+**Not to be confused with:** visitor access, which does not require an active subscription.
+
+### Topic
+
+A health or wellness subject used to organize content and community discussion within Well Live. Topics may cover physical, mental, or financial health subjects.
+
+### Visitor
+
+A person who accesses Well Live without an active subscription. A visitor has more limited access than a member.
+
+**Not to be confused with:** a member, who has subscription-based access to Well Live.
+
+### Well Live
+
+A subscription-based health and wellness platform that combines personalized, evidence-based education with social and community features. Well Live is intended to help members improve health literacy, support informed self-care, and participate in health-related discussions.
