@@ -2,4 +2,4 @@
 
 ## Design mockups
 
-- [Education-first mobile app concepts](docs/design/education-first-app-mockups/README.md)
+- [Education-first mobile app concepts](prototypes/design/education-first-app-mockups/README.md)
