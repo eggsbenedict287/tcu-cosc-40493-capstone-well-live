@@ -1,9 +1,9 @@
 # Project Glossary
 
 **Project:** Well Live
-**Team:** 07
-**Client:** Sarah Becan / Well Live
-**Version:** 0.1
+**Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
+**Client:** Sarah Becan
+**Version:** 0.1 <!-- TODO: change version number -->
 
 ---
 

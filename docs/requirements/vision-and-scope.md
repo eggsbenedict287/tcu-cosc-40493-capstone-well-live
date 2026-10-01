@@ -1,9 +1,9 @@
 # Vision and Scope
 
-**Project:** _Well Live_
-**Team:** An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, William Schuller, Angelette Munoz
+**Project:** Well Live
+**Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
 **Client:** Sarah Becan
-**Version:** 0.1
+**Version:** 0.1 <!-- TODO: change version number -->
 
 ---
 

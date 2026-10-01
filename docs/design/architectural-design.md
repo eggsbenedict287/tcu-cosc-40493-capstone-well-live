@@ -1,9 +1,9 @@
 # Architectural Design
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Client:** _[Client name and organization]_
-**Version:** 0.1
+**Project:** Well Live
+**Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
+**Client:** Sarah Becan
+**Version:** 0.1 <!-- TODO: change version number -->
 
 ---
 
