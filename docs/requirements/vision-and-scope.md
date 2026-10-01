@@ -258,7 +258,7 @@ _A stakeholder is not always a user. The person paying for the software, the per
 
 ### 3.1 Stakeholder Profiles
 
-_**Draft status:** the roles below are carried over from the candidate user classes in [`well-live-pitch-summary.md`](../well-live-pitch-summary.md). None have been confirmed with Sarah Becan. Attitude, in particular, is a guess dressed up as a table cell until a client meeting says otherwise — see the open issues this section raises._
+_**Draft status:** the roles below are carried over from the candidate user classes in [`well-live-pitch-summary.md`](../pitches/well-live-pitch-summary.md). None have been confirmed with Sarah Becan. Attitude, in particular, is a guess dressed up as a table cell until a client meeting says otherwise — see the open issues this section raises._
 
 | Stakeholder | Major value or benefit from this product | Attitude | Major features of interest | Constraints | End user? |
 |---|---|---|---|---|---|
