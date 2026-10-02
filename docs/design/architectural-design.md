@@ -90,25 +90,34 @@ _Example:]_
 
 ```mermaid
 C4Context
-    title System Context: Cafeteria Ordering System
+    title System Context: Well Live
 
-    Person(patron, "Patron", "Employee ordering a meal")
-    Person(staff, "Cafeteria Staff", "Prepares and delivers orders")
-    Person(menu, "Menu Manager", "Maintains the daily menu")
+    Person(visitor, "Visitor", "Creates an account to access Well Live")
+    Person(member, "Member", "Uses health and wellness content, assessments, and member features")
+    Person(moderator, "Moderator", "Reviews reported or harmful content")
+    Person(admin, "Administrator", "Manages users, content, and platform settings")
 
-    System(cos, "Cafeteria Ordering System", "Takes, prepares, and delivers meal orders")
+    System(welllive, "Well Live", "Health and wellness platform providing educational content and community features")
 
-    System_Ext(payroll, "Payroll System", "Deducts meal payments from pay")
-    System_Ext(sso, "Corporate Sign-On", "Authenticates employees")
-    System_Ext(email, "Corporate Email", "Order confirmations")
+    System_Ext(auth, "Authentication Service", "Provides account authentication and sign-in")
+    System_Ext(storage, "Database and Media Storage", "Stores user, assessment, content, and media data")
+    System_Ext(contentHost, "External Content Hosts", "Hosts linked educational videos, podcasts, articles, and other resources")
+    System_Ext(payment, "Payment Provider", "Processes subscription payments")
 
-    Rel(patron, cos, "Orders meals")
-    Rel(staff, cos, "Fulfils orders")
-    Rel(menu, cos, "Edits menu")
-    Rel(cos, payroll, "Submits payment requests")
-    Rel(cos, sso, "Verifies identity")
-    Rel(cos, email, "Sends confirmations")
+    Rel(visitor, welllive, "Creates an account")
+    Rel(member, welllive, "Uses educational, assessment, account, and community features")
+    Rel(moderator, welllive, "Reviews reports and moderates content")
+    Rel(admin, welllive, "Manages the platform")
+
+    Rel(welllive, auth, "Authenticates users")
+    Rel(welllive, storage, "Stores and retrieves application data and media")
+    Rel(welllive, contentHost, "Accesses linked educational content")
+    Rel(welllive, payment, "Processes subscription payments")
 ```
+
+Well Live's system boundary contains the application's account, assessment, educational content, and planned community functionality. Authentication, persistent data and media storage, externally hosted educational resources, and subscription payment processing are dependencies outside the Well Live application.
+
+The initial MVP focuses on account and profile functionality and general educational content. Moderation, administration, subscriptions, and other later-release functionality remain represented in the architectural context because they are part of the broader Well Live product, but they are not part of the initial MVP implementation.
 
 ## 4. Solution Strategy
 
