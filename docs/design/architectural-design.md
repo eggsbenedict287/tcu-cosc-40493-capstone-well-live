@@ -215,17 +215,59 @@ _Due: named at Checkpoint 1, detailed at Checkpoint 2._
 
 _[Four short paragraphs. The last three each cite the `SEC-*` requirement they answer:_
 
-- _**Trust boundary:** the line between what you control and what you do not. Name the container that is the boundary and what sits outside it (the browser, every external system). Every request that crosses it is authenticated and authorized, and it covers every path your deployable answers, framework endpoints included. Project Pulse's Security & Compliance section shows the shape in three sentences._
-- _**Authentication:** how a user proves who they are, and who issues the credential (your system, the client's sign-on, a third party)._
-- _**Authorization:** the roles, and the rule for what a user may see beyond their role (a patron sees only their own orders). The second part is where most real breaches happen._
-- _**Sensitive data:** what personal or regulated data the system stores, in which container, and which external systems receive any of it. How long it is kept and how it is disposed of are already in section 7.4 of your specification; cite them._
+### 8.1 Security
 
-_Secrets (passwords, API keys, connection strings) never appear in this document or in the repository. Say where they will live, not what they are.]_
+### 8.1 Security
+
+**Trust boundary.** The trust boundary is the Spring Boot REST API container. It is the only component that directly queries or updates data in the relational database, and it validates every request before taking action. Everything outside is untrusted: browser clients, single-page apps, and external third-party services (LLM APIs and email servers). Every request crossing this boundary must carry a valid token, except public endpoints: documentation (`/swagger-ui/**`), system health checks (`/actuator/health`), account registration, and user sign-in. All traffic crossing the boundary is encrypted over HTTPS. **[SEC-https]**
+
+**Authentication.** Users sign in using an email address and password verified directly by our system. Passwords are stored exclusively as salted hashes (using BCrypt) and are never logged, displayed, or sent back to the client (UC-ACC-setup-student-account, UC-ACC-setup-instructor-account). Repeated failed sign-in attempts are throttled, and error messages use generic wording so they do not confirm whether an email address exists. Inactive or deactivated accounts cannot sign in (FR-SEC-active-account, BR-student-lifecycle, BR-instructor-lifecycle). **[SEC-authentication]**
+
+**Authorization.** The system enforces role-based access for students, instructors, and course admins (BR-role-based-access, FR-SEC-authorization). The server validates the user's role first, then checks asset ownership:
+- A student can view and edit requirement documents, artifacts, links, and WARs only for her assigned team (BR-team-scoped-access).
+- A student can view only her own peer evaluation scores and public comments; private comments are strictly hidden from evaluatees and visible only to instructors (BR-evaluation-private-comment, BR-evaluation-visibility).
+- Instructors and course admins can access data only within the course sections they manage or teach.
+- Only course admins can create course sections, assign rubrics, and provision initial team documents (BR-section-admin-only, BR-document-creation). **[SEC-authorization]**
+
+**Sensitive data.** Sensitive student records and peer evaluations are protected under FERPA guidelines, encrypted both in transit (TLS/HTTPS) and at rest in the relational database (CO-ferpa, DI-data-retention-disposal). External systems receive only minimal, necessary information: the external LLM service receives only the prompt context sent through the server-side AI proxy without user credentials or database keys (CO-server-side-llm-proxy, SEC-llm-proxy), and the email service receives only notification recipient addresses and message bodies (CO-gmail-smtp). Secrets (database passwords, JWT signing keys, and third-party API keys) are held strictly in server environment variables and cloud secret configuration, never committed to source repositories. **[SEC-ferpa]**
+
 
 ### 8.2 Other concepts
 
-_Due: when they appear. [Error handling, logging, validation, time zones: anything every component must do the same way. Add a subsection the first time two components would otherwise do it differently.]_
+**Error handling.** Every failure returns the same JSON error body (status, code,
+message) from one global handler. Components throw exceptions; they
+never build error responses themselves. Unauthorized requests get a generic denial
+(FR-SEC-deny-unauthorized), and stack traces never reach the client.
 
+**Time and time zones.** The server clock decides every deadline, not the browser's.
+Timestamps are stored in UTC. 
+
+**API conventions.** The API is REST + JSON with resource-style names
+(e.g. `/api/v1/teams/{id}`). All responses use one shared format.
+Controllers only call services; business rules live in the service layer.
+
+**Code conventions.** Each feature module depends only on the shared foundation,
+never on another feature (MNT-feature-locality). [Add 2–3 rules every file follows,
+e.g. constructor injection, shared mapper library.] Formatting is left to the
+formatter.
+
+**Validation.** Input is checked on the server **[confirm where]**; browser checks
+are only for convenience. Uploads must pass the file-type and size limits
+(SI-import-allowlist). Access is checked before business rules.
+
+**Configuration and secrets.** Dev and production differ only by configuration
+(database, storage, JWT key, LLM key, SMTP) held in [environment variables /
+Azure settings]. `.env.example` lists the keys without values.
+Tunable values such as the lock interval and upload limit are settings, not code.
+
+**Logging.** Log at [ERROR / WARN / INFO; DEBUG off in production].
+Never log passwords, tokens, API keys, peer-evaluation scores or comments, or
+student document content. Identify users by id, not name or email (SEC-ferpa).
+
+**Persistence and concurrency.** A transaction begins and ends at the service
+method. Concurrent edits use version checks plus edit locks; a stale write is
+rejected, not merged (DI-concurrency-control, BR-edit-lock-required). Deletes are
+soft deletes kept for audit (BR-deletion-integrity).
 ## 9. Architecture Decisions
 
 _Due: the table and one decision at Checkpoint 1; more as they are made._
