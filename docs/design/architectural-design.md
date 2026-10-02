@@ -154,11 +154,16 @@ _[Three to five bullets: the few moves that shape everything else. arc42 suggest
 
 _Each bullet is one sentence, and it cites what explains it: the key decision in section 9.2 where one exists, and otherwise the quality goal and the building block in section 5 it shapes. Keep it short; the reasoning lives in section 9. A bullet that cites nothing is either not load-bearing, or it is a decision you have not written down yet._
 
-_Example:]_
+- **One Well Live application with one primary application/API deployment** (`CO-single-application`, `CO-maintainable-code`), because visitors, members, content reviewers, moderators, and administrators use the same system with access controlled by role rather than by separate applications.
 
-- _**One deployable with one managed database** (`KD-deployment-shape`), because nobody on the cafeteria side can operate infrastructure (quality goal 3)._
-- _**Payment is the only component that talks to the Payroll System** (section 5.2), so payroll data crosses the trust boundary in exactly one place (quality goal 1)._
-- _**Divided by use case area**, Ordering, Menu, and Delivery, each owning its own rules, so a menu change never touches ordering code (quality goal 3, `MNT-menu-self-service`)._
+- **A browser-based responsive front end communicates with a centralized application/API over HTTPS and JSON** (`CO-responsive-application`, `OE-supported-browsers`, `OE-secure-connections`), so the same application can support desktop, tablet, and mobile browser users.
+
+- **A managed relational database stores accounts, profiles, assessment data, educational content metadata, sources, and relationships** (`OE-database-storage`, `DI-persist-graph`), while sensitive assessment information is protected by authorization and encryption (`SEC-protected-data`).
+
+- **Authentication, media storage, and future payment processing are provided by standard external services rather than implemented internally** (`CO-standard-services`, `DE-authentication-service`, `DE-media-storage`, `DE-payment-provider`), reducing the amount of security-sensitive and infrastructure-specific code that the team must maintain.
+
+- **The application is divided into use-case areas and cross-cutting components** (`CO-maintainable-code`, `MNT-maintainability`), so account and assessment functionality, educational content, community functionality, moderation, and subscriptions can evolve without placing all business rules in one undifferentiated module.
+
 
 ## 5. Building Block View
 
@@ -174,38 +179,46 @@ _Under the diagram, one or two sentences on **why the system is divided this way
 
 _Three containers is a normal answer. If you have more than five, check each one against section 9: which decision, driven by which quality attribute, requires it to run separately?_
 
-_Example:]_
-
 ```mermaid
 C4Container
-    title Container Diagram: Cafeteria Ordering System
+    title Container Diagram: Well Live
 
-    Person(patron, "Patron", "Employee ordering a meal")
-    Person(staff, "Cafeteria Staff", "Prepares and delivers orders")
-    Person(menu, "Menu Manager", "Maintains the daily menu")
+    Person(visitor, "Visitor", "Views introductory information and creates an account")
+    Person(member, "Member", "Completes assessments and browses educational content")
+    Person(reviewer, "Content Reviewer", "Reviews educational content before publication")
+    Person(moderator, "Moderator", "Reviews reports and moderates community content")
+    Person(admin, "Administrator", "Manages users, content, and platform settings")
 
-    System_Boundary(cos, "Cafeteria Ordering System") {
-        Container(web, "Web Front End", "Vue.js", "Ordering, menu, and fulfilment screens in the browser")
-        Container(app, "Application", "Java / Spring Boot", "Every business rule; serves the front end")
-        ContainerDb(db, "Database", "PostgreSQL", "Orders, menus, and delivery slots")
+    System_Boundary(welllive, "Well Live") {
+        Container(web, "Web Front End", "Responsive web application; technology TBD", "Provides account, assessment, educational content, and future community screens in the browser")
+        Container(api, "Application/API", "Server-side application; technology TBD", "Enforces business rules, authentication checks, authorization, validation, and application workflows")
+        ContainerDb(db, "Relational Database", "Managed relational database; provider TBD", "Stores accounts, profiles, assessment data, content metadata, sources, roles, and application relationships")
+        Container(media, "Object Media Storage", "Protected object storage; provider TBD", "Stores images, audio, video, and other media files while the database stores references to them")
     }
 
-    System_Ext(payroll, "Payroll System", "Deducts meal payments from pay")
-    System_Ext(sso, "Corporate Sign-On", "Authenticates employees")
-    System_Ext(email, "Corporate Email", "Order confirmations")
+    System_Ext(auth, "Authentication Service", "Provides account creation, sign-in, identity verification, and session support")
+    System_Ext(contentHost, "External Content Hosts", "Hosts linked educational videos, podcasts, articles, or other resources")
+    System_Ext(payment, "Payment Provider", "Processes subscriptions in a future release")
 
-    Rel(patron, web, "Orders meals", "HTTPS")
-    Rel(staff, web, "Fulfils orders", "HTTPS")
-    Rel(menu, web, "Edits menu", "HTTPS")
-    Rel(web, app, "Calls", "JSON/HTTPS")
-    Rel(app, db, "Reads and writes", "JDBC")
-    Rel(app, payroll, "Submits payment requests", "not yet known: RISK-payroll-api-unavailable")
-    Rel(app, sso, "Verifies identity", "OpenID Connect")
-    Rel(app, email, "Sends confirmations", "SMTP")
+    Rel(visitor, web, "Views introductory information and creates an account", "HTTPS")
+    Rel(member, web, "Completes assessments and browses educational content", "HTTPS")
+    Rel(reviewer, web, "Reviews educational content", "HTTPS")
+    Rel(moderator, web, "Reviews reported community content", "HTTPS")
+    Rel(admin, web, "Manages users, content, and settings", "HTTPS")
+
+    Rel(web, api, "Sends requests and receives responses", "JSON/HTTPS")
+    Rel(api, db, "Reads and writes application data", "TLS-secured database protocol")
+    Rel(api, media, "Uploads and retrieves protected media", "HTTPS/object-storage API")
+    Rel(api, auth, "Creates accounts and verifies identity", "HTTPS/authentication API")
+    Rel(api, contentHost, "Retrieves or links to external educational media", "HTTPS")
+    Rel(api, payment, "Creates and manages subscription transactions", "HTTPS/payment API")
 ```
 
-_The system is one application and one database because nobody on the cafeteria side can operate more (`KD-deployment-shape`). The front end is a separate container only because it runs in the browser; it ships inside the application's package._
+The Web Front End, Application/API, relational database, and object media storage are separated because they have different responsibilities and runtime requirements. The front end runs in the user's browser, the Application/API centralizes security and business rules, the database stores structured application data, and object storage handles large media files. The system avoids separate microservices for each feature area because the current project has no confirmed scale or operations requirement that justifies that complexity (`KD-deployment-shape`, `CO-single-application`, `CO-maintainable-code`).
 
+The payment provider is represented in the container diagram for architectural completeness but is outside the initial MVP. Community, moderation, content review, and administration are also represented because they are planned system capabilities, even though they are not all part of the initial MVP.
+
+(Copilot helped w the mermaid diagram)
 ### 5.2 Use case areas and components
 
 _[One row per use case area in your [use cases](../requirements/use-cases.md), taken from the area column of [traceability.md](../traceability.md) section 1, plus one row per **cross-cutting component** that no single area owns (authentication, notifications, file handling, an integration with an external system). A use case area with no row is a part of your system with no home; a component with no area and no cross-cutting reason is one nobody asked for._
@@ -214,16 +227,19 @@ _**Responsibility** is one sentence, what the component owns, not how it works. 
 
 _Project Pulse's component tables also name each component's package. They can because its code exists; yours does not yet, so a row here is a name and a responsibility, and packages come with the design-of-record in week 7._
 
-_Example:]_
-
 | Use case area | Component | Responsibility | Depends on | Status |
 |---|---|---|---|---|
-| _`ORD`_ | _Ordering_ | _Owns an order from placement to cancellation, and the cut-off rules_ | _Menu, Payment, Identity_ | _provisional_ |
-| _`MNU`_ | _Menu_ | _Owns daily menus and item availability_ | _Identity_ | _provisional_ |
-| _`DEL`_ | _Delivery_ | _Owns delivery slots and the staff's fulfilment queue_ | _Ordering, Notification_ | _provisional_ |
-| _(cross-cutting)_ | _Payment_ | _The only component that talks to the Payroll System_ | _Payroll System_ | _provisional_ |
-| _(cross-cutting)_ | _Identity_ | _Maps a signed-on employee to a role_ | _Corporate Sign-On_ | _provisional_ |
-| _(cross-cutting)_ | _Notification_ | _Sends every email the system sends_ | _Corporate Email_ | _provisional_ |
+| `ACC` | Account, Profile, and Assessment | Owns account creation, sign-in integration, member profiles, health and wellness assessment data, display identity, personalization settings, and account deletion. | Authentication Service, Relational Database | provisional |
+| `CON` | Educational Content | Owns the organization, retrieval, searching, filtering, and presentation of reviewed educational content and its sources. | Account, Profile, and Assessment; Relational Database; Object Media Storage; External Content Hosts | provisional |
+| `COM` | Community Discussions | Owns topic groups, group membership, member posts, comments, community display identities, and community participation rules. | Account, Profile, and Assessment; Relational Database | provisional; post-MVP |
+| `MOD` | Moderation | Owns content reports, moderation queues, review decisions, content visibility, and moderation records. | Community Discussions; Educational Content; Account, Profile, and Assessment; Relational Database | provisional; post-MVP |
+| `SUB` | Subscriptions | Owns subscription state, access entitlement, cancellation behavior, and communication with the payment provider. | Account, Profile, and Assessment; Payment Provider; Relational Database | provisional; post-MVP |
+| `ADM` | Administration | Owns platform-level management of users, roles, educational content, topic groups, moderation settings, and other administrative settings. | Account, Profile, and Assessment; Educational Content; Community Discussions; Moderation; Relational Database | provisional; future scope |
+| `(cross-cutting)` | Identity and Access | Authenticates users through the external authentication service and enforces role-based access to protected features and data. | Authentication Service; Account, Profile, and Assessment | provisional |
+| `(cross-cutting)` | Health Data Protection | Protects assessment and profile information through authorization, encryption, controlled access, and restrictions on logging or public display. | Identity and Access; Relational Database | provisional |
+| `(cross-cutting)` | Content Review and Safety | Ensures educational content has the required review state, source information, disclaimer, and publication status before it appears to members. | Educational Content; Moderation; Content Reviewers | provisional |
+| `(cross-cutting)` | Media Management | Manages references to images, audio, video, and other media while storing the files in protected object storage rather than the relational database. | Educational Content; Object Media Storage; External Content Hosts | provisional |
+| `(cross-cutting)` | Validation and Error Handling | Applies shared input validation and returns consistent error responses for invalid requests, unavailable dependencies, and unauthorized actions. | All application components | provisional |
 
 _[Check before Checkpoint 1: every area in your use case file appears in the first column, and every external system in section 3 appears in some Depends on cell.]_
 
