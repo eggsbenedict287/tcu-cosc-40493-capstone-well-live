@@ -46,23 +46,27 @@ _Due: Checkpoint 1._
 
 _[Your [specification](../requirements/software-requirements-specification.md) and your [use cases](../requirements/use-cases.md) are the requirements overview. Link them here; do not summarize them.]_
 
+The requirements are the [Software Requirements Specification](../requirements/software-requirements-specification.md) and the [Use Cases](../requirements/use-cases.md). MVP scope is section 4.3 of [Vision and Scope](../requirements/vision-and-scope.md).
+
 ### 1.2 Quality goals
 
 _[The **three** quality attributes that most shape your system, in priority order. Pick them from section 9 of your [specification](../requirements/software-requirements-specification.md) and cite their identifiers. If you cannot rank them, ask your client which one they would give up first; that answer is the ranking._
 
-_These are usually the top rows of the table in section 9.1, and the two do different jobs. Here, say why each goal matters to your client. There, say which decision it forces._
+_These are usually the top rows of the table in section 9.1, and the two do different jobs. Here, say why each goal matters to your client. There, say which decision it forces.]_
 
-_Example, from the Cafeteria Ordering System:]_
-
-| Priority | Quality goal | Specification handles | Why it shapes the architecture |
+| Priority | Quality goal | Specification handles | Why it matters to the client |
 |---|---|---|---|
-| 1 | _Payroll data stays confidential_ | _`SEC-payroll-auth`, `SEC-employee-own-orders`_ | _Orders are paid by payroll deduction, so an order record carries an employee's pay account. A leak is a legal problem, not a bug._ |
-| 2 | _Orders placed before 10:00 are not lost_ | _`ROB-order-persisted`, `AVL-lunch-window`_ | _The lunch rush is the only load that matters, and a lost order is a hungry employee with a payroll charge._ |
-| 3 | _Cafeteria staff can run it without IT_ | _`CO-no-dedicated-ops`, `MNT-menu-self-service`_ | _Nobody on the cafeteria side can deploy, restart, or patch anything._ |
+| 1 | Members' health and profile data stays private | `SEC-protected-data` | The assessment asks members about health conditions and personal struggles, and the product's promise is a safe, judgment-free space. A leak is a legal liability and ends subscriber trust (`RI-privacy-breach`, the highest-impact risk in vision and scope). |
+| 2 | Members only see health content that has been reviewed, presented as education | `SAF-moderation`, `CO-human-content-review`, `CO-health-boundary` | Credibility is what separates Well Live from Instagram and Reddit (`BO-content-credibility`). One piece of unreviewed or diagnostic-sounding advice reaching a vulnerable member undoes that, and `RI-peer-misinformation` and `RI-ai-hallucination` both name review as the mitigation. |
+| 3 | Whoever inherits the system can understand and change it | `MNT-maintainability`, `CO-maintainable-code` | The team graduates after the build, and the long-term maintainer, hosting owner, and budget are still undecided (`AS-continuous-maintenance`, vision and scope 4.4). The system has to be simple enough for an unknown successor to run. |
+
+_This ranking is the team's and has not been confirmed with Sarah Becan. Before Checkpoint 1, ask her which of the three she would give up first, and record her answer in [OPEN-ISSUES.md](../requirements/OPEN-ISSUES.md)._
 
 ### 1.3 Stakeholders
 
 _[Your stakeholders are profiled in section 3.1 of [vision and scope](../requirements/vision-and-scope.md). Link it here; do not copy it.]_
+
+The stakeholders are profiled in section 3.1 of [Vision and Scope](../requirements/vision-and-scope.md#31-stakeholder-profiles).
 
 ## 2. Architecture Constraints
 
@@ -71,6 +75,29 @@ _Due: Checkpoint 1._
 _[The constraints the architecture has to honor. They are already written as `CO-*` in section 2.4 of your specification, and `OE-*` in section 2.3; **list the identifiers here, do not restate them.** Add one sentence only where a constraint narrows an architectural choice in a way that is not obvious from its text._
 
 _Your technology stack is a constraint only if something external fixes it: the client's IT department, an existing system, or the person who maintains this after you graduate. A stack your team chose is a decision, and it goes in section 9 with the alternative you rejected.]_
+
+The constraints are section 2.3 (operating environment) and section 2.4 (design and implementation constraints) of the [specification](../requirements/software-requirements-specification.md).
+
+**Operating environment**
+
+- `OE-supported-browsers`
+- `OE-responsive-web`
+- `OE-internet-access`
+- `OE-hosted-server`: No host or provider is fixed yet (`OI-3`), so nothing here may assume a specific cloud's proprietary services.
+- `OE-database-storage`: The system of record is relational. A document store is ruled out as the primary database, which fits the assessment, profile, and content relationships in specification section 7.1.
+- `OE-media-storage`: Video, audio, and image files live in object storage, not in the database. The database holds only references to them, and access to protected media goes through the application.
+- `OE-secure-connections`
+
+**Design and implementation constraints**
+
+- `CO-responsive-application`: The MVP ships no native iOS or Android app, even though vision and scope mentions both. One web front end serves every screen size.
+- `CO-single-application`: Members, reviewers, moderators, and administrators use the same application, separated by role, not by deployable. This bears directly on `KD-deployment-shape`.
+- `CO-standard-services`: Sign-in, storage, and payment are bought, not built. The system never stores passwords itself; it trusts an external authentication service (`DE-authentication-service`).
+- `CO-health-boundary`
+- `CO-human-content-review`: Even though moderation and administration are out of the MVP, the content model has to carry a review state from the start, so that nothing reaches the feed without passing review. Adding that state later would mean migrating every published item.
+- `CO-maintainable-code`
+
+No constraint fixes the technology stack. The client has no IT department, no existing system to integrate with, and no named maintainer yet, so the stack is a team decision and is recorded in section 9.
 
 ## 3. Context and Scope
 
