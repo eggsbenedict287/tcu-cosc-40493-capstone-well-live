@@ -1,7 +1,7 @@
 # Team Contract: Well Live
 
 **Project:** Well Live  
-**Members:** Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller  
+**Members:** An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller  
 **Repository:** <https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live>, owned by Esteban Hernandez-Anguiano  
 **Signed:** <date>
 

@@ -1,9 +1,9 @@
 # Business Rules
 
-**Project:** Well Live Application
-**Team:** Team 07 - Well Live
-**Client:** Ms. Sarah Becan
-**Version:** 0.1
+**Project:** Well Live
+**Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
+**Client:** Sarah Becan
+**Version:** 0.1 <!-- TODO: change version number -->
 
 ---
 

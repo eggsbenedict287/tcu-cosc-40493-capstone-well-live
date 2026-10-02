@@ -1,9 +1,9 @@
 # Software Requirements Specification
 
 **Project:** Well Live
-**Team:** Elijah Johnston, An Cao, Esteban Hernandez-Anguiano, Nikola Koltin, William Schuller, Angelette Munoz
+**Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
 **Client:** Sarah Becan
-**Version:** 0.1
+**Version:** 0.1 <!-- TODO: change version number -->
 
 ---
 
