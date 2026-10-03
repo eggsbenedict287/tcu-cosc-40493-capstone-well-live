@@ -316,9 +316,15 @@ _Your quality goals from section 1.2 are usually the top rows; cite them by iden
 
 _List three to six, ranked by importance to your client times difficulty to achieve. Reuse the specification's identifiers, never new ones. **At least one row is a `SEC-*` attribute.** Every system your team builds this year holds some personal data, and if no security requirement appears here, that data's protection was never designed; it will be added later, which is where security bugs come from.]_
 
+<!-- TODO (team review): The Importance × difficulty ratings below are a proposal, not a team decision. Rows 1–3 follow the section 1.2 ranking, which has not yet been confirmed with Sarah Becan. Confirm or change the ratings and the ranking before Checkpoint 1. -->
+
 | Rank | Requirement | Specification handles | Importance × difficulty | Drives |
 |---|---|---|---|---|
-| 1 | _Payroll data confidential_ | _`SEC-payroll-auth`_ | _High × Medium_ | _`KD-payment-isolated`_ |
+| 1 | Health and profile data stays private (quality goal 1) | `SEC-protected-data` | High × Medium | No key decision recorded yet |
+| 2 | Only reviewed health content reaches members (quality goal 2) | `SAF-moderation`, `CO-human-content-review` | High × Medium | No key decision recorded yet |
+| 3 | An unknown successor can understand and change the system (quality goal 3) | `MNT-maintainability`, `CO-maintainable-code` | High × Medium | `KD-deployment-shape` |
+| 4 | One application for every user class, separated by role | `CO-single-application` | Medium × Low | `KD-deployment-shape` |
+| 5 | Sign-in, storage, and payment are bought, not built | `CO-standard-services`, `INT-standard-integration` | Medium × Medium | No key decision recorded yet |
 
 ### 9.2 Key decisions
 
@@ -326,17 +332,20 @@ _[One entry per key decision (`KD-*`), in the form below; it is what the wider i
 
 _A decision without a **rejected alternative** is not a decision, it is a description. Name what you did not do and why not, so the next person does not redo the argument._
 
-_A decision that turns out wrong is not deleted or rewritten. Mark it **Superseded by `KD-<new-slug>`** and write the new decision as its own entry, so the reasoning behind both stays readable._
+_A decision that turns out wrong is not deleted or rewritten. Mark it **Superseded by `KD-<new-slug>`** and write the new decision as its own entry, so the reasoning behind both stays readable.]_
 
-_Example:]_
+**`KD-deployment-shape`: not yet decided.** _Open._
 
-**`KD-deployment-shape`: one deployable.** _Accepted._
+<!-- TODO (team): Required for Checkpoint 1. The team has not decided between the two options below. Once it does, fill in Decision, Rejected, and Trade-off, and change the status to Accepted. -->
 
-- **Driving requirements:** _`CO-no-dedicated-ops`; `AVL-lunch-window`._
-- **Context:** _About 400 patrons, one lunch peak a day, and nobody on the client side who can operate infrastructure._
-- **Decision:** _The front end is built into the back end's package and ships as one container to one host, with one managed database._
-- **Rejected:** _Separate services for ordering, menu, and delivery. They would add network calls, three deployments, and failure modes between them, to solve a scaling problem 400 users do not have._
-- **Trade-off:** _The system scales only as a whole, and a bad deploy takes all of it down._
+- **Driving requirements:** `CO-single-application`; `MNT-maintainability`; `CO-maintainable-code`.
+- **Context:** The MVP is `FEAT-account-profile` and `FEAT-general-content` only (vision and scope 4.3). The long-term maintainer, hosting owner, and operating budget are undecided (`AS-continuous-maintenance`, vision and scope 4.4), and no host has been chosen (`OI-3`).
+- **Options under consideration:** (a) one deployable, with the front end built into the back end's package; (b) the front end and the back end deployed separately.
+- **Decision:** _TBD by the team._
+- **Rejected:** _TBD once the decision is made._
+- **Trade-off:** _TBD once the decision is made._
+
+<!-- TODO (team): Section 2 says the technology stack is a team decision recorded here. The stack has not been decided, so it has no entry yet. Add it as its own KD-* entry, with a rejected alternative, once the team decides. -->
 
 ## 10. Quality Requirements
 
