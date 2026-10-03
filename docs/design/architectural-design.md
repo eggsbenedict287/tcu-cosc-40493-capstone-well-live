@@ -217,20 +217,20 @@ _[Four short paragraphs. The last three each cite the `SEC-*` requirement they a
 
 ### 8.1 Security
 
-### 8.1 Security
+**Trust boundary.** The boundary is the backend API container. It is the only component that reads or writes member data, and every access decision is made inside it. Everything outside is untrusted: the app or browser (hiding a control is never a security measure) and all external systems (the authentication service, the payment provider, and external content hosts). Every request that crosses the boundary is authenticated and authorized, including framework endpoints such as health checks and API documentation. The only unauthenticated access is the visitor's introductory information, account creation, and sign-in (BR-account-required). **[SEC-protected-data]**
 
-**Trust boundary.** The trust boundary is the Spring Boot REST API container. It is the only component that directly queries or updates data in the relational database, and it validates every request before taking action. Everything outside is untrusted: browser clients, single-page apps, and external third-party services (LLM APIs and email servers). Every request crossing this boundary must carry a valid token, except public endpoints: documentation (`/swagger-ui/**`), system health checks (`/actuator/health`), account registration, and user sign-in. All traffic crossing the boundary is encrypted over HTTPS. **[SEC-https]**
+**Authentication.** Members sign in with email and password verified by our authentication service. Passwords are stored only as salted hashes and never logged or displayed (UC-ACC-create-account). Failed attempts are throttled and error messages never reveal which field was wrong (UC-ACC-sign-in). An account pending deletion cannot sign in. **[SEC-protected-data]**
 
-**Authentication.** Users sign in using an email address and password verified directly by our system. Passwords are stored exclusively as salted hashes (using BCrypt) and are never logged, displayed, or sent back to the client (UC-ACC-setup-student-account, UC-ACC-setup-instructor-account). Repeated failed sign-in attempts are throttled, and error messages use generic wording so they do not confirm whether an email address exists. Inactive or deactivated accounts cannot sign in (FR-SEC-active-account, BR-student-lifecycle, BR-instructor-lifecycle). **[SEC-authentication]**
+**Authorization.** The roles are visitor, member, moderator, health professional, and administrator. The server checks role first, then what the user owns:
+- A member can read or change only their own assessment, personalization settings, and display identity.
+- Assessment answers are visible only to the member. Moderators and administrators can link a post to its account but never see assessment answers (UC-MOD-review-report).
+- Email addresses are visible only to the member and administrators.
+- A reporter's identity is never shown to the reported author (UC-MOD-report-content).
+- Only moderators can open the moderation queue.
 
-**Authorization.** The system enforces role-based access for students, instructors, and course admins (BR-role-based-access, FR-SEC-authorization). The server validates the user's role first, then checks asset ownership:
-- A student can view and edit requirement documents, artifacts, links, and WARs only for her assigned team (BR-team-scoped-access).
-- A student can view only her own peer evaluation scores and public comments; private comments are strictly hidden from evaluatees and visible only to instructors (BR-evaluation-private-comment, BR-evaluation-visibility).
-- Instructors and course admins can access data only within the course sections they manage or teach.
-- Only course admins can create course sections, assign rubrics, and provision initial team documents (BR-section-admin-only, BR-document-creation). **[SEC-authorization]**
+Anonymity is a display feature, not an access control: the community sees only the display identity, but moderators can resolve it (BR-pseudonymous-option). **[SEC-protected-data]**
 
-**Sensitive data.** Sensitive student records and peer evaluations are protected under FERPA guidelines, encrypted both in transit (TLS/HTTPS) and at rest in the relational database (CO-ferpa, DI-data-retention-disposal). External systems receive only minimal, necessary information: the external LLM service receives only the prompt context sent through the server-side AI proxy without user credentials or database keys (CO-server-side-llm-proxy, SEC-llm-proxy), and the email service receives only notification recipient addresses and message bodies (CO-gmail-smtp). Secrets (database passwords, JWT signing keys, and third-party API keys) are held strictly in server environment variables and cloud secret configuration, never committed to source repositories. **[SEC-ferpa]**
-
+**Sensitive data.** The most sensitive data is the health assessment (conditions, history, medications), which is encrypted at rest and in transit and restricted by role (BR-health-data-protection). Members are never required to disclose it (BR-no-mandatory-health-disclosure). Search terms can also reveal health concerns, so they are not logged with the member's identity (UC-CON-search-content). Posts are visible to group members. Card data is never stored: the payment provider holds it (UC-SUB-manage-subscription). External systems receive only necessary metadata: payment processors receive checkout tokens, and external media hosts receive asset requests without member identifiers. Retention and deletion are defined in section 7.4 of the specification; account deletion is UC-ACC-delete-account. Secrets (database credentials, signing keys, and provider keys) are held in secure server environment variables and secret stores, never in this document or the repository. **[SEC-protected-data]**
 
 ### 8.2 Other concepts
 
