@@ -154,15 +154,15 @@ _[Three to five bullets: the few moves that shape everything else. arc42 suggest
 
 _Each bullet is one sentence, and it cites what explains it: the key decision in section 9.2 where one exists, and otherwise the quality goal and the building block in section 5 it shapes. Keep it short; the reasoning lives in section 9. A bullet that cites nothing is either not load-bearing, or it is a decision you have not written down yet._
 
-- **One Well Live application with one primary application/API deployment** (`CO-single-application`, `CO-maintainable-code`), because visitors, members, content reviewers, moderators, and administrators use the same system with access controlled by role rather than by separate applications.
+- **Well Live will be developed as one responsive web application** (`CO-responsive-application`, `CO-single-application`). Members will access the account, assessment, and educational-content features through the same application.
 
-- **A browser-based responsive front end communicates with a centralized application/API over HTTPS and JSON** (`CO-responsive-application`, `OE-supported-browsers`, `OE-secure-connections`), so the same application can support desktop, tablet, and mobile browser users.
+- **The system will use a separate web front end, application/API, and relational database** (`CO-maintainable-code`, `OE-database-storage`). The front end will display the user interface, the application/API will contain the business rules, and the database will store the system's information.
 
-- **A managed relational database stores accounts, profiles, assessment data, educational content metadata, sources, and relationships** (`OE-database-storage`, `DI-persist-graph`), while sensitive assessment information is protected by authorization and encryption (`SEC-protected-data`).
+- **The application/API will control validation, authorization, and access to sensitive assessment data** (`SEC-protected-data`, `CO-health-boundary`). This prevents the browser from directly accessing protected information and ensures that health information is shown only to the appropriate member.
 
-- **Authentication, media storage, and future payment processing are provided by standard external services rather than implemented internally** (`CO-standard-services`, `DE-authentication-service`, `DE-media-storage`, `DE-payment-provider`), reducing the amount of security-sensitive and infrastructure-specific code that the team must maintain.
+- **The system will use an external authentication service instead of creating its own password-management system** (`CO-standard-services`, `DE-authentication-service`). This reduces the security and maintenance responsibilities of the project team.
 
-- **The application is divided into use-case areas and cross-cutting components** (`CO-maintainable-code`, `MNT-maintainability`), so account and assessment functionality, educational content, community functionality, moderation, and subscriptions can evolve without placing all business rules in one undifferentiated module.
+- **Educational content will be stored and displayed separately from member assessment information** (`CO-human-content-review`, `SAF-moderation`). The content feed will show approved educational material as health education and not as diagnosis, treatment, or medical advice.
 
 
 ## 5. Building Block View
@@ -183,40 +183,35 @@ _Three containers is a normal answer. If you have more than five, check each one
 C4Container
     title Container Diagram: Well Live
 
-    Person(visitor, "Visitor", "Views introductory information and creates an account")
-    Person(member, "Member", "Completes assessments and browses educational content")
-    Person(reviewer, "Content Reviewer", "Reviews educational content before publication")
-    Person(moderator, "Moderator", "Reviews reports and moderates community content")
+    Person(visitor, "Visitor", "Creates an account and learns about Well Live")
+    Person(member, "Member", "Completes assessments, reads content, and participates in the community")
+    Person(moderator, "Moderator", "Reviews reports and moderates content")
     Person(admin, "Administrator", "Manages users, content, and platform settings")
 
     System_Boundary(welllive, "Well Live") {
-        Container(web, "Web Front End", "Responsive web application; technology TBD", "Provides account, assessment, educational content, and future community screens in the browser")
-        Container(api, "Application/API", "Server-side application; technology TBD", "Enforces business rules, authentication checks, authorization, validation, and application workflows")
-        ContainerDb(db, "Relational Database", "Managed relational database; provider TBD", "Stores accounts, profiles, assessment data, content metadata, sources, roles, and application relationships")
-        Container(media, "Object Media Storage", "Protected object storage; provider TBD", "Stores images, audio, video, and other media files while the database stores references to them")
+        Container(web, "Web Front End", "Responsive web application", "Provides screens for accounts, assessments, educational content, community features, moderation, subscriptions, and administration")
+        Container(api, "Application/API", "Server-side application", "Handles business rules, validation, authorization, security, and communication with external services")
+        ContainerDb(db, "Relational Database", "Managed relational database", "Stores accounts, profiles, assessments, educational content, community data, reports, and subscription information")
     }
 
-    System_Ext(auth, "Authentication Service", "Provides account creation, sign-in, identity verification, and session support")
-    System_Ext(contentHost, "External Content Hosts", "Hosts linked educational videos, podcasts, articles, or other resources")
+    System_Ext(auth, "Authentication Service", "Handles account creation, sign-in, and identity verification")
+    System_Ext(contentHost, "External Content Hosts", "Hosts linked articles, videos, podcasts, and other educational resources")
     System_Ext(payment, "Payment Provider", "Processes subscriptions in a future release")
 
-    Rel(visitor, web, "Views introductory information and creates an account", "HTTPS")
-    Rel(member, web, "Completes assessments and browses educational content", "HTTPS")
-    Rel(reviewer, web, "Reviews educational content", "HTTPS")
-    Rel(moderator, web, "Reviews reported community content", "HTTPS")
-    Rel(admin, web, "Manages users, content, and settings", "HTTPS")
+    Rel(visitor, web, "Creates an account and views introductory information", "HTTPS")
+    Rel(member, web, "Completes assessments and views educational content", "HTTPS")
+    Rel(member, web, "Participates in community features", "HTTPS")
+    Rel(moderator, web, "Reviews content reports", "HTTPS")
+    Rel(admin, web, "Manages the platform", "HTTPS")
 
     Rel(web, api, "Sends requests and receives responses", "JSON/HTTPS")
-    Rel(api, db, "Reads and writes application data", "TLS-secured database protocol")
-    Rel(api, media, "Uploads and retrieves protected media", "HTTPS/object-storage API")
-    Rel(api, auth, "Creates accounts and verifies identity", "HTTPS/authentication API")
-    Rel(api, contentHost, "Retrieves or links to external educational media", "HTTPS")
-    Rel(api, payment, "Creates and manages subscription transactions", "HTTPS/payment API")
+    Rel(api, db, "Reads and writes application data", "Secure database connection")
+    Rel(api, auth, "Creates accounts and verifies identity", "HTTPS/API")
+    Rel(api, contentHost, "Accesses external educational resources", "HTTPS")
+    Rel(api, payment, "Manages subscription transactions", "HTTPS/API")
 ```
 
-The Web Front End, Application/API, relational database, and object media storage are separated because they have different responsibilities and runtime requirements. The front end runs in the user's browser, the Application/API centralizes security and business rules, the database stores structured application data, and object storage handles large media files. The system avoids separate microservices for each feature area because the current project has no confirmed scale or operations requirement that justifies that complexity (`KD-deployment-shape`, `CO-single-application`, `CO-maintainable-code`).
-
-The payment provider is represented in the container diagram for architectural completeness but is outside the initial MVP. Community, moderation, content review, and administration are also represented because they are planned system capabilities, even though they are not all part of the initial MVP.
+The architecture uses one main application with several logical feature areas. The Web Front End provides the user interface, the Application/API handles business rules, validation, and security, and the Relational Database stores the system’s persistent data. External services such as authentication, content hosting, and future payment processing connect to the application but are not part of the core Well Live system. This design supports the project’s use cases while keeping the application organized and easier to maintain.
 
 (Copilot helped w the mermaid diagram)
 ### 5.2 Use case areas and components
@@ -229,17 +224,16 @@ _Project Pulse's component tables also name each component's package. They can b
 
 | Use case area | Component | Responsibility | Depends on | Status |
 |---|---|---|---|---|
-| `ACC` | Account, Profile, and Assessment | Owns account creation, sign-in integration, member profiles, health and wellness assessment data, display identity, personalization settings, and account deletion. | Authentication Service, Relational Database | provisional |
-| `CON` | Educational Content | Owns the organization, retrieval, searching, filtering, and presentation of reviewed educational content and its sources. | Account, Profile, and Assessment; Relational Database; Object Media Storage; External Content Hosts | provisional |
-| `COM` | Community Discussions | Owns topic groups, group membership, member posts, comments, community display identities, and community participation rules. | Account, Profile, and Assessment; Relational Database | provisional; post-MVP |
-| `MOD` | Moderation | Owns content reports, moderation queues, review decisions, content visibility, and moderation records. | Community Discussions; Educational Content; Account, Profile, and Assessment; Relational Database | provisional; post-MVP |
-| `SUB` | Subscriptions | Owns subscription state, access entitlement, cancellation behavior, and communication with the payment provider. | Account, Profile, and Assessment; Payment Provider; Relational Database | provisional; post-MVP |
-| `ADM` | Administration | Owns platform-level management of users, roles, educational content, topic groups, moderation settings, and other administrative settings. | Account, Profile, and Assessment; Educational Content; Community Discussions; Moderation; Relational Database | provisional; future scope |
-| `(cross-cutting)` | Identity and Access | Authenticates users through the external authentication service and enforces role-based access to protected features and data. | Authentication Service; Account, Profile, and Assessment | provisional |
-| `(cross-cutting)` | Health Data Protection | Protects assessment and profile information through authorization, encryption, controlled access, and restrictions on logging or public display. | Identity and Access; Relational Database | provisional |
-| `(cross-cutting)` | Content Review and Safety | Ensures educational content has the required review state, source information, disclaimer, and publication status before it appears to members. | Educational Content; Moderation; Content Reviewers | provisional |
-| `(cross-cutting)` | Media Management | Manages references to images, audio, video, and other media while storing the files in protected object storage rather than the relational database. | Educational Content; Object Media Storage; External Content Hosts | provisional |
-| `(cross-cutting)` | Validation and Error Handling | Applies shared input validation and returns consistent error responses for invalid requests, unavailable dependencies, and unauthorized actions. | All application components | provisional |
+| `ACC` | Account, Profile, and Assessment | Handles account creation, sign-in, profile information, assessment completion, assessment updates, display identity, personalization settings, and account deletion. | Authentication Service; Relational Database | Provisional|
+| `CON` | Educational Content | Handles browsing the educational feed, searching and filtering content, reading educational content and sources, and managing personalization settings. | Account, Profile, and Assessment; Relational Database; Object/Media Storage; External Content Hosts | Provisional|
+| `COM` | Community Discussions | Handles topic groups, group membership, health journey posts, and comments. | Account, Profile, and Assessment; Relational Database |provisional |
+| `MOD` | Moderation | Handles reports of harmful or misleading content and the review of those reports. | Community Discussions; Educational Content; Relational Database | provisional |
+| `SUB` | Subscriptions | Handles starting, viewing, updating, and canceling subscription access. | Account, Profile, and Assessment; Payment Provider; Relational Database | provisional |
+| `ADM` | Administration | Handles administrative management of users, content, groups, moderation settings, and platform settings. | Account, Profile, Educational Content, Moderation; Relational Database | provisional |
+| Cross-cutting | Identity and Access | Verifies user identity and controls access to member, moderator, and administrator features. | Authentication Service; Account, Profile, and Assessment | provisional |
+| Cross-cutting | Validation and Error Handling | Checks user input and provides consistent responses for invalid, unauthorized, or failed requests. | All application components | provisional |
+| Cross-cutting | Health Data Protection | Protects assessment answers, health history, medication information, and other sensitive member data. | Identity and Access; Relational Database |provisional |
+| Cross-cutting | Content Safety | Ensures educational content is reviewed and presented as education rather than diagnosis, treatment, or medical advice. | Educational Content; Moderation; Content Reviewers | provisional |
 
 _[Check before Checkpoint 1: every area in your use case file appears in the first column, and every external system in section 3 appears in some Depends on cell.]_
 
