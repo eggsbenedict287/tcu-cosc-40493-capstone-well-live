@@ -3,7 +3,7 @@
 **Project:** Well Live
 **Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
 **Client:** Sarah Becan
-**Version:** 0.1 <!-- TODO: change version number -->
+**Version:** 0.2
 
 ---
 
@@ -35,6 +35,7 @@ _[Project Pulse numbers its decisions and scenarios (`KD-1`, `QS-1`). Yours use 
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 0.1 | | | Initial draft for Checkpoint 1 |
+| 0.2 | 2026-10-14 | Esteban Hernandez-Anguiano | Decided `KD-deployment-shape` (separate Ionic frontend client and backend API); added `KD-frontend-framework`; aligned sections 2, 4, 5.1, and 9.1 |
 
 ---
 
@@ -90,7 +91,7 @@ The constraints are section 2.3 (operating environment) and section 2.4 (design 
 
 **Design and implementation constraints**
 
-- `CO-responsive-application`: The MVP ships no native iOS or Android app, even though vision and scope mentions both. One web front end serves every screen size.
+- `CO-responsive-application`: The MVP ships no native iOS or Android app, even though vision and scope mentions both. One web front end serves every screen size. The frontend is built with Ionic so that native apps can later come from the same codebase (`KD-frontend-framework`), but the MVP deliverable is the web build.
 - `CO-single-application`: Members, reviewers, moderators, and administrators use the same application, separated by role, not by deployable. This bears directly on `KD-deployment-shape`.
 - `CO-standard-services`: Sign-in, storage, and payment are bought, not built. The system never stores passwords itself; it trusts an external authentication service (`DE-authentication-service`).
 - `CO-health-boundary`
@@ -154,11 +155,11 @@ _[Three to five bullets: the few moves that shape everything else. arc42 suggest
 
 _Each bullet is one sentence, and it cites what explains it: the key decision in section 9.2 where one exists, and otherwise the quality goal and the building block in section 5 it shapes. Keep it short; the reasoning lives in section 9. A bullet that cites nothing is either not load-bearing, or it is a decision you have not written down yet._
 
-- **Well Live will be developed as one responsive web application** (`CO-responsive-application`, `CO-single-application`). Members will access the account, assessment, and educational-content features through the same application.
+- **Well Live will be one application for every role, built with Ionic and delivered as a responsive web app for the MVP** (`CO-responsive-application`, `CO-single-application`, `KD-frontend-framework`). The same codebase can later be packaged as native iOS and Android apps.
 
-- **The system will use a separate web front end, application/API, and relational database** (`CO-maintainable-code`, `OE-database-storage`). The front end will display the user interface, the application/API will contain the business rules, and the database will store the system's information.
+- **The system will ship as two deployables, a frontend client and a backend API, plus a relational database** (`KD-deployment-shape`, `OE-database-storage`). The client displays the user interface, the backend API contains the business rules, and the database stores the system's information.
 
-- **The application/API will control validation, authorization, and access to sensitive assessment data** (`SEC-protected-data`, `CO-health-boundary`). This prevents the browser from directly accessing protected information and ensures that health information is shown only to the appropriate member.
+- **The backend API will control validation, authorization, and access to sensitive assessment data** (`SEC-protected-data`, `CO-health-boundary`). This prevents the browser from directly accessing protected information and ensures that health information is shown only to the appropriate member.
 
 - **The system will use an external authentication service instead of creating its own password-management system** (`CO-standard-services`, `DE-authentication-service`). This reduces the security and maintenance responsibilities of the project team.
 
@@ -189,8 +190,8 @@ C4Container
     Person(admin, "Administrator", "Manages users, content, and platform settings")
 
     System_Boundary(welllive, "Well Live") {
-        Container(web, "Web Front End", "Responsive web application", "Provides screens for accounts, assessments, educational content, community features, moderation, subscriptions, and administration")
-        Container(api, "Application/API", "Server-side application", "Handles business rules, validation, authorization, security, and communication with external services")
+        Container(web, "Frontend Client", "Ionic (TypeScript); responsive web, Capacitor native builds later", "Provides screens for accounts, assessments, educational content, community features, moderation, subscriptions, and administration")
+        Container(api, "Backend API", "Server-side application", "Handles business rules, validation, authorization, security, and communication with external services")
         ContainerDb(db, "Relational Database", "Managed relational database", "Stores accounts, profiles, assessments, educational content, community data, reports, and subscription information")
     }
 
@@ -211,7 +212,7 @@ C4Container
     Rel(api, payment, "Manages subscription transactions", "HTTPS/API")
 ```
 
-The architecture uses one main application with several logical feature areas. The Web Front End provides the user interface, the Application/API handles business rules, validation, and security, and the Relational Database stores the system’s persistent data. External services such as authentication, content hosting, and future payment processing connect to the application but are not part of the core Well Live system. This design supports the project’s use cases while keeping the application organized and easier to maintain.
+Well Live ships as two deployables plus a database (`KD-deployment-shape`). The Frontend Client is one Ionic codebase, deployed as a responsive web app for the MVP, that can later be packaged as native mobile apps. The Backend API is a single application, organized by use case area, that holds all business rules, validation, and authorization, and is the only container that reads or writes the Relational Database. The client is separate so that web and future mobile builds share one API, and the backend is the only route to member data so it can serve as the trust boundary (section 8.1). Nothing else is split out: no quality attribute in section 9.1 requires a third running service, and each extra one would add hosting and maintenance cost that nobody has been named to carry. External services such as authentication, content hosting, and future payment processing connect only to the Backend API.
 
 (Copilot helped w the mermaid diagram)
 ### 5.2 Use case areas and components
@@ -314,7 +315,7 @@ _List three to six, ranked by importance to your client times difficulty to achi
 
 | Rank | Requirement | Specification handles | Importance × difficulty | Drives |
 |---|---|---|---|---|
-| 1 | Health and profile data stays private (quality goal 1) | `SEC-protected-data` | High × Medium | No key decision recorded yet |
+| 1 | Health and profile data stays private (quality goal 1) | `SEC-protected-data` | High × Medium | `KD-deployment-shape` |
 | 2 | Only reviewed health content reaches members (quality goal 2) | `SAF-moderation`, `CO-human-content-review` | High × Medium | No key decision recorded yet |
 | 3 | An unknown successor can understand and change the system (quality goal 3) | `MNT-maintainability`, `CO-maintainable-code` | High × Medium | `KD-deployment-shape` |
 | 4 | One application for every user class, separated by role | `CO-single-application` | Medium × Low | `KD-deployment-shape` |
@@ -328,18 +329,32 @@ _A decision without a **rejected alternative** is not a decision, it is a descri
 
 _A decision that turns out wrong is not deleted or rewritten. Mark it **Superseded by `KD-<new-slug>`** and write the new decision as its own entry, so the reasoning behind both stays readable.]_
 
-**`KD-deployment-shape`: not yet decided.** _Open._
+**`KD-deployment-shape`: two deployables, a frontend client and a backend API.** _Accepted._
 
-<!-- TODO (team): Required for Checkpoint 1. The team has not decided between the two options below. Once it does, fill in Decision, Rejected, and Trade-off, and change the status to Accepted. -->
+- **Driving requirements:** `CO-single-application`; `CO-responsive-application`; `SEC-protected-data`; `MNT-maintainability`; `CO-maintainable-code`.
+- **Context:** The MVP is `FEAT-account-profile` and `FEAT-general-content` only (vision and scope 4.3). The client's planned platforms are responsive web now and native mobile later (vision and scope 3.2), and whether mobile web is enough for the first release is still open. The long-term maintainer, hosting owner, and operating budget are undecided (`AS-continuous-maintenance`, vision and scope 4.4), and no host has been chosen (`OI-3`).
+- **Decision:** Well Live ships as two separately built and deployed pieces, plus the database:
+  - **Frontend client.** One Ionic codebase (`KD-frontend-framework`), deployed for the MVP as static web assets that run as a responsive web app (`CO-responsive-application`). The same codebase can later be packaged with Capacitor as iOS and Android apps without a second client.
+  - **Backend API.** One server-side application that owns all business rules, validation, and authorization, and is the only component that reads or writes the relational database and media storage.
 
-- **Driving requirements:** `CO-single-application`; `MNT-maintainability`; `CO-maintainable-code`.
-- **Context:** The MVP is `FEAT-account-profile` and `FEAT-general-content` only (vision and scope 4.3). The long-term maintainer, hosting owner, and operating budget are undecided (`AS-continuous-maintenance`, vision and scope 4.4), and no host has been chosen (`OI-3`).
-- **Options under consideration:** (a) one deployable, with the front end built into the back end's package; (b) the front end and the back end deployed separately.
-- **Decision:** _TBD by the team._
-- **Rejected:** _TBD once the decision is made._
-- **Trade-off:** _TBD once the decision is made._
+  The two communicate only through the backend's JSON/HTTPS API (section 8.2, API conventions). Every role uses the same client and the same backend, separated by role (`CO-single-application`).
+- **Why:** (1) A native mobile build cannot be bundled inside a server package. A separate client lets the web build and any future mobile builds share one backend API without rework. (2) The backend is the trust boundary (section 8.1). The client holds no member data and no secrets, so no client release, web or mobile, can widen access to health data (`SEC-protected-data`). (3) Each side can be understood, changed, and released by a successor on its own (`MNT-maintainability`, `CO-maintainable-code`).
+- **Rejected:** (a) one deployable, with the frontend built into the backend's package and served by it. It is simpler to host (one service, one release, no cross-origin configuration), but it couples every client change to a server release and cannot produce the native mobile builds the client plans. The split would have to be made later anyway, after code had been written around one package.
+- **Trade-off:**
+  - *Two of everything.* Two build and release pipelines, cross-origin (CORS) configuration, and API versioning between client and server. A successor has to know two stacks: TypeScript/Ionic and the backend.
+  - *Cloud infrastructure for the backend.* The backend has to run continuously on hosted infrastructure (`OE-hosted-server`): application compute, a managed relational database (`DE-database-service`), object storage for media (`DE-media-storage`), TLS certificates, and backups. The frontend is static files and is cheap to host from a static host or CDN. The backend is a recurring monthly cost that grows with members and media.
+  - *Maintenance cost.* Someone has to own the backend's security patches, dependency and runtime upgrades, database backups and restores, monitoring, and scaling. Once native builds exist, they also have to keep the API backward compatible with app versions members have not updated. No maintainer, hosting owner, or operating budget has been named yet (`AS-continuous-maintenance`, vision and scope 4.4, `OI-3`), which makes this the decision's largest ongoing risk. It belongs in section 11 at Checkpoint 2.
+  - *Why we accept it.* Option (a) needs the same always-on hosted server, so the backend's cloud and maintenance cost exists either way. The split adds only a low-cost static host for the client. The system stays at two deployables and a database, with no microservices, message queues, or container orchestration, which keeps cloud spend and upkeep as low as this design allows. Because section 2 rules out provider-proprietary services until `OI-3` is answered, the backend can move to whichever host the client can afford.
 
-<!-- TODO (team): Section 2 says the technology stack is a team decision recorded here. The stack has not been decided, so it has no entry yet. Add it as its own KD-* entry, with a rejected alternative, once the team decides. -->
+**`KD-frontend-framework`: Ionic for the frontend client.** _Accepted._
+
+- **Driving requirements:** `CO-responsive-application`; `OE-responsive-web`; `USE-responsive-ui`; `MNT-maintainability`.
+- **Context:** The client's technical assessment named React, React Native, or Next.js (vision and scope 3.2). The MVP must be a responsive web application, and native mobile apps are planned for later.
+- **Decision:** Build the frontend client with Ionic (TypeScript). One codebase produces the responsive web app for the MVP and, through Capacitor, native iOS and Android apps later.
+- **Rejected:** React Native, because meeting `CO-responsive-application` would then need a second web codebase. Next.js or React alone, because they are web-only, so native apps would need a second codebase later. Ionic is the only option of the three that covers both from one codebase.
+- **Trade-off:** A hybrid app runs in a WebView, so it has a less native look and lower performance than React Native. That is acceptable for an app made mostly of content feeds and forms.
+
+<!-- TODO (team): The backend technology stack has not been recorded as a decision. Add it as its own KD-* entry, with a rejected alternative, once the team confirms it. -->
 
 ## 10. Quality Requirements
 
