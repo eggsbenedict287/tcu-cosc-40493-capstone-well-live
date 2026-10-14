@@ -215,8 +215,6 @@ _Due: named at Checkpoint 1, detailed at Checkpoint 2._
 
 _[Four short paragraphs. The last three each cite the `SEC-*` requirement they answer:_
 
-### 8.1 Security
-
 **Trust boundary.** The boundary is the backend API container. It is the only component that reads or writes member data, and every access decision is made inside it. Everything outside is untrusted: the app or browser (hiding a control is never a security measure) and all external systems (the authentication service, the payment provider, and external content hosts). Every request that crosses the boundary is authenticated and authorized, including framework endpoints such as health checks and API documentation. The only unauthenticated access is the visitor's introductory information, account creation, and sign-in (BR-account-required). **[SEC-protected-data]**
 
 **Authentication.** Members sign in with email and password verified by our authentication service. Passwords are stored only as salted hashes and never logged or displayed (UC-ACC-create-account). Failed attempts are throttled and error messages never reveal which field was wrong (UC-ACC-sign-in). An account pending deletion cannot sign in. **[SEC-protected-data]**
@@ -234,40 +232,26 @@ Anonymity is a display feature, not an access control: the community sees only t
 
 ### 8.2 Other concepts
 
-**Error handling.** Every failure returns the same JSON error body (status, code,
-message) from one global handler. Components throw exceptions; they
-never build error responses themselves. Unauthorized requests get a generic denial
-(FR-SEC-deny-unauthorized), and stack traces never reach the client.
+**Error handling.** The API returns errors in one JSON shape containing an HTTP status, a stable error code, and a user-safe message. A shared handler translates application errors into that response; services do not construct HTTP responses. Authentication and authorization failures do not disclose protected data, and unexpected errors never expose stack traces. A consistent response lets the browser handle failures predictably while limiting disclosure of account and health information (`SEC-protected-data`, `UC-ACC-sign-in`).
 
-**Time and time zones.** The server clock decides every deadline, not the browser's.
-Timestamps are stored in UTC. 
+**Time and time zones.** The server clock is authoritative for recorded events, and timestamps are stored in UTC. This keeps account, assessment, and future moderation timestamps comparable regardless of the member's device or location (`UC-ACC-complete-assessment`, `UC-ACC-update-assessment`).
 
-**API conventions.** The API is REST + JSON with resource-style names
-(e.g. `/api/v1/teams/{id}`). All responses use one shared format.
-Controllers only call services; business rules live in the service layer.
+**API conventions.** The browser and backend communicate over HTTPS using REST-style resource paths and JSON. Responses, including errors, use documented shared formats. Controllers handle HTTP concerns and delegate application behavior to services, where business rules are enforced. This gives the responsive web client a consistent interface and keeps business behavior independent of request handling (`CO-responsive-application`, `CO-maintainable-code`).
 
-**Code conventions.** Each feature module depends only on the shared foundation,
-never on another feature (MNT-feature-locality). [Add 2–3 rules every file follows,
-e.g. constructor injection, shared mapper library.] Formatting is left to the
-formatter.
+**Code conventions.** Code is organized around the use-case areas in `use-cases.md`; each feature owns its business rules and accesses another feature through an explicit service boundary rather than reaching into its data. Cross-cutting concerns belong in shared components. These boundaries limit accidental coupling and make the application easier for future student teams to maintain (`CO-maintainable-code`). Formatting is applied consistently by the project's chosen formatter once the implementation stack is selected.
 
-**Validation.** Input is checked on the server **[confirm where]**; browser checks
-are only for convenience. Uploads must pass the file-type and size limits
-(SI-import-allowlist). Access is checked before business rules.
+**Validation and authorization.** The backend validates all input before saving it or applying business rules; browser-side checks provide quicker feedback but are not authoritative. The backend checks identity and access before reading or changing protected data. Server-side enforcement is necessary because browser requests can be modified or sent without using the Well Live interface (`SEC-protected-data`, `UC-ACC-complete-assessment`, `UC-ACC-update-assessment`).
 
-**Configuration and secrets.** Dev and production differ only by configuration
-(database, storage, JWT key, LLM key, SMTP) held in [environment variables /
-Azure settings]. `.env.example` lists the keys without values.
-Tunable values such as the lock interval and upload limit are settings, not code.
+**Configuration and secrets.** Environment-specific service addresses and settings are supplied by deployment configuration rather than embedded in source code. Credentials and signing keys are kept in the hosting environment's secret-management facility and are not committed to the repository. The specific mechanism is deferred until the hosting platform is chosen. This allows the same application build to use different environments without exposing credentials (`DE-authentication-service`, `DE-database-service`, `DE-media-storage`).
 
-**Logging.** Log at [ERROR / WARN / INFO; DEBUG off in production].
-Never log passwords, tokens, API keys, peer-evaluation scores or comments, or
-student document content. Identify users by id, not name or email (SEC-ferpa).
+**Logging.** Production logs use error, warning, and informational levels; debug detail is disabled in production. Logs must not contain passwords, session tokens, provider credentials, or sensitive assessment answers. Search terms are not recorded with a member's identity; operational records identify a member by an internal ID rather than email. These limits support diagnosis of operational failures while reducing exposure of health and identity data (`SEC-protected-data`, `UC-CON-search-content`).
 
-**Persistence and concurrency.** A transaction begins and ends at the service
-method. Concurrent edits use version checks plus edit locks; a stale write is
-rejected, not merged (DI-concurrency-control, BR-edit-lock-required). Deletes are
-soft deletes kept for audit (BR-deletion-integrity).
+**Auditing.** Where moderation is implemented, each moderation action records who performed it, what action was taken, when it occurred, and why (`UC-MOD-review-report`). Audit records do not include assessment answers, which moderators are not authorized to view. Whether access to assessment data must itself be audited, and how long audit records are retained, remain open requirements questions; no policy is assumed here (`SEC-protected-data`).
+
+**Testing.** Automated tests cover service-level rules and API behavior, including authorization around assessment data, consistent safe error responses, and the failure paths specified by the use cases. Integration tests verify that assessment creation and updates are atomic and that a failed update leaves the prior answers unchanged (`UC-ACC-complete-assessment`, `UC-ACC-update-assessment`). These checks target the privacy and data-integrity failures with the greatest impact; test tooling and pipeline timing are deferred to implementation and deployment design.
+
+**Persistence and concurrency.** A use-case operation that promises an all-or-nothing save is committed atomically; assessment creation and updates follow this rule. Account deletion disables sign-in before data cleanup and retries unfinished cleanup rather than leaving a partially deleted account usable (`UC-ACC-complete-assessment`, `UC-ACC-update-assessment`, `UC-ACC-delete-account`). The requirements do not yet choose a concurrent-edit strategy, soft-delete policy, or audit-retention period, so this architecture does not prescribe version checks, edit locks, or soft deletes.
+
 ## 9. Architecture Decisions
 
 _Due: the table and one decision at Checkpoint 1; more as they are made._
