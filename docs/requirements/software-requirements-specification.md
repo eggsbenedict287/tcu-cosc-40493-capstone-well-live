@@ -104,11 +104,10 @@ _[How this system relates to other systems and to the user's environment. Self-c
 
 Well Live is a new web-based health and wellness platform. It is not replacing an existing internal system. Users will access the system through a responsive web application, and mobile support may be added or expanded as the product is validated.
 
-The system will include account management, member profiles, health and wellness assessments, educational content, and community features. It will depend on external services for authentication, database storage, media storage, and future subscription payments.
+The system will include account management, member profiles, health and wellness assessments, educational content, and community features. It will depend on external services for database storage, media storage, and future subscription payments. Sign-in is handled by the application itself, using a standard authentication library.
 
 The major external systems are:
 
-- Authentication service
 - Relational database
 - Object or media storage
 - Payment provider for a future subscription release
@@ -176,7 +175,7 @@ _[An assumption is a factor you believe true without proof, which would change t
 - `AS-assessment-voluntary`: Members will not be required to disclose sensitive health information unless the client explicitly approves that requirement.
 - `AS-app-store-clearance`: The platform will be treated as a wellness and education platform rather than a medical device or telehealth service.
 - `AS-continuous-maintenance`: Hosting, security updates, and operational maintenance will be available after the student team completes the project.
-- `DE-authentication-service`: Account creation and sign-in depend on an authentication service.
+- `DE-authentication-service`: Account creation and sign-in depend on a standard, well-tested authentication and password-hashing library used inside the application, rather than custom cryptography. Passwords are stored only as salted hashes.
 - `DE-database-service`: The application depends on a relational database for account, profile, assessment, and content data.
 - `DE-media-storage`: The application depends on protected storage for media files and other content assets.
 - `DE-payment-provider`: Subscription functionality depends on an approved payment provider and is outside the initial MVP.
@@ -433,7 +432,7 @@ The system does not require custom hardware. It runs on standard user devices wi
 
 ### 8.3 Software interfaces
 
-The application shall integrate with a standard authentication service, a relational database, object storage for media files, and an approved payment provider for subscriptions. If an external dependency is unavailable, the system will notify the user. 
+The application shall use a standard authentication library for sign-in and shall integrate with a relational database, object storage for media files, and an approved payment provider for subscriptions. If an external dependency is unavailable, the system will notify the user. 
 ### 8.4 API document
 
 No formal API document exists yet. As implementation begins, the team shall create and maintain an API specification that lists endpoints, authentication requirements, and request/response formats.

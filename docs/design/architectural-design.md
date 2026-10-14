@@ -35,7 +35,7 @@ _[Project Pulse numbers its decisions and scenarios (`KD-1`, `QS-1`). Yours use 
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 0.1 | | | Initial draft for Checkpoint 1 |
-| 0.2 | 2026-10-14 | Esteban Hernandez-Anguiano | Decided `KD-deployment-shape` (separate Ionic frontend client and backend API); added `KD-frontend-framework`; aligned sections 2, 4, 5.1, and 9.1 |
+| 0.2 | 2026-10-14 | Esteban Hernandez-Anguiano | Decided `KD-deployment-shape` (separate Ionic frontend client and backend API); added `KD-frontend-framework`; aligned sections 2, 4, 5.1, and 9.1. Moved sign-in into the Backend API (salted password hashes) and named the Relational Database as the store for encrypted assessment answers (issue #30, item 5) |
 
 ---
 
@@ -93,7 +93,7 @@ The constraints are section 2.3 (operating environment) and section 2.4 (design 
 
 - `CO-responsive-application`: The MVP ships no native iOS or Android app, even though vision and scope mentions both. One web front end serves every screen size. The frontend is built with Ionic so that native apps can later come from the same codebase (`KD-frontend-framework`), but the MVP deliverable is the web build.
 - `CO-single-application`: Members, reviewers, moderators, and administrators use the same application, separated by role, not by deployable. This bears directly on `KD-deployment-shape`.
-- `CO-standard-services`: Sign-in, storage, and payment are bought, not built. The system never stores passwords itself; it trusts an external authentication service (`DE-authentication-service`).
+- `CO-standard-services`: Storage and payment are bought, not built. Sign-in is part of the Backend API, but it is built on a standard, well-tested security library, not home-made cryptography (`DE-authentication-service`). The backend stores passwords only as salted hashes from a slow password-hashing algorithm (for example bcrypt or Argon2), never in plain text or reversible form.
 - `CO-health-boundary`
 - `CO-human-content-review`: Even though moderation and administration are out of the MVP, the content model has to carry a review state from the start, so that nothing reaches the feed without passing review. Adding that state later would mean migrating every published item.
 - `CO-maintainable-code`
@@ -127,7 +127,6 @@ C4Context
 
     System(welllive, "Well Live", "Health and wellness platform providing educational content and community features")
 
-    System_Ext(auth, "Authentication Service", "Provides account authentication and sign-in")
     System_Ext(storage, "Database and Media Storage", "Stores user, assessment, content, and media data")
     System_Ext(contentHost, "External Content Hosts", "Hosts linked educational videos, podcasts, articles, and other resources")
     System_Ext(payment, "Payment Provider", "Processes subscription payments")
@@ -137,13 +136,12 @@ C4Context
     Rel(moderator, welllive, "Reviews reports and moderates content")
     Rel(admin, welllive, "Manages the platform")
 
-    Rel(welllive, auth, "Authenticates users")
     Rel(welllive, storage, "Stores and retrieves application data and media")
     Rel(welllive, contentHost, "Accesses linked educational content")
     Rel(welllive, payment, "Processes subscription payments")
 ```
 
-Well Live's system boundary contains the application's account, assessment, educational content, and planned community functionality. Authentication, persistent data and media storage, externally hosted educational resources, and subscription payment processing are dependencies outside the Well Live application.
+Well Live's system boundary contains the application's account, sign-in, assessment, educational content, and planned community functionality. Authentication is inside the boundary: the Backend API verifies passwords against the salted hashes it stores (`CO-standard-services`). Persistent data and media storage, externally hosted educational resources, and subscription payment processing are dependencies outside the Well Live application.
 
 The initial MVP focuses on account and profile functionality and general educational content. Moderation, administration, subscriptions, and other later-release functionality remain represented in the architectural context because they are part of the broader Well Live product, but they are not part of the initial MVP implementation.
 
@@ -161,7 +159,7 @@ _Each bullet is one sentence, and it cites what explains it: the key decision in
 
 - **The backend API will control validation, authorization, and access to sensitive assessment data** (`SEC-protected-data`, `CO-health-boundary`). This prevents the browser from directly accessing protected information and ensures that health information is shown only to the appropriate member.
 
-- **The system will use an external authentication service instead of creating its own password-management system** (`CO-standard-services`, `DE-authentication-service`). This reduces the security and maintenance responsibilities of the project team.
+- **The Backend API will handle sign-in itself, using a standard security library and storing passwords only as salted hashes** (`CO-standard-services`, `DE-authentication-service`). This avoids an extra external service to pay for and maintain, without the team writing its own cryptography.
 
 - **Educational content will be stored and displayed separately from member assessment information** (`CO-human-content-review`, `SAF-moderation`). The content feed will show approved educational material as health education and not as diagnosis, treatment, or medical advice.
 
@@ -191,11 +189,10 @@ C4Container
 
     System_Boundary(welllive, "Well Live") {
         Container(web, "Frontend Client", "Ionic (TypeScript); responsive web, Capacitor native builds later", "Provides screens for accounts, assessments, educational content, community features, moderation, subscriptions, and administration")
-        Container(api, "Backend API", "Server-side application", "Handles business rules, validation, authorization, security, and communication with external services")
-        ContainerDb(db, "Relational Database", "Managed relational database", "Stores accounts, profiles, assessments, educational content, community data, reports, and subscription information")
+        Container(api, "Backend API", "Server-side application", "Handles sign-in, business rules, validation, authorization, encryption of assessment answers, and communication with external services")
+        ContainerDb(db, "Relational Database", "Managed relational database", "Stores accounts (with salted password hashes), profiles, encrypted assessment answers, educational content, community data, reports, and subscription information")
     }
 
-    System_Ext(auth, "Authentication Service", "Handles account creation, sign-in, and identity verification")
     System_Ext(contentHost, "External Content Hosts", "Hosts linked articles, videos, podcasts, and other educational resources")
     System_Ext(payment, "Payment Provider", "Processes subscriptions in a future release")
 
@@ -207,12 +204,11 @@ C4Container
 
     Rel(web, api, "Sends requests and receives responses", "JSON/HTTPS")
     Rel(api, db, "Reads and writes application data", "Secure database connection")
-    Rel(api, auth, "Creates accounts and verifies identity", "HTTPS/API")
     Rel(api, contentHost, "Accesses external educational resources", "HTTPS")
     Rel(api, payment, "Manages subscription transactions", "HTTPS/API")
 ```
 
-Well Live ships as two deployables plus a database (`KD-deployment-shape`). The Frontend Client is one Ionic codebase, deployed as a responsive web app for the MVP, that can later be packaged as native mobile apps. The Backend API is a single application, organized by use case area, that holds all business rules, validation, and authorization, and is the only container that reads or writes the Relational Database. The client is separate so that web and future mobile builds share one API, and the backend is the only route to member data so it can serve as the trust boundary (section 8.1). Nothing else is split out: no quality attribute in section 9.1 requires a third running service, and each extra one would add hosting and maintenance cost that nobody has been named to carry. External services such as authentication, content hosting, and future payment processing connect only to the Backend API.
+Well Live ships as two deployables plus a database (`KD-deployment-shape`). The Frontend Client is one Ionic codebase, deployed as a responsive web app for the MVP, that can later be packaged as native mobile apps. The Backend API is a single application, organized by use case area, that holds all business rules, validation, and authorization, and is the only container that reads or writes the Relational Database. The client is separate so that web and future mobile builds share one API, and the backend is the only route to member data so it can serve as the trust boundary (section 8.1). Nothing else is split out: no quality attribute in section 9.1 requires a third running service, and each extra one would add hosting and maintenance cost that nobody has been named to carry. Sign-in is not a separate service: it runs inside the Backend API. External services, namely content hosting and future payment processing, connect only to the Backend API.
 
 (Copilot helped w the mermaid diagram)
 ### 5.2 Use case areas and components
@@ -225,15 +221,15 @@ _Project Pulse's component tables also name each component's package. They can b
 
 | Use case area | Component | Responsibility | Depends on | Status |
 |---|---|---|---|---|
-| `ACC` | Account, Profile, and Assessment | Handles account creation, sign-in, profile information, assessment completion, assessment updates, display identity, personalization settings, and account deletion. | Authentication Service; Relational Database | Provisional|
+| `ACC` | Account, Profile, and Assessment | Handles account creation, sign-in, profile information, assessment completion, assessment updates, display identity, personalization settings, and account deletion. | Identity and Access; Relational Database | Provisional|
 | `CON` | Educational Content | Handles browsing the educational feed, searching and filtering content, reading educational content and sources, and managing personalization settings. | Account, Profile, and Assessment; Relational Database; Object/Media Storage; External Content Hosts | Provisional|
 | `COM` | Community Discussions | Handles topic groups, group membership, health journey posts, and comments. | Account, Profile, and Assessment; Relational Database |provisional |
 | `MOD` | Moderation | Handles reports of harmful or misleading content and the review of those reports. | Community Discussions; Educational Content; Relational Database | provisional |
 | `SUB` | Subscriptions | Handles starting, viewing, updating, and canceling subscription access. | Account, Profile, and Assessment; Payment Provider; Relational Database | provisional |
 | `ADM` | Administration | Handles administrative management of users, content, groups, moderation settings, and platform settings. | Account, Profile, Educational Content, Moderation; Relational Database | provisional |
-| Cross-cutting | Identity and Access | Verifies user identity and controls access to member, moderator, and administrator features. | Authentication Service; Account, Profile, and Assessment | provisional |
+| Cross-cutting | Identity and Access | Verifies sign-in against stored salted password hashes and controls access to member, moderator, and administrator features. | Relational Database | provisional |
 | Cross-cutting | Validation and Error Handling | Checks user input and provides consistent responses for invalid, unauthorized, or failed requests. | All application components | provisional |
-| Cross-cutting | Health Data Protection | Protects assessment answers, health history, medication information, and other sensitive member data. | Identity and Access; Relational Database |provisional |
+| Cross-cutting | Health Data Protection | Encrypts and decrypts assessment answers, health history, medication information, and other sensitive member data. | Identity and Access; Relational Database |provisional |
 | Cross-cutting | Content Safety | Ensures educational content is reviewed and presented as education rather than diagnosis, treatment, or medical advice. | Educational Content; Moderation; Content Reviewers | provisional |
 
 _[Check before Checkpoint 1: every area in your use case file appears in the first column, and every external system in section 3 appears in some Depends on cell.]_
@@ -262,9 +258,9 @@ _Due: named at Checkpoint 1, detailed at Checkpoint 2._
 
 _[Four short paragraphs. The last three each cite the `SEC-*` requirement they answer:_
 
-**Trust boundary.** The boundary is the backend API container. It is the only component that reads or writes member data, and every access decision is made inside it. Everything outside is untrusted: the app or browser (hiding a control is never a security measure) and all external systems (the authentication service, the payment provider, and external content hosts). Every request that crosses the boundary is authenticated and authorized, including framework endpoints such as health checks and API documentation. The only unauthenticated access is the visitor's introductory information, account creation, and sign-in (BR-account-required). **[SEC-protected-data]**
+**Trust boundary.** The boundary is the backend API container. It is the only component that reads or writes member data, and every access decision is made inside it. Everything outside is untrusted: the app or browser (hiding a control is never a security measure) and all external systems (the payment provider and external content hosts). Every request that crosses the boundary is authenticated and authorized, including framework endpoints such as health checks and API documentation. The only unauthenticated access is the visitor's introductory information, account creation, and sign-in (BR-account-required). **[SEC-protected-data]**
 
-**Authentication.** Members sign in with email and password verified by our authentication service. Passwords are stored only as salted hashes and never logged or displayed (UC-ACC-create-account). Failed attempts are throttled and error messages never reveal which field was wrong (UC-ACC-sign-in). An account pending deletion cannot sign in. **[SEC-protected-data]**
+**Authentication.** Members sign in with email and password, verified by the Backend API using a standard security library (`CO-standard-services`, `DE-authentication-service`). The Backend API stores passwords in the Relational Database only as salted hashes from a slow password-hashing algorithm such as bcrypt or Argon2. A hash is one-way: the system checks a typed password against it and can never recover the original, and passwords are never logged or displayed (UC-ACC-create-account). Failed attempts are throttled and error messages never reveal which field was wrong (UC-ACC-sign-in). An account pending deletion cannot sign in. **[SEC-protected-data]**
 
 **Authorization.** The roles are visitor, member, moderator, health professional, and administrator. The server checks role first, then what the user owns:
 - A member can read or change only their own assessment, personalization settings, and display identity.
@@ -275,7 +271,7 @@ _[Four short paragraphs. The last three each cite the `SEC-*` requirement they a
 
 Anonymity is a display feature, not an access control: the community sees only the display identity, but moderators can resolve it (BR-pseudonymous-option). **[SEC-protected-data]**
 
-**Sensitive data.** The most sensitive data is the health assessment (conditions, history, medications), which is encrypted at rest and in transit and restricted by role (BR-health-data-protection). Members are never required to disclose it (BR-no-mandatory-health-disclosure). Search terms can also reveal health concerns, so they are not logged with the member's identity (UC-CON-search-content). Posts are visible to group members. Card data is never stored: the payment provider holds it (UC-SUB-manage-subscription). External systems receive only necessary metadata: payment processors receive checkout tokens, and external media hosts receive asset requests without member identifiers. Retention and deletion are defined in section 7.4 of the specification; account deletion is UC-ACC-delete-account. Secrets (database credentials, signing keys, and provider keys) are held in secure server environment variables and secret stores, never in this document or the repository. **[SEC-protected-data]**
+**Sensitive data.** The most sensitive data is the health assessment (conditions, history, medications). It is stored in the Relational Database, encrypted in transit (HTTPS) and at rest, and restricted by role (BR-health-data-protection). The Backend API encrypts assessment answers before writing them and decrypts them only for the owning member, with a key held in the backend's secret store and never in the database. Assessment answers are encrypted rather than hashed, because members must be able to view and update them (UC-ACC-update-assessment), and a hash cannot be reversed. Members are never required to disclose it (BR-no-mandatory-health-disclosure). Search terms can also reveal health concerns, so they are not logged with the member's identity (UC-CON-search-content). Posts are visible to group members. Card data is never stored: the payment provider holds it (UC-SUB-manage-subscription). External systems receive only necessary metadata: payment processors receive checkout tokens, and external media hosts receive asset requests without member identifiers. Retention and deletion are defined in section 7.4 of the specification; account deletion is UC-ACC-delete-account. Secrets (database credentials, signing keys, and provider keys) are held in secure server environment variables and secret stores, never in this document or the repository. **[SEC-protected-data]**
 
 ### 8.2 Other concepts
 
@@ -319,7 +315,7 @@ _List three to six, ranked by importance to your client times difficulty to achi
 | 2 | Only reviewed health content reaches members (quality goal 2) | `SAF-moderation`, `CO-human-content-review` | High × Medium | No key decision recorded yet |
 | 3 | An unknown successor can understand and change the system (quality goal 3) | `MNT-maintainability`, `CO-maintainable-code` | High × Medium | `KD-deployment-shape` |
 | 4 | One application for every user class, separated by role | `CO-single-application` | Medium × Low | `KD-deployment-shape` |
-| 5 | Sign-in, storage, and payment are bought, not built | `CO-standard-services`, `INT-standard-integration` | Medium × Medium | No key decision recorded yet |
+| 5 | Storage and payment are bought, and sign-in uses a standard library, not home-made cryptography | `CO-standard-services`, `INT-standard-integration` | Medium × Medium | No key decision recorded yet |
 
 ### 9.2 Key decisions
 

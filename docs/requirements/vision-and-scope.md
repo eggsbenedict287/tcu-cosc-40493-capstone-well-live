@@ -323,7 +323,6 @@ flowchart LR
   Moderator[Moderator] --> WL
   Admin[Administrator] --> WL
   WL --> Payment[Payment provider]
-  WL --> Auth[Authentication service]
   WL --> Storage[(Database and media storage)]
 ```
 

@@ -158,7 +158,7 @@ _**Draft note (applies to every use case below).** The vision and scope takes su
 **Created By:** Esteban Hernandez-Anguiano
 **Date Created:** 2026-09-25
 **Primary Actor:** visitor
-**Secondary Actors:** authentication service (vision and scope §4.1)
+**Secondary Actors:** none (sign-in is handled inside the application; see `DE-authentication-service`)
 **Trigger:** The visitor indicates to create a Well Live account.
 **Description:** A visitor who wants to use Well Live's educational and community features creates an account, so that they become a member and can sign in.
 
@@ -197,7 +197,7 @@ _**Draft note (applies to every use case below).** The vision and scope takes su
 - **5a. An account already exists for the email address:**
     - 5a1. The system says it cannot create the account with that email address and offers `UC-ACC-sign-in`. The message must not reveal more about the existing account than the chosen account-enumeration policy allows (open issue).
     - 5a2. The visitor either goes to `UC-ACC-sign-in`, returns to step 3, or ends the use case.
-- **6a. The authentication service or database is unavailable:**
+- **6a. The database is unavailable:**
     - 6a1. The system does not create a partial account, tells the visitor that account creation is temporarily unavailable, and keeps the entered values except the password.
     - 6a2. Use case ends.
 - **7a. The member chooses to start the assessment:**
@@ -232,7 +232,7 @@ Account creation is all-or-nothing: if any step after validation fails, no accou
 **Created By:** Esteban Hernandez-Anguiano
 **Date Created:** 2026-09-25
 **Primary Actor:** member
-**Secondary Actors:** authentication service
+**Secondary Actors:** none (sign-in is handled inside the application; see `DE-authentication-service`)
 **Trigger:** The member indicates to sign in.
 **Description:** A member with an existing account proves their identity so they can use member features.
 
@@ -262,7 +262,7 @@ Account creation is all-or-nothing: if any step after validation fails, no accou
     - 4b1. The system applies the lockout or throttling policy defined in the SRS. Use case ends.
 - **4c. The account is pending deletion (see `UC-ACC-delete-account`):**
     - 4c1. The system tells the member the account is scheduled for deletion and offers whatever restore option the retention policy allows (open issue). Use case ends.
-- **4d. The authentication service is unavailable:**
+- **4d. The database is unavailable:**
     - 4d1. The system says sign-in is temporarily unavailable. Use case ends.
 - **2a. The member has forgotten their password:**
     - 2a1. The system starts a password reset. That flow isn't specified yet, and nothing in this use case depends on it.
