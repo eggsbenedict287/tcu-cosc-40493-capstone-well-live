@@ -7,7 +7,7 @@
 | Item | Evidence / prepared work | Status and next action |
 |---|---|---|
 | Access and baseline | Exact repository root/origin verified; starting `design-health-assessment` was clean; fetched main contains PRs #39 and #40 | Complete; original branch retained, preparation starts from current origin/main |
-| Assessment design and requirements | [ACC draft](../design/acc.md), [use case](../requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment), complete questionnaire read; concrete shape proposed to owner | Partial; accept shape under [design command Phase 2](../../.claude/commands/design.md#phase-2-draft-the-design-and-wait), then write corrected mapping/contracts/requirements and run fresh questions test; two nonowner approvals and human merge before implementation |
+| Assessment design and requirements | [ACC draft](../design/acc.md), [use case](../requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment), complete questionnaire read; concrete shape proposed to owner; [baseline questions-test dispositions](assessment-review-dispositions.md) | Partial; accept shape under [design command Phase 2](../../.claude/commands/design.md#phase-2-draft-the-design-and-wait), then write corrected mapping/contracts/requirements and capture the full fresh questions test; two nonowner approvals and human merge before implementation |
 | Architecture | Section 8 read in full; Ionic accepted but Vue/backend/database decisions missing; runtime/quality/risk template gaps remain | Partial; proposed changes belong in the design PR after shape acceptance; keep components provisional until proven |
 | Settings | [Claude settings](../../.claude/settings.json), [charter](../../AGENTS.md#agent-settings-and-secrets), ignored planned local secret mount and course worktree path | Partial; static validation and reviewable diff required, then human Claude sentinel refusal check and teammate review/merge |
 | Charter | [Dependency, attribution and parallel-work rules](../../AGENTS.md#parallel-agent-workflow) | Partial; team review/merge required; no dependency added |
@@ -27,6 +27,8 @@ Client questions are recorded in [OPEN-ISSUES.md](../requirements/OPEN-ISSUES.md
 ## Review and access handoff
 
 The [team contract](../team-contract.md#5-git-workflow-and-review) requires **two approving nonowner reviews**. Draft PR creation is authorized but merging, self-approval, messaging, paid resources and release publication are not.
+
+The preparation branch is pushed, with [a ready-to-submit PR description](checkpoint-2-pr.md). Draft PR creation was also refused with GitHub 403. Static checks passed for 13 settings rules, 204 then-existing local paths/anchors and all 16 UC release rows; six planned secret/worktree paths are ignored. Claude runtime refusal is still unverified. The fresh baseline questions test found blockers; its captured dispositions are explicitly partial, and it must be rerun/captured against the corrected design.
 
 Normal command execution fails during sandbox setup; supported repository-scoped elevated checks work when approved. The GitHub connector reads the repository but issue creation returns `403 Resource not accessible by integration`; the available browser is signed out. Do not infer write access from a successful read or weaken filesystem permissions. The local impact body remains ready for submission.
 
