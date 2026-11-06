@@ -1,78 +1,85 @@
 # Traceability Matrix
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
-**Version:** 0.1
-**Last checked:** _[YYYY-MM-DD, by whom]_
+**Project:** Well Live
+**Team:** Team 07
+**Version:** 0.2 proposed
+**Last checked:** 2026-11-06, Codex-assisted preparation against `3fdbe132a5d9a35bb3b794c95f51277d012ccafc`
 
----
-
-_**How to use this template.** Instructions appear in italic square brackets. Fill in underneath them and leave them in place until the document is stable._
-
-_**What this file is.** The map of your project, from the reason something exists to the thing that does it. Every other document owns its own contents; this one owns the **links between them**, so nobody has to restate anything to find out what connects to what._
-
-_**Why it exists before any code does.** The question it answers in week 4 is "did we specify everything we promised, and nothing we did not?" The question it answers in week 12 is "this broke, what was it supposed to do, and who asked for it?" Those are the same question, and the file that answers the second one is the file you started in week 4. Starting it later means reconstructing links from memory, which is the same work done worse._
-
-_**It grows.** Week 4 fills in two tables. Week 8 adds the columns for design, code, and tests once those exist, and the tables below leave room for them. Do not add empty columns now._
-
-_**Run the checks by hand this week.** Each table below ends with two checks. They are cheap, and they fail loudly. Hand the whole file to your agent and ask it to run them, then verify what it tells you, because a check reported as passing by the thing that also wrote the table is not evidence._
-
----
+This document owns links, not requirements. Release placement and priorities below are **proposals pending team review**, not a forecast or client commitment. [Estimates and missing actuals](planning/checkpoint-2-estimates.md) do not yet establish capacity.
 
 ## 1. Feature to use case area
 
-_[Your vision and scope lists product **features** (`FEAT-<slug>`), each a capability a stakeholder can see. Your use case file groups behavior into **use case areas** (`UC-<AREA>-*`). This table connects them, and it is where **business objectives attach**: the objective hangs on the feature, and every use case underneath inherits it. That is why the objective is named here once, rather than repeated on forty use cases._
-
-_Features and areas are deliberately many-to-many. A feature that lands on exactly one area is probably too narrow, and a feature that reads "create, edit, and delete X" is a list of use cases wearing a feature's clothes._
-
-_Worked example, from Project Pulse:]_
-
 | Feature | Business objectives | Use case areas |
 |---|---|---|
-| `FEAT-performance-tracking` | `BO-PERF-instructor-efficiency`, `BO-PERF-student-participation` | `WAR`, `EVA` |
-| `FEAT-administration` | (enabling, serves no objective directly) | `SEC`, `TEA`, `STU`, `INS`, `ACC`, `RUB` |
+| [FEAT-account-profile](requirements/vision-and-scope.md#42-major-features-and-scope) | [BO-intake-completion](requirements/vision-and-scope.md#22-business-objectives) | ACC |
+| [FEAT-personalized-content](requirements/vision-and-scope.md#42-major-features-and-scope) | [BO-health-literacy](requirements/vision-and-scope.md#22-business-objectives), [BO-content-credibility](requirements/vision-and-scope.md#22-business-objectives) | CON; assessment input from ACC |
+| [FEAT-community-discussions](requirements/vision-and-scope.md#42-major-features-and-scope) | [BO-peer-engagement](requirements/vision-and-scope.md#22-business-objectives) | COM |
+| [FEAT-content-moderation](requirements/vision-and-scope.md#42-major-features-and-scope) | [BO-content-credibility](requirements/vision-and-scope.md#22-business-objectives) | MOD |
+| [FEAT-subscriptions](requirements/vision-and-scope.md#42-major-features-and-scope) | [BO-retention-rate](requirements/vision-and-scope.md#22-business-objectives) | SUB |
+| [FEAT-administration](requirements/vision-and-scope.md#42-major-features-and-scope) | Enabling; no direct objective asserted | ADM — no defined use case; gap remains |
 
-_[An enabling feature that serves no measurable objective on its own says so, as the second row does. That is different from forgetting to fill the column in.]_
-
-**Checks.**
-
-1. **Every feature has at least one area.** A feature with none means your vision promises something nobody has specified.
-2. **Every area is reached by a feature.** An area no feature points at means you have use cases no stakeholder asked for.
-
----
+All six defined features and all five defined use case areas are represented. Architecture also names ADM, but its use cases are missing. `FEAT-general-content` is referenced in vision and scope §4.3 but has no definition; it is not invented as a seventh feature here. The source [use-case scope](requirements/use-cases.md#12-scope) already flags this inconsistency.
 
 ## 2. Business rule to what enforces it
 
-_[A business rule is a property of your client's business, so it has no implementation of its own. What it has is a set of requirements that enforce it, and this table is how you find them. Rules are **cited, never restated**: the rule's text lives in `business-rules.md` and nowhere else, and this table holds only the identifier and the links._
+The Source column summarizes the owning document's attribution, retaining its candidate qualifications. Old `napkin.md` source references resolve to the existing [napkin0.md](napkins/napkin0.md); the historical source references in business rules are not silently edited.
 
-_The **Source** column is duplicated here from `business-rules.md` on purpose, and it is the one exception in this file. It is the column reviewers and clients actually read, and a rule whose source is one click away is a rule nobody checks._
-
-_Worked example, from Project Pulse:]_
-
-| Business rule | Source | Enforced by |
+| Business rule | Source | Requirements that cite it |
 |---|---|---|
-| `BR-evaluation-submission-window` | Not recorded | `UC-EVA-submit-evaluation` step 7 and extension 1b |
-| `BR-section-admin-only` | Not recorded | `UC-RUB-assign-rubric`, `UC-SEC-create-section`, `UC-SEC-edit-section`, `UC-SEC-setup-active-weeks` |
+| [BR-non-diagnostic](requirements/business-rules.md#21-health-safety-and-clinical-boundaries) | [Technical assessment](napkins/napkin0.md); [pitch summary](pitches/well-live-pitch-summary.md), candidate | [UC-ACC-create-account](requirements/use-cases.md#uc-acc-create-account-the-visitor-creates-an-account), [UC-ACC-complete-assessment](requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment), [UC-CON-browse-feed](requirements/use-cases.md#uc-con-browse-feed-the-member-browses-the-educational-feed), [UC-CON-read-content](requirements/use-cases.md#uc-con-read-content-the-member-reads-an-educational-item-and-its-sources), [UC-COM-create-post](requirements/use-cases.md#uc-com-create-post-the-member-shares-a-health-journey-post), [UC-COM-comment-on-post](requirements/use-cases.md#uc-com-comment-on-post-the-member-responds-to-a-post), [UC-MOD-report-content](requirements/use-cases.md#uc-mod-report-content-the-member-reports-harmful-or-misleading-content) |
+| [BR-no-clinical-services](requirements/business-rules.md#21-health-safety-and-clinical-boundaries) | [Business rules §1.2](requirements/business-rules.md#12-scope); [pitch summary](pitches/well-live-pitch-summary.md) | [UC-CON-read-content](requirements/use-cases.md#uc-con-read-content-the-member-reads-an-educational-item-and-its-sources), [UC-MOD-report-content](requirements/use-cases.md#uc-mod-report-content-the-member-reports-harmful-or-misleading-content) |
+| [BR-content-review](requirements/business-rules.md#21-health-safety-and-clinical-boundaries) | [Technical assessment](napkins/napkin0.md); [pitch summary](pitches/well-live-pitch-summary.md), candidate | [UC-CON-browse-feed](requirements/use-cases.md#uc-con-browse-feed-the-member-browses-the-educational-feed), [UC-CON-search-content](requirements/use-cases.md#uc-con-search-content-the-member-searches-or-filters-educational-content), [UC-CON-read-content](requirements/use-cases.md#uc-con-read-content-the-member-reads-an-educational-item-and-its-sources), [UC-MOD-review-report](requirements/use-cases.md#uc-mod-review-report-the-moderator-reviews-a-content-report) |
+| [BR-five-pillars](requirements/business-rules.md#22-content-and-topic-scope) | [Technical assessment](napkins/napkin0.md) | [UC-ACC-complete-assessment](requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment), [UC-CON-browse-feed](requirements/use-cases.md#uc-con-browse-feed-the-member-browses-the-educational-feed), [UC-CON-search-content](requirements/use-cases.md#uc-con-search-content-the-member-searches-or-filters-educational-content), [UC-COM-join-topic-group](requirements/use-cases.md#uc-com-join-topic-group-the-member-browses-and-joins-a-topic-group), [UC-COM-create-post](requirements/use-cases.md#uc-com-create-post-the-member-shares-a-health-journey-post) |
+| [BR-ad-free](requirements/business-rules.md#22-content-and-topic-scope) | [Vision and scope](requirements/vision-and-scope.md), candidate | [UC-CON-browse-feed](requirements/use-cases.md#uc-con-browse-feed-the-member-browses-the-educational-feed), [UC-SUB-manage-subscription](requirements/use-cases.md#uc-sub-manage-subscription-the-member-manages-their-subscription) |
+| [BR-subscription-model](requirements/business-rules.md#23-subscription-and-access) | [Technical assessment](napkins/napkin0.md) | [UC-SUB-manage-subscription](requirements/use-cases.md#uc-sub-manage-subscription-the-member-manages-their-subscription) |
+| [BR-account-required](requirements/business-rules.md#23-subscription-and-access) | [Pitch summary](pitches/well-live-pitch-summary.md), candidate | [UC-ACC-create-account](requirements/use-cases.md#uc-acc-create-account-the-visitor-creates-an-account), [UC-ACC-sign-in](requirements/use-cases.md#uc-acc-sign-in-the-member-signs-in), [UC-CON-browse-feed](requirements/use-cases.md#uc-con-browse-feed-the-member-browses-the-educational-feed), [UC-COM-join-topic-group](requirements/use-cases.md#uc-com-join-topic-group-the-member-browses-and-joins-a-topic-group), [UC-COM-create-post](requirements/use-cases.md#uc-com-create-post-the-member-shares-a-health-journey-post), [UC-COM-comment-on-post](requirements/use-cases.md#uc-com-comment-on-post-the-member-responds-to-a-post), [UC-SUB-manage-subscription](requirements/use-cases.md#uc-sub-manage-subscription-the-member-manages-their-subscription) |
+| [BR-health-data-protection](requirements/business-rules.md#24-privacy-identity-and-data-handling) | [Technical assessment](napkins/napkin0.md); [vision and scope](requirements/vision-and-scope.md) | [UC-ACC-sign-in](requirements/use-cases.md#uc-acc-sign-in-the-member-signs-in), [UC-ACC-complete-assessment](requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment), [UC-ACC-update-assessment](requirements/use-cases.md#uc-acc-update-assessment-the-member-updates-their-assessment-answers), [UC-ACC-delete-account](requirements/use-cases.md#uc-acc-delete-account-the-member-deletes-their-account-and-personal-data), [UC-MOD-review-report](requirements/use-cases.md#uc-mod-review-report-the-moderator-reviews-a-content-report) |
+| [BR-no-mandatory-health-disclosure](requirements/business-rules.md#24-privacy-identity-and-data-handling) | [Pitch summary](pitches/well-live-pitch-summary.md) | [UC-ACC-create-account](requirements/use-cases.md#uc-acc-create-account-the-visitor-creates-an-account), [UC-ACC-complete-assessment](requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment), [UC-ACC-update-assessment](requirements/use-cases.md#uc-acc-update-assessment-the-member-updates-their-assessment-answers), [UC-CON-opt-out-personalization](requirements/use-cases.md#uc-con-opt-out-personalization-the-member-opts-out-of-or-resets-personalization) |
+| [BR-pseudonymous-option](requirements/business-rules.md#24-privacy-identity-and-data-handling) | [Vision and scope](requirements/vision-and-scope.md); [pitch summary](pitches/well-live-pitch-summary.md), team choice/client question | [UC-ACC-set-display-identity](requirements/use-cases.md#uc-acc-set-display-identity-the-member-chooses-how-their-identity-is-displayed), [UC-COM-create-post](requirements/use-cases.md#uc-com-create-post-the-member-shares-a-health-journey-post), [UC-COM-comment-on-post](requirements/use-cases.md#uc-com-comment-on-post-the-member-responds-to-a-post) |
+| [BR-not-medical-device](requirements/business-rules.md#25-regulatory-and-platform-constraints) | [Technical assessment](napkins/napkin0.md); [vision and scope](requirements/vision-and-scope.md) | [UC-ACC-complete-assessment](requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment) |
 
-**Checks.**
+Every one of the eleven defined rules is cited by at least one defined UC. This establishes specification links only; implementation enforcement has not been verified. All BR identifiers in UC Business Rules fields resolve. Candidate policies still need client review.
 
-1. **Every rule is enforced by something.** A rule with an empty third column is a policy your software ignores. That may be the right answer, and it is only the right answer if you decided it on purpose. Write the decision in `OPEN-ISSUES.md` rather than leaving the cell blank.
-2. **Every requirement that cites a rule cites one that exists.** Search your use cases and specification for every `BR-` identifier and confirm each one is defined in `business-rules.md`. This is the check that catches a draft citing `BR-late-penalty` because a late penalty is the kind of thing a course usually has. A generated document cites plausible identifiers with complete confidence, and nothing else in your process will notice.
+## 3. Use cases and release proposals
 
----
+Release values are `v0.1.0` (proving slice), `v0.2.0` (proposed next delivery), `v1.0.0` (fall MVP), `Spring`, or `Out`. No existing UC is declared Out by this proposal. Fall readiness, remaining capacity and client scope must be reviewed before moving rows into v1.0.0.
 
-## 3. From here (week 8)
+`v0.1.0` needs real authentication/member storage and a general-feed destination. These are partial foundations of other UCs, not proof those full UCs are complete. All Code and Tests cells remain empty because only static prototypes exist. The merged assessment draft [PR #39](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/39) still has blockers; [PR #40](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/40) changes a diagram label only.
 
-_[Leave this section as it is until week 8. It says what the two tables above grow into, so that nobody restructures the file in the meantime._
+| Requirement | Priority proposal | Release proposal | Design | Code | Tests | Build | Verify |
+|---|---|---|---|---|---|---|---|
+| [UC-ACC-create-account](requirements/use-cases.md#uc-acc-create-account-the-visitor-creates-an-account) | High | v0.2.0 |  | | | Not started | None |
+| [UC-ACC-sign-in](requirements/use-cases.md#uc-acc-sign-in-the-member-signs-in) | High | v0.2.0 |  | | | Not started | None |
+| [UC-ACC-complete-assessment](requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment) | High | v0.1.0 | [ACC draft](design/acc.md#uc-acc-complete-assessment) — merged, blockers remain | | | Not started | None |
+| [UC-ACC-update-assessment](requirements/use-cases.md#uc-acc-update-assessment-the-member-updates-their-assessment-answers) | Medium | v0.2.0 |  | | | Not started | None |
+| [UC-ACC-set-display-identity](requirements/use-cases.md#uc-acc-set-display-identity-the-member-chooses-how-their-identity-is-displayed) | Medium | v0.2.0 |  | | | Not started | None |
+| [UC-ACC-delete-account](requirements/use-cases.md#uc-acc-delete-account-the-member-deletes-their-account-and-personal-data) | Medium | v0.2.0 |  | | | Not started | None |
+| [UC-CON-browse-feed](requirements/use-cases.md#uc-con-browse-feed-the-member-browses-the-educational-feed) | High | v0.2.0 |  | | | Not started | None |
+| [UC-CON-search-content](requirements/use-cases.md#uc-con-search-content-the-member-searches-or-filters-educational-content) | Medium | v0.2.0 |  | | | Not started | None |
+| [UC-CON-read-content](requirements/use-cases.md#uc-con-read-content-the-member-reads-an-educational-item-and-its-sources) | Medium | v0.2.0 |  | | | Not started | None |
+| [UC-CON-opt-out-personalization](requirements/use-cases.md#uc-con-opt-out-personalization-the-member-opts-out-of-or-resets-personalization) | Medium | Spring |  | | | Not started | None |
+| [UC-COM-join-topic-group](requirements/use-cases.md#uc-com-join-topic-group-the-member-browses-and-joins-a-topic-group) | Low | Spring |  | | | Not started | None |
+| [UC-COM-create-post](requirements/use-cases.md#uc-com-create-post-the-member-shares-a-health-journey-post) | Low | Spring |  | | | Not started | None |
+| [UC-COM-comment-on-post](requirements/use-cases.md#uc-com-comment-on-post-the-member-responds-to-a-post) | Low | Spring |  | | | Not started | None |
+| [UC-MOD-report-content](requirements/use-cases.md#uc-mod-report-content-the-member-reports-harmful-or-misleading-content) | Low | Spring |  | | | Not started | None |
+| [UC-MOD-review-report](requirements/use-cases.md#uc-mod-review-report-the-moderator-reviews-a-content-report) | Low | Spring |  | | | Not started | None |
+| [UC-SUB-manage-subscription](requirements/use-cases.md#uc-sub-manage-subscription-the-member-manages-their-subscription) | Low | Spring |  | | | Not started | None |
 
-_In week 8 the spine extends past the use case: **business objective → feature → use case area → use case → design → code → test.** A third table arrives with one row per use case and columns for the design element, the source files, and the tests, tracked as two separate states, built and verified, so that a use case which is built but untested stays visibly unverified rather than being absorbed into a single "done".]_
+## 4. Non-use-case functional requirements
 
----
+[SRS §5.2](requirements/software-requirements-specification.md#52-non-use-case-functional-requirements) defines **zero project FRs**. `FR-SAVE-autosave-active` is an italic template example and is excluded. All 16 defined UCs are above; no FR row is invented to make this table look complete.
+
+If the team defines a project FR in the owning SRS, add its real source link and Release/Design/Code/Tests/Build/Verify row here in the same PR.
+
+## 5. Gaps and checks
+
+- Feature coverage: six defined features linked; ADM behavior remains unspecified.
+- UC coverage: 16/16 defined UCs linked; every row has an allowed release proposal.
+- FR coverage: 0/0 defined project FRs; SRS functional inventory remains a review item.
+- Rule coverage: 11/11 defined BRs linked to citing UCs; candidate status preserved.
+- Delivery evidence: no production application, tests, CI or tags found at the checked baseline. Static [prototypes](../prototypes/) are design evidence.
+- Definition gaps: undefined `FEAT-general-content`; Member/subscription mismatch between [glossary](requirements/project-glossary.md#member) and [SRS user classes](requirements/software-requirements-specification.md#22-user-classes-and-characteristics); assessment placeholders versus questionnaire. See [impact preparation](planning/assessment-change-issue.md).
 
 ## Working this document with your agent
 
-_[Delegate: running both checks and reporting what fails; finding every `BR-`, `FEAT-`, and `UC-` identifier cited anywhere in `docs/` and listing the ones with no definition; regenerating the second table from the Business Rules fields of your use cases after you have edited them._
-
-_Keep human: whether an area with no feature is a missing feature or a use case that should not exist, and whether an unenforced rule is an oversight or a decision. Both are questions about your client's business, and the answer is not in your repository._
-
-_**The specific failure to watch for:** an agent asked to "fill in the traceability matrix" produces a complete, well-formed table in which every cell is populated and some of the links are invented. A blank cell is information. A confidently wrong link is worse than no link, because it makes the check pass. Verify every row you did not write yourself by opening the document at the other end.]_
+Regenerate links only from definitions in owning documents. Report undefined identifiers and uncovered features rather than inventing behavior. Keep priorities, release scope, acceptance and review human. A design file's existence does not establish a built or verified feature.

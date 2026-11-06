@@ -31,12 +31,19 @@ _[Send the shortlist to your client the day before. A client who has seen the qu
 
 | ID | Question | Why it matters | Who can answer | Raised |
 |---|---|---|---|---|
-| OI-1 | _[The question, phrased so it has a definite answer. Not "tell us about reporting" but "who is allowed to see another student's evaluation scores?"]_ | _[What we get wrong if we guess. Name the artifact or decision it blocks.]_ | _[Client, instructor, a specific user, or the team itself]_ | _[YYYY-MM-DD]_ |
-| OI-2 |_[How is the data going to be stored?]_  |_[If wrong blocks the ability to have user logins]_  | _[Client]_ | _[2026-09-25]_ |
-| OI-3 |_[Where is the backend going to be hosted]_  | _[If wrong we have no ability to have a running backend]_ | _[Client]_ |_[2026-09-26]_  |
+| OI-2 | Will the team accept MySQL on Aiven's free plan for development and the proving slice, with local MySQL for development/tests? Who owns operation and later production approval? | Database choice and hosting remain proposed; no paid resource or client approval is implied. | Team; client for production responsibilities | 2026-09-25; clarified 2026-11-06 |
+| OI-3 | Where will the Spring Boot backend be hosted, who owns it, and what approved budget applies? | Database hosting would not itself host the backend. A hosted demonstration still needs application compute and HTTPS. | Team and client | 2026-09-26; clarified 2026-11-06 |
+| OI-4 | Which entries in the supplied questionnaire may be collected for real member use, and which must be excluded? | [UC-ACC-complete-assessment](use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment) has placeholder collection fields. Questionnaire wording is source evidence, not approval of collection scope. Proposed proving scope uses fictitious data only. | Client and team | 2026-11-06 |
+| OI-5 | What retention, deletion and backup-retention rules apply to assessment answers and access/audit records? | Blocks real-data deployment and completion of [SRS §7.4](software-requirements-specification.md#74-data-acquisition-integrity-retention-and-disposal). No duration or cleanup schedule is assumed. | Client and team | 2026-11-06 |
+| OI-6 | What exact explanation of collection purpose, use, access and optional disclosure should members see before answering? | Completion step 2 requires an explanation; the team must not invent consent text or claim personalization already uses answers. Demonstration text must identify fictitious-data scope. | Client; team for demonstration wording | 2026-11-06 |
+| OI-7 | What response, if any, should follow sensitive concern selections in the questionnaire? | No clinical advice, alert, notification, monitoring or intervention may be inferred. Confirm the intended boundary before real-member use. | Client and team | 2026-11-06 |
+| OI-8 | For the proving slice, does Member mean an authenticated account without a paid subscription, and may fictitious accounts be bootstrapped for real sign-in? | [Glossary Member](project-glossary.md#member) requires a subscription; [SRS user classes](software-requirements-specification.md#22-user-classes-and-characteristics) and the MVP defer payments. Real authentication must not be replaced with mock identity. | Team | 2026-11-06 |
+
+OI-1 was a template instruction, not a project question; its number is not reused. The team's accepted application decisions supplied on 2026-11-06 do not answer these client questions. No client answer is recorded by this preparation.
 
 ## Resolved
 
 | ID | Question | Answer | Answered by | Date | Filed in |
 |---|---|---|---|---|---|
-| OI-0 | _[Example row, delete it]_ | _[What we were told]_ | _[Name]_ | _[YYYY-MM-DD]_ | _[`BO-grading-time`, or the glossary term, or the section]_ |
+
+No resolved project questions are recorded here. The former OI-0 row was an example, not a client answer.
