@@ -3,7 +3,7 @@
 **Project:** Well Live
 **Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
 **Client:** Sarah Becan
-**Version:** 0.1 <!-- TODO: change version number -->
+**Version:** 0.2 proposed
 
 ---
 
@@ -264,11 +264,9 @@ classDiagram
     }
 
     class Assessment {
-        +wellness interests
-        +health goals
-        +health history
-        +medications
-        +last updated
+        +questionnaire version
+        +answers
+        +completed at
     }
 
     class Topic {
@@ -337,8 +335,6 @@ classDiagram
 
 _[Each entity's fields, with data type, allowed values, defaults, and validation rules. Where a use case already specifies a field's validation in its Associated Information, cite the use case instead of repeating it.]_
 
-**Might go back and change this** 
-**Don't know if I did this right**
 
 | Entity | Field | Type | Required? | Validation or allowed values | Access concerns |
 |---|---|---|---|---|---|
@@ -348,11 +344,10 @@ _[Each entity's fields, with data type, allowed values, defaults, and validation
 | Member | account status | Enum | Yes | Active, disabled, pending deletion, deleted | Internal use |
 | Member | display mode | Enum | Yes | Anonymous or named | Controlled by the member |
 | Member | display name | String | Conditional | Required when named; length and uniqueness rules TBD | Visible to community members |
-| Assessment | wellness interests | Set of Topic | No | Values must come from the approved topic list | Member only |
-| Assessment | health goals | Set/Text | No | Approved choices and optional “Other” text | Sensitive; member only |
-| Assessment | health history | Set/Text | No | Approved choices and optional “Other” text | Sensitive; encrypted and member only |
-| Assessment | medications | Set/Text | No | Approved choices and optional “Other” text | Sensitive; encrypted and member only |
-| Assessment | personalization enabled | Boolean | Yes | True or false | Controlled by the member |
+| Assessment | questionnaire version | Integer | Yes after confirmation | Fixed version 1; [completion UC](use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment) | Member only |
+| Assessment | normalized answers | Protected structured data | Yes after confirmation | Field validation, response distinctions, optionality and follow-up applicability belong to the completion UC; no universal Other or Boolean screening | Encrypted; owning member only |
+| Assessment | submission ID | Member-scoped identifier | Yes on confirmation | Retry/conflict semantics belong to the completion UC | Internal; never an ownership credential |
+| Assessment | completed at | UTC instant | Yes after confirmation | Server generated once; retry returns original | Member only |
 | EducationalContent | title | String | Yes | Must not be empty | Visible to members when published |
 | EducationalContent | topic | Topic | Yes | Must use an approved topic | Visible to members |
 | EducationalContent | format | Enum | Yes | Article, video, podcast, diagram, or approved future format | Visible to members |
@@ -399,7 +394,7 @@ _[Where the data comes from, how it is kept correct, how long it is kept, and ho
 
 - Required fields shall be validated before being saved.
 - Email addresses shall be stored uniquely for each active account.
-- Assessment updates shall be saved as all-or-nothing transactions.
+- Assessment creation and updates shall be saved as all-or-nothing transactions; completion and retry behavior are owned by [UC-ACC-complete-assessment](use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment).
 - Only published educational content shall be displayed to members.
 - Content reports shall maintain a record of the reported item, reporting member, reason, status, and resolution.
 
@@ -432,10 +427,10 @@ The system does not require custom hardware. It runs on standard user devices wi
 
 ### 8.3 Software interfaces
 
-The application shall use a standard authentication library for sign-in and shall integrate with a relational database, object storage for media files, and an approved payment provider for subscriptions. If an external dependency is unavailable, the system will notify the user. 
+The application shall use a standard authentication library for sign-in and shall integrate with a relational database, object storage for media files, and an approved payment provider for subscriptions. If an external dependency is unavailable, the system will notify the user.
 ### 8.4 API document
 
-No formal API document exists yet. As implementation begins, the team shall create and maintain an API specification that lists endpoints, authentication requirements, and request/response formats.
+The proposed assessment API contract is maintained in [ACC design](../design/acc.md#api-contract). It is not implemented or approved until its review gate closes. Additional API contracts are added with their use-case designs.
 
 ### 8.5 Communications interfaces
 

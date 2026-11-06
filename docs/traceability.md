@@ -3,7 +3,7 @@
 **Project:** Well Live
 **Team:** Team 07
 **Version:** 0.2 proposed
-**Last checked:** 2026-11-06, Codex-assisted preparation against `3fdbe132a5d9a35bb3b794c95f51277d012ccafc`
+**Last checked:** 2026-11-06, corrected-design preparation against main `eea456b`; no implemented slice is claimed.
 
 This document owns links, not requirements. Release placement and priorities below are **proposals pending team review**, not a forecast or client commitment. [Estimates and missing actuals](planning/checkpoint-2-estimates.md) do not yet establish capacity.
 
@@ -44,13 +44,13 @@ Every one of the eleven defined rules is cited by at least one defined UC. This 
 
 Release values are `v0.1.0` (proving slice), `v0.2.0` (proposed next delivery), `v1.0.0` (fall MVP), `Spring`, or `Out`. No existing UC is declared Out by this proposal. Fall readiness, remaining capacity and client scope must be reviewed before moving rows into v1.0.0.
 
-`v0.1.0` needs real authentication/member storage and a general-feed destination. These are partial foundations of other UCs, not proof those full UCs are complete. All Code and Tests cells remain empty because only static prototypes exist. The merged assessment draft [PR #39](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/39) still has blockers; [PR #40](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/40) changes a diagram label only.
+`v0.1.0` needs real authentication/member storage and a general-feed destination. These are partial foundations of other UCs, not proof those full UCs are complete. All Code and Tests cells remain empty because main/current checkout has only static prototypes. Remote integrate-health-assessment contains an unverified backend and React/Ionic React draft; PR #44 merged into that branch, not main. It does not establish compliance with this corrected design or the selected Ionic Vue stack. The merged assessment draft [PR #39](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/39) still has blockers; [PR #40](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/40) changes a diagram label only.
 
 | Requirement | Priority proposal | Release proposal | Design | Code | Tests | Build | Verify |
 |---|---|---|---|---|---|---|---|
 | [UC-ACC-create-account](requirements/use-cases.md#uc-acc-create-account-the-visitor-creates-an-account) | High | v0.2.0 |  | | | Not started | None |
 | [UC-ACC-sign-in](requirements/use-cases.md#uc-acc-sign-in-the-member-signs-in) | High | v0.2.0 |  | | | Not started | None |
-| [UC-ACC-complete-assessment](requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment) | High | v0.1.0 | [ACC draft](design/acc.md#uc-acc-complete-assessment) — merged, blockers remain | | | Not started | None |
+| [UC-ACC-complete-assessment](requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment) | High | v0.1.0 | [Corrected ACC design](design/acc.md#uc-acc-complete-assessment) — review/merge and team decisions pending | | | Not started | None |
 | [UC-ACC-update-assessment](requirements/use-cases.md#uc-acc-update-assessment-the-member-updates-their-assessment-answers) | Medium | v0.2.0 |  | | | Not started | None |
 | [UC-ACC-set-display-identity](requirements/use-cases.md#uc-acc-set-display-identity-the-member-chooses-how-their-identity-is-displayed) | Medium | v0.2.0 |  | | | Not started | None |
 | [UC-ACC-delete-account](requirements/use-cases.md#uc-acc-delete-account-the-member-deletes-their-account-and-personal-data) | Medium | v0.2.0 |  | | | Not started | None |
@@ -78,7 +78,9 @@ If the team defines a project FR in the owning SRS, add its real source link and
 - FR coverage: 0/0 defined project FRs; SRS functional inventory remains a review item.
 - Rule coverage: 11/11 defined BRs linked to citing UCs; candidate status preserved.
 - Delivery evidence: no production application, tests, CI or tags found at the checked baseline. Static [prototypes](../prototypes/) are design evidence.
-- Definition gaps: undefined `FEAT-general-content`; Member/subscription mismatch between [glossary](requirements/project-glossary.md#member) and [SRS user classes](requirements/software-requirements-specification.md#22-user-classes-and-characteristics); assessment placeholders versus questionnaire. See [impact preparation](planning/assessment-change-issue.md).
+- Definition gaps: undefined `FEAT-general-content`; Member/subscription mismatch between [glossary](requirements/project-glossary.md#member) and [SRS user classes](requirements/software-requirements-specification.md#22-user-classes-and-characteristics). The corrected assessment mapping/requirements are proposed in this branch, not merged or implemented. See [impact preparation](planning/assessment-change-issue.md).
+
+Do not set the assessment row to Designed merely because a prior draft was merged. After two nonowner approvals, resolution of its implementation-blocking decisions and human merge of the corrected design, update its Build to Designed; leave Code/Tests/Verify unclaimed until implementation supplies evidence. Owner-only retrieval in ACC is only a foundation of the update UC, not a design or completion claim for that entire UC.
 
 ## Working this document with your agent
 

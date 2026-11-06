@@ -70,12 +70,14 @@ These are Claude Code rules, not Codex settings or an operating-system lock. Cod
 
 | Layer | Technology | Decision |
 |---|---|---|
-| Frontend client | Ionic with Vue | Ionic: `KD-frontend-framework` in [architectural design §9](docs/design/architectural-design.md#9-architecture-decisions). Vue: no `KD-*` yet |
-| Backend API | Spring Boot | No `KD-*` yet |
+| Frontend client | Ionic with Vue | `KD-frontend-framework` and `KD-vue-client` in [architectural design §9](docs/design/architectural-design.md#9-architecture-decisions) |
+| Backend API | Spring Boot | `KD-spring-boot` in [architectural design §9](docs/design/architectural-design.md#9-architecture-decisions) |
 
 ## Coding conventions
 
 _To be written. Until then there are no conventions to follow; do not adopt a framework or style beyond the technology stack above on your own._
+
+The selected checking tools are Prettier, Vue/TypeScript ESLint and vue-tsc for the frontend; Spotless/google-java-format, Checkstyle and Java compilation for the backend. See the [checking plan](docs/planning/assessment-checks-and-ci.md) before adding their build configuration. They have not run: manifests and application code are not present yet. Preserve the design/trunk gates; report findings without automatic source repair.
 
 ## Build and test
 

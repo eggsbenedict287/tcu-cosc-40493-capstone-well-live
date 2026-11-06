@@ -30,6 +30,16 @@ Tracked-tree inspection found static prototypes but no application manifests, so
 4. What response, if any, is expected to sensitive concern selections?
 No clinical advice, alert, notification or retention duration is implied.
 
+## Corrected-design continuation at main eea456b
+
+The concrete branch now aligns the completion UC and SRS with the accepted decisions, maps 110 items and eight prompts, supplies real planned paths/contracts and test oracles, and records the chosen Ionic Vue/Spring Boot/checking tools. Source Word and teammate transcription remain unchanged. Repository-scoped identifier searches still find no project FR definition; no FR is invented. Proposed design changes are not client approval or implementation evidence.
+
+Fresh questions-test findings added account-bound in-place reauthentication, immutable retry snapshots, uncertain COMMIT handling, current-member checks under the transaction lock, stale follow-up normalization and deliberate take-later entry. OI-2/OI-8–OI-11 retain unresolved technical/scope choices; client questions remain explicit. See [dispositions](assessment-review-dispositions.md).
+
+Remote integrate-health-assessment at 58c3602 contains React/Ionic React and backend drafts; PR #44 targeted that branch rather than main. Existing code was inspected via Git without switching checkout or modifying it. Main/current checkout still has no app manifests; source findings were not repaired and analyzers were not run.
+
+Additional files outside the behavioral impact list: [checking/CI comparison plan](assessment-checks-and-ci.md), [review/checklist](checkpoint-2.md) and [PR handoff](assessment-design-pr.md) answer the owner's Checkpoint 2/static-check requests. The [estimate tracker](checkpoint-2-estimates.md) now acknowledges main's teammate calibration rows without replacing their ranges or inventing actuals.
+
 ## Proposed proving scope and gates
 Use fictitious data only until client questions and privacy review are resolved. Full questionnaire with real authenticated ownership and real MySQL persistence; no personalization. Aiven free-plan MySQL remains proposed pending team confirmation; no service provisioned.
 Accept the design shape, then prepare its diff/PR; two nonowner approvals and human merge are required before a fresh implementation session. Preserve trunk review stop and release authorization.

@@ -1,7 +1,7 @@
 # Checkpoint 2 Estimates and Calibration
 
 **Prepared:** 2026-11-06, Codex-assisted proposals
-**State:** Human inputs missing; no planning-poker round or actual hours asserted.
+**State:** Human inputs missing; no planning-poker round or actual hours asserted. Main now also contains teammate [calibration rows](../calibration.md), added by commits 87382ea/6166408. Preserve these separately: their Week 10 coarse ranges are recorded source evidence, but agreement/estimate dates and actual hours are not established. The UC-AREA-slug rows are examples, not project actuals. The proposals below do not replace those teammate ranges.
 
 ## Coarse planning proposals
 

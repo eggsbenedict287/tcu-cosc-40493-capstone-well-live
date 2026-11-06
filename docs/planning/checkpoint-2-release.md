@@ -1,10 +1,10 @@
 # Checkpoint 2 Startup and Release Preparation
 
-**State:** Planned command contract, not a reproducible running demo yet. No application manifests, wrappers or tests exist at baseline `3fdbe13`. Replace this status with observed commands and results in the implementation PR.
+**State:** Planned command contract, not a reproducible running demo yet. No application manifests, wrappers or tests exist on main/current checkout at `eea456b`. Remote integration drafts are unverified and not adopted. Replace this status with observed commands and results in the implementation PR.
 
 ## Startup contract for implementation review
 
-The design-shape proposal selects Ionic Vue in `frontend/` and Spring Boot in `backend/`. Planned environment variable names are `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`, `WELL_LIVE_ASSESSMENT_KEY`, and `WELL_LIVE_ALLOWED_ORIGIN`. Names are proposals until the design is accepted; values belong in the backend secret store or ignored `backend/secrets/`, never the frontend, repository, screenshots or logs.
+The corrected [design](../design/acc.md#reuse--cross-cutting) selects Ionic Vue in `frontend/` and Spring Boot in `backend/`. Planned environment names are `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`, `WELL_LIVE_ASSESSMENT_KEY_ID`, `WELL_LIVE_ASSESSMENT_KEY`, `WELL_LIVE_ALLOWED_ORIGIN`, `WELL_LIVE_SESSION_TIMEOUT_SECONDS`, `WELL_LIVE_LOGIN_MAX_ATTEMPTS` and `WELL_LIVE_LOGIN_WINDOW_SECONDS`. Values belong in the backend secret store or ignored `backend/secrets/`, never the frontend, repository, screenshots or logs. Runtime/security/key/operator decisions remain open; these names are not working startup configuration.
 
 MySQL on Aiven's free plan is proposed pending team confirmation; local MySQL can support tests. No hosted resources have been provisioned. TLS must verify the database certificate/host, and the browser/API connection must use HTTPS under architecture section 8. These details and real sign-in fixtures must be exercised before the following planned commands can be called reproducible.
 
