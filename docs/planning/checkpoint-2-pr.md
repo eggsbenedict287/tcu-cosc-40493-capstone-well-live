@@ -1,6 +1,6 @@
 # Checkpoint 2 Preparation Pull Request
 
-**State:** Branch pushed; draft PR creation attempted and refused with GitHub `403 Resource not accessible by integration`. No PR number or review is claimed.
+**State:** Historical preparation-only handoff, superseded by [draft design PR #47](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/47) and [its current handoff](assessment-design-pr.md). Do not create a duplicate preparation PR. The original connector attempt returned 403; authenticated browser fallback later succeeded for the combined design branch.
 
 **Branch:** `chore/checkpoint-2-preparation` targeting `main`
 **Create PR:** https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/compare/main...chore/checkpoint-2-preparation?expand=1

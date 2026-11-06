@@ -1,6 +1,6 @@
 # Assessment Questionnaire Change Issue
 
-**State:** Ready to copy into a GitHub issue; creation attempted on 2026-11-06 and refused with `403 Resource not accessible by integration`. No issue number is claimed. The available browser requires GitHub sign-in.
+**State:** [Impact issue #46](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/issues/46) created and verified open on 2026-11-06 using the authenticated shared browser after connector creation returned `403 Resource not accessible by integration`. [Draft design PR #47](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/47) links the issue. No client approval is claimed.
 
 **Proposed title:** Align assessment questionnaire and record Checkpoint 2 impact
 
@@ -42,5 +42,5 @@ Additional files outside the behavioral impact list: [checking/CI comparison pla
 
 ## Proposed proving scope and gates
 Use fictitious data only until client questions and privacy review are resolved. Full questionnaire with real authenticated ownership and real MySQL persistence; no personalization. Aiven free-plan MySQL remains proposed pending team confirmation; no service provisioned.
-Accept the design shape, then prepare its diff/PR; two nonowner approvals and human merge are required before a fresh implementation session. Preserve trunk review stop and release authorization.
+The corrected design is pushed for review in PR #47; two nonowner approvals, resolved implementation decisions and human merge are required before a fresh implementation session. Preserve trunk review stop and release authorization.
 PRs must name files outside this list and why; settings/charter, estimates/calibration, release/checklist documents are independent Checkpoint 2 preparation, not assessment behavior.

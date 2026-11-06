@@ -2,10 +2,10 @@
 
 **Branch:** `design/assessment-checkpoint-2` → `main`.
 **Title:** Correct assessment design and Checkpoint 2 checking plan
-**State:** Ready for draft PR creation; no PR number or approval claimed. Creation result will be recorded below.
+**State:** [Draft PR #47](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/47) created and independently verified open/draft, targeting main. Connector creation returned 403; authenticated shared-browser submission succeeded. No approving review or merge claimed.
 **Compare:** https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/compare/main...design/assessment-checkpoint-2?expand=1
 
-No repository PR template exists on inspected main; the body uses the course headings. Select Create draft pull request; preserve two nonowner approvals and human merge. The earlier preparation-only PR handoff is superseded by this combined design handoff.
+No repository PR template exists on inspected main; the posted body uses the course headings and links [impact issue #46](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/issues/46). Preserve two nonowner approvals and human merge. The earlier preparation-only PR handoff is superseded by this combined design handoff.
 
 +## Traces to
 

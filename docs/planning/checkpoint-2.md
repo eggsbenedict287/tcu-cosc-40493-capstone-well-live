@@ -15,7 +15,7 @@ Document verification: source-extracted 110 item/eight prompt labels match the m
 | Traceability/releases | [16 UC rows and 11 BR links](../traceability.md) | Partial; zero project FR definitions in SRS §5.2. Release/priorities proposed; Code/Tests empty and Verify None. Undefined feature/administration gaps explicit. |
 | Coarse estimates | [Four-part suggestions](checkpoint-2-estimates.md), preserved [teammate coarse rows](../calibration.md) | Partial; issue/owner links, independent estimates and dated team agreement missing. Commits do not prove poker occurred. |
 | Calibration | [Pending records/formulas](checkpoint-2-estimates.md#calibration-preparation) | Missing actual-hours evidence; examples excluded, ratios and biggest miss not invented. |
-| Impact | [Issue body/search findings](assessment-change-issue.md) | Partial; GitHub issue creation previously returned 403; no issue number claimed. |
+| Impact | [Issue #46](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/issues/46), [search findings](assessment-change-issue.md) | Complete preparation; affected IDs/files, findings and unresolved client questions recorded. No client approval implied. |
 | Implementation | [Human stops](../design/acc.md#implementation-ordering-and-human-stops) | Blocked; corrected design unmerged on main. Preserve remote integration draft, reconcile after approval, start fresh implementation session and stop after trunk for owner explanation. |
 | Tests/static checks | [Selected tools and findings contract](assessment-checks-and-ci.md) | Missing execution; no package.json/pom.xml in this checkout. No app tests/builds/analyzers run; counts unavailable, not zero. All test rows planned. |
 | PR CI | [Two-job plan and Project Pulse comparison](assessment-checks-and-ci.md#future-workflow-contract) | Blocked until approved real builds. No workflow referencing nonexistent files created. Full-SHA pins, ubuntu-latest, no fixes/device builds/continue-on-error required. |
@@ -40,9 +40,9 @@ The [design command](../../.claude/commands/design.md#phase-4-record-the-design-
 
 Newly fetched `origin/integrate-health-assessment` at 58c3602 contains backend plus React/Ionic React drafts. PR #44 merged into that integration branch, not main, with only a bot comment observed as its review. Its design still names blockers. Preserve it; do not treat it as approved Ionic Vue implementation.
 
-The [design PR body](assessment-design-pr.md) records scope, dispositions and files outside the impact list. Connector reads/native branch pushes work, but prior issue/PR creation returned 403; report the actual new attempt separately.
+The [draft design PR #47](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/47) records scope, dispositions and files outside the impact list; [local handoff](assessment-design-pr.md). Connector creation returned 403, but authenticated shared-browser creation of issue #46 and draft PR #47 succeeded and was verified. No merge/approval was performed.
 
-Open [PR #45](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/45) proposes a backend-only workflow referencing absent builds and different analyzers. It is preserved; the [checking plan](assessment-checks-and-ci.md#existing-remote-workflow-proposal) records the mismatches. No UC-specific issue or activity reports were found in the repository GitHub issue inventory (the only non-PR issue is architecture #30); releases remain empty.
+Open [PR #45](https://github.com/eggsbenedict287/tcu-cosc-40493-capstone-well-live/pull/45) proposes a backend-only workflow referencing absent builds and different analyzers. It is preserved; the [checking plan](assessment-checks-and-ci.md#existing-remote-workflow-proposal) records the mismatches. Before creating impact #46, no UC-specific issue or activity reports were found (the only non-PR issue was architecture #30); use-case ownership/estimate evidence is still missing. Releases remain empty.
 
 ## Course evidence
 
