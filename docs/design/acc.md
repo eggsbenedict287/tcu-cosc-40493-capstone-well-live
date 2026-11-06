@@ -3,7 +3,7 @@
 **Project:** Well Live  
 **Team:** Team 07  
 **Area:** ACC  
-**Status:** Draft for teammate review; implementation blockers remain.
+**Status:** Draft for teammate review; a proving-slice implementation exists, but approval blockers remain.
 
 > **Realizes:** `UC-ACC-complete-assessment`
 >
@@ -19,29 +19,29 @@
 > [Sarah's questionnaire](../health%20assessment.docx).
 >
 > **Designed against:** `a2f44e9`, the main revision reported by
-> the owner when creating `design-health-assessment`.
-> Current application code and reusable implementations must be
-> checked before implementation.
+> the owner when creating `design-health-assessment`. The current
+> implementation is in [`backend/`](../../backend/); reconcile this
+> design and the requirements against that code before approval.
 
 ## Overview
 
-The ACC area implements assessment completion through the Frontend
-Client and Backend API described in the architecture. It obtains the
-member's identity from Identity and Access and persists protected
-assessment answers in the Relational Database. Sarah's questionnaire
-supplies the section headings and item wording. The response behavior
-agreed by the pair must be recorded in the cited use case before this
-design is approved.
+The ACC proving slice is implemented as a Java 21 / Spring Boot API in
+[`backend/`](../../backend/). Spring Security supplies the authenticated
+member session; the API serves the fixed questionnaire, validates pending
+sections without persistence, then atomically stores one encrypted,
+normalized submission per member. Sarah's questionnaire supplies the
+section headings and item wording. The response semantics, collection
+policy and exact disclosure text still require review against the cited
+use case before the design is approved.
 
-This slice saves the assessment and returns the member to the general
-educational feed. It does not implement personalization or questionnaire
-administration.
+The backend handles assessment completion only; skip/leave behavior remains
+on the frontend and creates no row. It does not implement personalization,
+assessment updates or questionnaire administration.
 
 ## Components & classes
 
-The following are proposed new responsibilities. Their paths are
-relative to the frontend and backend source roots, which the team must
-fix when choosing the backend stack. None is claimed as existing code.
+The backend paths below are implemented. The frontend remains a separate
+client; its current branch is not part of this source tree.
 
 ```mermaid
 classDiagram
@@ -51,21 +51,21 @@ classDiagram
         +confirm()
     }
     class AssessmentController {
-        +getForm()
+        +form()
         +validateSection()
-        +createAssessment()
+        +complete()
     }
     class AssessmentService {
         +validateSection()
-        +completeAssessment()
+        +complete()
     }
     class AssessmentRepository {
-        +findByMember()
-        +insert()
+        +findByMemberId()
+        +saveAndFlush()
     }
     class AssessmentDefinition {
-        +getVersion()
-        +getSections()
+        +version()
+        +sections()
     }
     AssessmentPage --> AssessmentController
     AssessmentController --> AssessmentService
@@ -73,17 +73,14 @@ classDiagram
     AssessmentService --> AssessmentRepository
 ```
 
-| Proposed path | Status | Responsibility |
+| Path | Status | Responsibility |
 |---|---|---|
-| `frontend/<source-root>/acc/AssessmentPage` | New | Section navigation, pending answers, summary, confirmation and retry |
-| `backend/<source-root>/acc/AssessmentController` | New | HTTP request and response handling |
-| `backend/<source-root>/acc/AssessmentService` | New | Validation, ownership, submission reconciliation and atomic completion |
-| `backend/<source-root>/acc/AssessmentRepository` | New | Assessment persistence and member uniqueness |
-| `backend/<source-root>/acc/AssessmentDefinition` | New | Fixed questionnaire version, stable identifiers and source wording |
-
-Identity, encryption, error handling and clock implementations are shared
-architectural responsibilities. Their existence must be checked; if
-absent, the implementation plan must name the new shared files.
+| `backend/src/main/java/com/welllive/backend/assessment/AssessmentController.java` | Implemented | Form, section-validation and completion routes |
+| `backend/src/main/java/com/welllive/backend/assessment/AssessmentService.java` | Implemented | Validation, normalization, member ownership, retry reconciliation and atomic completion |
+| `backend/src/main/java/com/welllive/backend/repository/AssessmentRepository.java` | Implemented | Assessment persistence; one row per member is enforced by the database |
+| `backend/src/main/java/com/welllive/backend/assessment/AssessmentDefinition.java` | Implemented | Fixed version 1 questionnaire and stable question IDs |
+| `backend/src/main/java/com/welllive/backend/auth/` | Implemented | Member registration, session authentication and current-member identity |
+| `backend/src/main/java/com/welllive/backend/security/AssessmentAnswerProtector.java` | Implemented | AES-GCM answer encryption using a key configured outside the database |
 
 ## Sequence
 
@@ -150,8 +147,11 @@ submission ID. This recovery behavior must be added to the use case.
 ## API contract
 
 The authenticated member comes from the session, never from a
-client-supplied owner field. All operations require authenticated,
-authorized access. Errors follow architecture section 8.2.
+client-supplied owner field. All assessment operations require authenticated,
+authorized access. The unauthenticated `GET /api/auth/csrf` endpoint only
+initializes the browser CSRF cookie/header needed for account creation and
+sign-in; it does not read or write member data. Errors follow architecture
+section 8.2.
 
 | Endpoint | Caller | Request | Success | Errors |
 |---|---|---|---|---|
@@ -162,8 +162,11 @@ authorized access. Errors follow architecture section 8.2.
 Unexpected server failures return a user-safe `500` response without
 stack traces or answer values.
 
-Answer fields distinguish concern responses, numeric values with units,
-optional basic text and follow-up text. Final submission normalizes
+Answer fields distinguish Concern, No concern, Skipped and Others responses,
+numeric values with units, optional basic text and follow-up text. The concern
+options are served by the backend in that order, with Others last; Others
+requires a short text value. Height, weight and age remain typed numeric
+fields, while profile details remain typed text. Final submission normalizes
 unanswered items exactly as the confirmation summary does.
 
 Validation rules belong in the use case's Associated Information.
@@ -200,9 +203,12 @@ response could cause a successful save to appear to have failed.
 Compare against the protected stored answers after authorized
 decryption; do not store a plaintext copy for comparison.
 
-**Use a fixed questionnaire definition for this release.**
-Rejected: adding an editor or administration workflow, because those
-capabilities are outside this use case. Stable IDs are assigned once
+**Use a fixed, backend-owned questionnaire definition for this release.**
+The frontend renders the definition returned by `GET /api/assessment/form`.
+Changing questions or options requires a backend code change and redeploy;
+it does not require a separate frontend question-list change. Rejected:
+database-managed editing, an editor or administration workflow, because
+those capabilities are outside this use case. Stable IDs are assigned once
 and never generated dynamically from display wording.
 
 ## Data model
@@ -215,13 +221,16 @@ Add one Assessment associated with one Member:
 - Member-scoped submission ID.
 - Server-generated UTC completion timestamp.
 
-Concern answers preserve Concern, No concern and Skipped distinctly.
+Concern answers preserve Concern, No concern, Skipped and Others distinctly;
+Others stores its short text in the protected answer document.
 Skipped basic-information answers use an explicit absent value.
 Height and weight retain the entered numeric value and selected unit.
 
-Use a database uniqueness constraint for the member reference.
-The migration file path, concrete column types and encryption
-implementation depend on the unresolved backend stack.
+Use a database uniqueness constraint for the member reference. The Flyway
+migration is `backend/src/main/resources/db/migration/V1__create_members_and_assessments.sql`.
+Answers are AES-GCM protected, with the member ID used as authenticated
+additional data; the key is injected through configuration and is not stored
+in the database.
 
 No personalization setting is created or changed by this slice.
 Any conflicting completion postcondition must be corrected in the
@@ -254,7 +263,7 @@ and authentication facilities rather than custom cryptography.
 | 4b: leave | UI and integration | Pending answers are discarded and nothing is saved |
 | 7a: edit summary | UI | Revised values appear in summary and final submission |
 | 9a: save failure | Integration | Failure rolls back the assessment; UI retains answers for retry |
-| Three concern responses | Unit and integration | Concern, No concern and Skipped remain distinct |
+| Concern response choices | Unit and integration | Concern, No concern, Skipped and Others remain distinct; Others requires short text and is last in the form options |
 | Untouched items | UI and integration | Summary and persisted answers normalize untouched items to Skipped |
 | All skipped | Integration | Confirmation creates a completed assessment with no disclosed answers |
 | Text boundaries | Unit | Trimmed text at 500 Unicode code points passes; 501 fails; blank text becomes skipped |
@@ -262,37 +271,44 @@ and authentication facilities rather than custom cryptography.
 | Family follow-up | UI and integration | One optional section text appears when any family item is Concern; absent when none is Concern |
 | Unauthenticated access | Integration | Every endpoint refuses unauthenticated requests without returning or saving protected data |
 | Ownership | Service integration | Member identity comes from the trusted session; another member cannot select an owner or access saved answers |
-| Concurrent creation | Database integration | Two different submissions create exactly one assessment; the loser receives conflict |
+| Concurrent creation | Database integration | A per-member database lock and unique member key serialize creation; a different submission after completion receives conflict |
 | Lost response and retry | Integration | Retrying the same ID and answers returns the original timestamp without another insert |
 | Changed retry payload | Integration | Same ID with different normalized answers returns conflict and leaves stored answers unchanged |
 | Concurrent identical retry | Database integration | Same member and submission ID submitted concurrently yields one record and successful reconciliation |
 | Questionnaire version | Integration | Unsupported version returns conflict without saving or silently discarding pending UI answers |
-| Protection | Integration | Stored answers are encrypted; operational logs and errors omit answer values |
+| Protection | Integration and unit | Stored answers are encrypted, cryptographically bound to their member, and operational logs and errors omit answer values |
 | Follow-up removal | UI and integration | Changing Concern to No concern or Skipped removes associated follow-up from the submitted answers |
 
-Concrete test commands and file paths must be added after the stack
-and test framework are selected.
+The automated API tests are in
+`backend/src/test/java/com/welllive/backend/AssessmentApiIntegrationTest.java`.
+The answer-protection unit test is in
+`backend/src/test/java/com/welllive/backend/AssessmentAnswerProtectorTest.java`.
+They cover authentication, CSRF, fixed form delivery, section validation,
+protected persistence, version and value rejection, idempotent retry and
+concurrent identical submissions. Run the tests with
+`mvn -f backend/pom.xml test`. UI-only behaviors remain to be tested with the
+frontend.
 
 ## Changes to the architecture-of-record
 
 No container or responsibility changes are proposed.
 
-Before implementation, record the backend stack decision in the
-architecture-of-record, including a rejected alternative and reason.
-Confirm source-root conventions and shared security implementations.
+The selected stack and rejected alternative are recorded as
+`KD-backend-stack` in the
+[architecture-of-record](architectural-design.md#92-key-decisions). The
+implementation uses the repository-root `backend/` source tree, Spring
+Security sessions, AES-GCM encryption and UTC `Clock`.
 
 ## Open questions & risks
 
 | Question or risk | Owner | Effect |
 |---|---|---|
-| Backend framework, database integration, test tools and source roots | Team | Blocks concrete implementation paths and test commands |
-| Codex command runner cannot start | Owner/tool environment | Prevents independent local inspection and automated file changes |
+| Production host, managed database operations and key rotation | Team | Must be decided before deployment with real member data |
 | Questionnaire collection scope, retention and explanation of use | Sarah and team | Must be recorded in OPEN-ISSUES.md; unresolved production behavior |
 | Response to sensitive concern selections | Sarah and team | No alert or intervention behavior may be inferred |
 | Existing member terminology versus subscriptions | Team | Resolve authorization terminology without inventing an MVP subscription gate |
 | Requirements still describe placeholder questions and universal Other | Pair | Must align use case, rules and associated information before approval |
-| No verified implementation baseline | Pair | Check current tree and source before implementation |
-| Complete questionnaire source not yet mapped to stable IDs | Pair | Add the full mapping before implementation; examples alone are insufficient |
+| Response semantics and stable-ID mapping | Pair and Sarah | Version 1 maps every questionnaire item; confirm the mappings and answer choices before freezing the client contract |
 
 Use fictitious assessment answers for development and demonstration
 while client collection and response questions remain unresolved.
@@ -304,8 +320,10 @@ The agent may draft contracts, diagrams, file mappings and tests.
 The pair owns decisions; a teammate who did not draft the design
 reviews and approves the pull request.
 
-Do not begin implementation until the design is merged and its
-implementation blockers are resolved.
+The proving slice exists to exercise the API contract, not to waive the
+design-review gate. Do not merge it as a production feature or enable
+assessment collection with real member data until the remaining review and
+privacy/safety decisions are resolved.
 
 ## The questions test
 

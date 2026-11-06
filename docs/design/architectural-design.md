@@ -36,6 +36,7 @@ _[Project Pulse numbers its decisions and scenarios (`KD-1`, `QS-1`). Yours use 
 |---|---|---|---|
 | 0.1 | | | Initial draft for Checkpoint 1 |
 | 0.2 | 2026-10-14 | Esteban Hernandez-Anguiano | Decided `KD-deployment-shape` (separate Ionic frontend client and backend API); added `KD-frontend-framework`; aligned sections 2, 4, 5.1, and 9.1. Moved sign-in into the Backend API (salted password hashes) and named the Relational Database as the store for encrypted assessment answers (issue #30, item 5) |
+| 0.3 | 2026-11-06 | Well Live team | Selected Java 21 and Spring Boot for the backend proving slice; implemented the ACC assessment API with session authentication and encrypted assessment persistence |
 
 ---
 
@@ -189,8 +190,8 @@ C4Container
 
     System_Boundary(welllive, "Well Live") {
         Container(web, "Frontend Client", "Ionic (TypeScript); responsive web, Capacitor native builds later", "Provides screens for accounts, assessments, educational content, community features, moderation, subscriptions, and administration")
-        Container(api, "Backend API", "Server-side application", "Handles sign-in, business rules, validation, authorization, encryption of assessment answers, and communication with external services")
-        ContainerDb(db, "Relational Database", "Managed relational database", "Stores accounts (with salted password hashes), profiles, encrypted assessment answers, educational content, community data, reports, and subscription information")
+        Container(api, "Backend API", "Java 21; Spring Boot", "Handles sign-in, business rules, validation, authorization, encryption of assessment answers, and communication with external services")
+        ContainerDb(db, "Relational Database", "PostgreSQL in hosted environments; H2 for local development and tests", "Stores accounts (with salted password hashes), profiles, encrypted assessment answers, educational content, community data, reports, and subscription information")
     }
 
     System_Ext(contentHost, "External Content Hosts", "Hosts linked articles, videos, podcasts, and other educational resources")
@@ -221,24 +222,70 @@ _Project Pulse's component tables also name each component's package. They can b
 
 | Use case area | Component | Responsibility | Depends on | Status |
 |---|---|---|---|---|
-| `ACC` | Account, Profile, and Assessment | Handles account creation, sign-in, profile information, assessment completion, assessment updates, display identity, personalization settings, and account deletion. | Identity and Access; Relational Database | Provisional|
+| `ACC` | Account, Profile, and Assessment | Handles account creation, sign-in, profile information, assessment completion, assessment updates, display identity, personalization settings, and account deletion. | Identity and Access; Relational Database | Proven for assessment-completion slice |
 | `CON` | Educational Content | Handles browsing the educational feed, searching and filtering content, reading educational content and sources, and managing personalization settings. | Account, Profile, and Assessment; Relational Database; Object/Media Storage; External Content Hosts | Provisional|
 | `COM` | Community Discussions | Handles topic groups, group membership, health journey posts, and comments. | Account, Profile, and Assessment; Relational Database |provisional |
 | `MOD` | Moderation | Handles reports of harmful or misleading content and the review of those reports. | Community Discussions; Educational Content; Relational Database | provisional |
 | `SUB` | Subscriptions | Handles starting, viewing, updating, and canceling subscription access. | Account, Profile, and Assessment; Payment Provider; Relational Database | provisional |
 | `ADM` | Administration | Handles administrative management of users, content, groups, moderation settings, and platform settings. | Account, Profile, Educational Content, Moderation; Relational Database | provisional |
-| Cross-cutting | Identity and Access | Verifies sign-in against stored salted password hashes and controls access to member, moderator, and administrator features. | Relational Database | provisional |
-| Cross-cutting | Validation and Error Handling | Checks user input and provides consistent responses for invalid, unauthorized, or failed requests. | All application components | provisional |
-| Cross-cutting | Health Data Protection | Encrypts and decrypts assessment answers, health history, medication information, and other sensitive member data. | Identity and Access; Relational Database |provisional |
+| Cross-cutting | Identity and Access | Verifies sign-in against stored salted password hashes and controls access to member, moderator, and administrator features. | Relational Database | Proven for member sessions |
+| Cross-cutting | Validation and Error Handling | Checks user input and provides consistent responses for invalid, unauthorized, or failed requests. | All application components | Proven for assessment completion |
+| Cross-cutting | Health Data Protection | Encrypts and decrypts assessment answers, health history, medication information, and other sensitive member data. | Identity and Access; Relational Database | Proven for assessment answers |
 | Cross-cutting | Content Safety | Ensures educational content is reviewed and presented as education rather than diagnosis, treatment, or medical advice. | Educational Content; Moderation; Content Reviewers | provisional |
 
 _[Check before Checkpoint 1: every area in your use case file appears in the first column, and every external system in section 3 appears in some Depends on cell.]_
 
 ## 6. Runtime View
 
-_Due: Checkpoint 2. [One sequence diagram, for the use case your proving slice builds, from the user's action through every container and external system it touches. Leave this section empty until the slice exists; a sequence diagram of code nobody has written describes a guess._
+### `UC-ACC-complete-assessment`
 
-_Draw it as a mermaid `sequenceDiagram`, and name the participants exactly as the containers in section 5.1 name them. If the use case calls an external system, show what happens when that system fails or does not answer; arc42 counts error scenarios among the most useful runtime views. Under the diagram, a sentence or two on anything a reader would not guess from it. Cite the use case by its `UC-*` identifier; do not restate its steps.]_
+```mermaid
+sequenceDiagram
+    actor Member
+    participant Web as Frontend Client
+    participant API as Backend API
+    participant DB as Relational Database
+
+    Member->>Web: Start optional assessment
+    Web->>API: GET /api/assessment/form (session cookie)
+    API-->>Web: Fixed form version and question definition
+
+    loop Each section
+        Member->>Web: Answer, skip, or edit items
+        Web->>API: POST /api/assessment/section-validations
+        API->>API: Validate IDs, status, units, and text
+        API-->>Web: 200 valid, or 409/422 error
+    end
+
+    alt Skip or leave before confirmation
+        Web->>Web: Discard pending answers; make no write request
+    else Confirm
+        Web->>API: POST /api/assessment (form version, submission ID, answers)
+        API->>API: Validate and normalize unanswered items
+        API->>DB: Lock member row; check existing assessment
+        alt Same member, submission ID, and normalized answers
+            API->>DB: Read encrypted answers
+            API->>API: Decrypt and compare for safe retry reconciliation
+            API-->>Web: 201 with original completion timestamp
+        else New assessment
+            API->>API: Encrypt canonical answers with AES-GCM
+            API->>DB: Insert one assessment in the transaction
+            DB-->>API: Commit
+            API-->>Web: 201 with completion timestamp
+        else Existing assessment or reused ID with different answers
+            API-->>Web: 409 conflict; stored answers unchanged
+        else Validation or persistence failure
+            API-->>Web: 422 validation error or 503 safe failure
+        end
+        Web-->>Member: Confirmation or retain answers for retry
+    end
+```
+
+Pending answers stay in frontend memory until confirmation; section validation
+does not persist health information. The API derives the member from the
+authenticated session and serializes submissions per member before checking
+the database uniqueness constraint. The implementation and integration tests
+are in `backend/`; see its README for the full endpoint and local-run contract.
 
 ## 7. Deployment View
 
@@ -258,9 +305,9 @@ _Due: named at Checkpoint 1, detailed at Checkpoint 2._
 
 _[Four short paragraphs. The last three each cite the `SEC-*` requirement they answer:_
 
-**Trust boundary.** The boundary is the backend API container. It is the only component that reads or writes member data, and every access decision is made inside it. Everything outside is untrusted: the app or browser (hiding a control is never a security measure) and all external systems (the payment provider and external content hosts). Every request that crosses the boundary is authenticated and authorized, including framework endpoints such as health checks and API documentation. The only unauthenticated access is the visitor's introductory information, account creation, and sign-in (BR-account-required). **[SEC-protected-data]**
+**Trust boundary.** The boundary is the backend API container. It is the only component that reads or writes member data, and every access decision is made inside it. Everything outside is untrusted: the app or browser (hiding a control is never a security measure) and all external systems (the payment provider and external content hosts). Every request that crosses the boundary is authenticated and authorized, including framework endpoints such as health checks and API documentation. The only unauthenticated access is the visitor's introductory information, account creation, sign-in, and the data-free CSRF-token bootstrap required by browser clients to protect account creation and sign-in (BR-account-required). **[SEC-protected-data]**
 
-**Authentication.** Members sign in with email and password, verified by the Backend API using a standard security library (`CO-standard-services`, `DE-authentication-service`). The Backend API stores passwords in the Relational Database only as salted hashes from a slow password-hashing algorithm such as bcrypt or Argon2. A hash is one-way: the system checks a typed password against it and can never recover the original, and passwords are never logged or displayed (UC-ACC-create-account). Failed attempts are throttled and error messages never reveal which field was wrong (UC-ACC-sign-in). An account pending deletion cannot sign in. **[SEC-protected-data]**
+**Authentication.** Members sign in with email and password, verified by the Backend API using a standard security library (`CO-standard-services`, `DE-authentication-service`). The Backend API stores passwords in the Relational Database only as salted hashes from a slow password-hashing algorithm such as bcrypt or Argon2. A hash is one-way: the system checks a typed password against it and can never recover the original, and passwords are never logged or displayed (UC-ACC-create-account). Failed attempts must be throttled and error messages must never reveal which field was wrong (UC-ACC-sign-in). The proving slice uses BCrypt and generic credential errors; account throttling/lockout and pending-deletion checks remain unimplemented and block production sign-in. **[SEC-protected-data]**
 
 **Authorization.** The roles are visitor, member, moderator, health professional, and administrator. The server checks role first, then what the user owns:
 - A member can read or change only their own assessment, personalization settings, and display identity.
@@ -350,7 +397,13 @@ _A decision that turns out wrong is not deleted or rewritten. Mark it **Supersed
 - **Rejected:** React Native, because meeting `CO-responsive-application` would then need a second web codebase. Next.js or React alone, because they are web-only, so native apps would need a second codebase later. Ionic is the only option of the three that covers both from one codebase.
 - **Trade-off:** A hybrid app runs in a WebView, so it has a less native look and lower performance than React Native. That is acceptable for an app made mostly of content feeds and forms.
 
-<!-- TODO (team): The backend technology stack has not been recorded as a decision. Add it as its own KD-* entry, with a rejected alternative, once the team confirms it. -->
+**`KD-backend-stack`: Java 21 and Spring Boot for the Backend API.** _Accepted for the proving slice._
+
+- **Driving requirements:** `SEC-protected-data`; `MNT-maintainability`; `CO-maintainable-code`.
+- **Context:** The Backend API is a single application and the trust boundary. The assessment proving slice requires server-side validation, authenticated member ownership, relational persistence, and encryption of sensitive answers.
+- **Decision:** Implement the API as a Java 21 Spring Boot application. Use Spring Security for session-based authentication and CSRF protection, Spring Data JPA for relational access, Flyway for schema migrations, and PostgreSQL for hosted persistence. Local development and automated tests use H2. Assessment answers are encrypted by the API with AES-GCM before database writes; the encryption key is configured outside the database.
+- **Rejected:** A TypeScript/Node backend, despite sharing a language with the Ionic client, because the team explicitly selected Java Spring Boot for this backend slice.
+- **Trade-off:** The team must support a JVM build and deployment alongside the TypeScript frontend. Spring's standard security, validation, and persistence facilities provide explicit boundaries for the sensitive assessment path. The current implementation is a proving slice; host, production key management, and final assessment collection policy remain open.
 
 ## 10. Quality Requirements
 
