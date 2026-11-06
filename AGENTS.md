@@ -66,9 +66,16 @@ Read-only research and fresh-context review may be delegated without parallel fi
 
 These are Claude Code rules, not Codex settings or an operating-system lock. Codex separately uses its filesystem sandbox and approval checks. Keep both enabled. After changing secret paths, update the deny patterns and verify refusal in Claude with a harmless sentinel, never real credentials. Settings and branch protection require human review; two nonowner approvals remain required by [the team contract](docs/team-contract.md#5-git-workflow-and-review).
 
+## Technology stack
+
+| Layer | Technology | Decision |
+|---|---|---|
+| Frontend client | Ionic with Vue | Ionic: `KD-frontend-framework` in [architectural design §9](docs/design/architectural-design.md#9-architecture-decisions). Vue: no `KD-*` yet |
+| Backend API | Spring Boot | No `KD-*` yet |
+
 ## Coding conventions
 
-_To be written once the technology stack is decided and recorded as a `KD-*` in [architectural design §9](docs/design/architectural-design.md#9-architecture-decisions). Until then there are no conventions to follow; do not adopt a stack, framework, or style on your own._
+_To be written. Until then there are no conventions to follow; do not adopt a framework or style beyond the technology stack above on your own._
 
 ## Build and test
 

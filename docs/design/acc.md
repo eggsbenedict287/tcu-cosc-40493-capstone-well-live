@@ -104,7 +104,7 @@ sequenceDiagram
     API-->>UI: Definition and explanation (2–3)
 
     alt Skip whole assessment (3a)
-        UI-->>M: General feed; assessment available later
+        UI-->>M: General feed and assessment available later
     else Continue assessment
         loop Each section (4–6)
             M->>UI: Answer or skip items (4)
@@ -134,7 +134,7 @@ sequenceDiagram
             alt Confirmed database failure (9a)
                 DB-->>API: Rollback
                 API-->>UI: Safe failure
-                UI-->>M: Retain answers; offer retry or exit
+                UI-->>M: Retain answers and offer retry or exit
             else Saved
                 DB-->>API: Committed
                 API-->>UI: Completion timestamp
