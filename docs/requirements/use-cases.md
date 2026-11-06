@@ -3,7 +3,7 @@
 **Project:** Well Live
 **Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
 **Client:** Sarah Becan
-**Version:** 0.1 <!-- TODO: change version number -->
+**Version:** 0.2 proposed
 
 ---
 
@@ -29,6 +29,7 @@ _Within one use case, `PRE-1`, `POST-1`, and the step numbers are local and may 
 
 | Date | Version | Description | Author |
 |---|---|---|---|
+| 2026-11-06 | 0.2 proposed | Align assessment completion with supplied questionnaire and team application decisions; client questions remain open. | Team 07, Codex-assisted |
 | 2026-09-25 | 0.1 | Draft use cases derived from the vision and scope feature list and the requirements guide (client meeting 1, 2026-09-11). Not yet reviewed with the client. | Esteban Hernandez-Anguiano |
 
 ---
@@ -286,70 +287,76 @@ Account creation is all-or-nothing: if any step after validation fails, no accou
 **Date Created:** 2026-09-25
 **Primary Actor:** member
 **Secondary Actors:** none
-**Trigger:** The member accepts the offer at the end of `UC-ACC-create-account`, or indicates to take the assessment later from their profile.
-**Description:** The member records what they choose to share about their interests, goals, health history, and medications, so Well Live can organize educational content around it. The assessment **records what the member discloses. It does not diagnose, score, or infer a condition.**
+**Trigger:** The member accepts the assessment offer after `UC-ACC-create-account`, or starts it later from their profile.
+**Description:** The member records only what they choose to disclose using the supplied questionnaire. The assessment does not diagnose, score, infer a condition, or provide clinical advice.
 
 **Preconditions:**
 
 - PRE-1. The member is signed in.
-- PRE-2. The member has no saved assessment. (If they have one, `UC-ACC-update-assessment` applies.)
+- PRE-2. The member has no saved assessment. An existing assessment belongs to `UC-ACC-update-assessment`; retries of the original confirmation are reconciled under 9b.
+- PRE-3. Before real health information is used, the collection/use questions in [open issues](OPEN-ISSUES.md#open) and the privacy review in SRS §11 are resolved. Development and demonstration use fictitious data only, as required by the owner.
 
 **Postconditions:**
 
-- POST-1. The member's assessment is saved with each answered question and the time it was saved. Unanswered questions stay empty.
-- POST-2. The member's personalization setting is on, unless they turned it off during the assessment.
+- POST-1. Confirmation creates exactly one complete assessment for the authenticated member, with questionnaire version 1, every response distinction, and one server-generated UTC completion timestamp. Untouched items are Skipped; an all-skipped confirmation is completed.
+- POST-2. Completion opens the general educational feed and neither creates nor changes personalization settings.
+- POST-3. Skipping the whole assessment or leaving before confirmation creates no assessment.
 
 **Main Success Scenario:**
 
 1. The member indicates to take the assessment.
-2. The system explains why the questions are asked and that every question is optional. It also says the assessment is not a medical evaluation and how the answers will be used.
-3. The system presents the first section of questions (see "Assessment sections" in the Associated Information). Each question offers fixed choices plus an "Other" option.
-4. The member answers or skips each question in the section and continues.
-5. The system validates the section's answers and keeps them.
-6. Steps 3 to 5 repeat for each remaining section.
-7. The system shows a summary of the answers and asks the member to confirm.
-8. The member confirms.
-9. The system saves the assessment and tells the member their feed will reflect their interests and goals.
-10. The system displays the educational feed (`UC-CON-browse-feed`).
+2. The system explains optional disclosure, the educational/non-medical boundary, who may access the answers, and their intended use. Wording for real collection awaits the client; a fictitious demonstration must say that real answers must not be entered.
+3. The system presents the questionnaire in the supplied section order and wording, using the Associated Information and the [version-1 mapping](../design/acc.md#questionnaire-version-1-mapping).
+4. The member answers or skips items, optionally supplies associated follow-up text, and continues.
+5. The system validates the section without saving assessment answers; pending answers remain only in the current page.
+6. Steps 3–5 repeat for the remaining sections.
+7. The system shows a summary distinguishing Concern, No concern, answered basic fields, and Skipped; untouched items are explicitly shown as Skipped before confirmation. The member can edit.
+8. The member confirms, including when all items are Skipped.
+9. The system derives ownership from authenticated identity, normalizes and validates the entire submission, atomically saves it and its completion metadata, and confirms completion.
+10. The system opens the general educational feed (`UC-CON-browse-feed`); this slice does not personalize it.
 11. Use case ends.
 
 **Extensions:**
 
-- **3a. The member chooses to skip the whole assessment:**
-    - 3a1. The system saves nothing, notes that the member can take the assessment later from their profile, and displays the general feed. Use case ends.
-- **4a. The member selects "Other":**
-    - 4a1. The system asks for a short free-text description.
-    - 4a2. The member enters it. Rejoins at step 4.
-- **5a. A free-text "Other" answer is invalid (empty after selecting Other, or over the length limit):**
-    - 5a1. The system identifies the problem. Returns to step 4.
-- **4b. The member leaves before confirming:**
-    - 4b1. The system discards the unsaved answers. PRE-2 still holds, so the member can start again later. Use case ends.
-- **7a. The member wants to change an answer:**
-    - 7a1. The member picks a section, and the system returns to step 3 for that section.
-- **9a. Saving fails (database unavailable):**
-    - 9a1. The system saves nothing (no partial assessment), tells the member, and keeps the answers on screen so they can retry. Returns to step 8 or ends.
+- **3a. The member skips the whole assessment:** Discard pending answers; save nothing; explain that it can be taken later; open the general feed. Use case ends.
+- **4a. The member selects Concern for an item with an associated prompt:** Reveal its optional source prompt. Family/Relationship has one optional section prompt while any item is Concern. Rejoin at step 4.
+- **4b. The member leaves, reloads or closes the page before confirmation:** Discard the in-page draft; create no assessment. Use case ends. This does not describe exiting while a save is already in flight (9b).
+- **5a. An answer is invalid:** Identify the item and rule without reflecting answer values in errors; keep the draft and return to step 4. Final confirmation performs the same validation.
+- **5b. Questionnaire version is unsupported:** Save nothing; retain the current draft and explain that the form must be reloaded. Do not silently transfer answers to different IDs or discard them.
+- **7a. The member edits the summary:** Return to the selected section, revise answers and show the updated summary. Remove inapplicable follow-up text before submitting.
+- **9a. Saving definitely fails:** Roll back all assessment writes; show a safe failure; keep the draft so the member can retry or leave. Rejoin at step 8 or end.
+- **9b. Save outcome is unknown because the response or database commit acknowledgment is lost:** Keep the original submission ID and an immutable normalized attempt snapshot in page memory. Disable editing until reconciliation or explicit departure; retry that original snapshot and ID. An equivalent retry returns the original success and timestamp if committed, or performs the first atomic save if none committed. Never promise rollback for an unknown outcome; leaving after confirmation does not erase a committed assessment.
+- **9c. A submission conflicts with a saved assessment:** Same member and submission ID with different normalized answers returns `409 SUBMISSION_ID_REUSED`; a different ID after completion returns `409 ASSESSMENT_EXISTS`. Keep the saved assessment unchanged. The UI retains local answers and offers to leave for the general feed; it does not overwrite, create a new ID automatically, or claim the current draft was saved.
+- **\*a. Authentication or authorization is refused at any request:** Return no protected answers and make no assessment write. Retain the in-page draft for in-place same-account reauthentication, without automatic submission. If a different account signs in, clear the prior draft and attempt before any assessment request, explain the restart and begin with that account's own state. Leaving discards page memory; answers never transfer between accounts or enter browser/session storage.
 
-**Priority:** High
-**Frequency of Use:** At most once per member. After that, changes go through `UC-ACC-update-assessment`.
+**Priority:** High (release placement remains a team proposal in traceability)
+**Frequency of Use:** At most one initial completed assessment per member; subsequent changes use `UC-ACC-update-assessment`.
 **Business Rules:** `BR-no-mandatory-health-disclosure`, `BR-health-data-protection`, `BR-non-diagnostic`, `BR-not-medical-device`, `BR-five-pillars`
 
 **Associated Information:**
 
-Assessment sections (**placeholder**: Sarah offered to help write the actual questions and choices):
+Sarah's [original questionnaire](../health%20assessment.docx) takes precedence over placeholder wording and the incomplete [plain-text transcription](../health-assessment.md). The team supplied the application decisions below on 2026-11-06; this is not a claim that Sarah approved unspecified behavior. Stable technical IDs and prompt bindings are defined in the [ACC design mapping](../design/acc.md#questionnaire-version-1-mapping), never generated from labels.
 
-| Property name | Data type | Validation rule | Security or access concerns | Glossary reference |
-|---|---|---|---|---|
-| wellness interests | Set of Topic | Optional; values from the controlled topic list | Not sensitive; used for personalization | Topic |
-| health goals | Set of choice + optional "Other" text | Optional; controlled list; free text length limit TBD | Visible only to the member; used for personalization | Health Goal |
-| health conditions / history | Set of choice + optional "Other" text | Optional; controlled list | **Sensitive**; visible only to the member; encrypted; used for personalization only if the client confirms that's allowed | Health History |
-| medications | Set of choice + optional "Other" text | Optional; controlled list | **Sensitive**; visible only to the member; encrypted | Medication |
-| yes/no screening questions | Boolean per question | Optional | Sensitivity depends on the question; defaults to sensitive | Assessment |
+| Input | Validation and normalization | Security / glossary |
+|---|---|---|
+| Concern item | Concern, No concern, or Skip / Prefer not to answer. Untouched and explicit skip normalize to Skipped. Never infer No concern. | Sensitive; Assessment |
+| Height | Optional positive finite value with at most two decimal places; centimeters (`cm`) or inches (`in`) required with a value; retain value and unit together | Sensitive; Assessment |
+| Weight | Same numeric rule; kilograms (`kg`) or pounds (`lb`) required with a value; retain both | Sensitive; Assessment |
+| Age | Optional integer 0–150; not an account-eligibility decision | Sensitive; Assessment |
+| Biological sex, ethnicity, education level, language | Optional text | Sensitive; Assessment |
+| All text, including follow-ups | Trim ends; blank becomes skipped; at most 500 Unicode code points after trimming; preserve internal whitespace | Sensitive; Assessment |
+| Associated item follow-up | Optional only when the associated item is Concern; otherwise remove before validation/submission/storage | Sensitive; Assessment |
+| Family/Relationship follow-up | One optional “Specify concern:” section prompt when any item is Concern; otherwise remove it | Sensitive; Assessment |
 
-No assessment answer is ever shown to other members, moderators, or on public profiles. The whole assessment is saved in one transaction.
+No “Other” option or Boolean screening model is implied by this questionnaire. The seven source groups are its opening fields, Physical concerns, Practical concerns, Family/Relationship concerns, Emotional concerns, Spiritual or religious concerns, and Lifestyle or information needs. The first displayed heading remains “Review of Systems”.
+
+Only the owning member may read answers; other members, moderators and administrators cannot. No persistence of drafts in browser storage, sessions, logs or the database is allowed. Infrastructure session records may exist independently of an assessment.
+
+One atomic save includes the member-scoped submission ID, normalized protected answers, version and completion timestamp. Equivalent normalized payloads ignore map ordering, omitted versus explicit Skipped, trimmed blank text and removed inapplicable follow-ups. Numeric spelling differences with the same value and unit compare equal; changing the unit is a different payload. These retry rules do not bypass ownership, schema validation or unsupported-version rejection.
 
 **Related Use Cases:** `UC-ACC-create-account`, `UC-ACC-update-assessment`, `UC-CON-browse-feed`, `UC-CON-opt-out-personalization`.
-**Assumptions:** In the MVP the feed isn't personalized yet (vision and scope §4.2), so the answers are stored for later personalization and shown back to the member.
-**Open Issues:** What are the actual questions and choices? May diagnoses and medications be collected at all, and may they drive personalization? Who can read "Other" free text, and is it reviewed? Does an assessment answer ever suggest topic groups automatically?
+**Assumptions:** Personalization is deferred. Real collection, retention and response policies are not established by the questionnaire or this team decision.
+**Open Issues:** [OI-2 through OI-8](OPEN-ISSUES.md#open): database/hosting, collection scope, retention, explanation of use, sensitive-selection response, and Member/demo-account meaning. API/security/runtime proposals in the corrected design also require teammate review before implementation.
 
 ---
 

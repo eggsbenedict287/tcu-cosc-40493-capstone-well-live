@@ -3,7 +3,7 @@
 **Project:** Well Live
 **Team:** Team 07 — An Cao, Esteban Hernandez-Anguiano, Elijah Johnston, Nikola Koltin, Angelette Munoz, William Schuller
 **Client:** Sarah Becan
-**Version:** 0.2
+**Version:** 0.3 proposed
 
 ---
 
@@ -35,6 +35,7 @@ _[Project Pulse numbers its decisions and scenarios (`KD-1`, `QS-1`). Yours use 
 | Version | Date | Author | Change |
 |---|---|---|---|
 | 0.1 | | | Initial draft for Checkpoint 1 |
+| 0.3 proposed | 2026-11-06 | Team 07, Codex-assisted | Record supplied Vue/Spring Boot/checking selections; propose MySQL; add proving runtime, owner-only scenario and technical risks. Implementation/review gates remain open. |
 | 0.2 | 2026-10-14 | Esteban Hernandez-Anguiano | Decided `KD-deployment-shape` (separate Ionic frontend client and backend API); added `KD-frontend-framework`; aligned sections 2, 4, 5.1, and 9.1. Moved sign-in into the Backend API (salted password hashes) and named the Relational Database as the store for encrypted assessment answers (issue #30, item 5) |
 
 ---
@@ -188,9 +189,9 @@ C4Container
     Person(admin, "Administrator", "Manages users, content, and platform settings")
 
     System_Boundary(welllive, "Well Live") {
-        Container(web, "Frontend Client", "Ionic (TypeScript); responsive web, Capacitor native builds later", "Provides screens for accounts, assessments, educational content, community features, moderation, subscriptions, and administration")
-        Container(api, "Backend API", "Server-side application", "Handles sign-in, business rules, validation, authorization, encryption of assessment answers, and communication with external services")
-        ContainerDb(db, "Relational Database", "Managed relational database", "Stores accounts (with salted password hashes), profiles, encrypted assessment answers, educational content, community data, reports, and subscription information")
+        Container(web, "Frontend Client", "Ionic Vue (TypeScript); responsive web, device builds later", "Provides screens for accounts, assessments, educational content, community features, moderation, subscriptions, and administration")
+        Container(api, "Backend API", "Spring Boot (Java)", "Handles sign-in, business rules, validation, authorization, encryption of assessment answers, and communication with external services")
+        ContainerDb(db, "Relational Database", "Relational database; MySQL proposal pending OI-2", "Stores accounts (with salted password hashes), profiles, encrypted assessment answers, educational content, community data, reports, and subscription information")
     }
 
     System_Ext(contentHost, "External Content Hosts", "Hosts linked articles, videos, podcasts, and other educational resources")
@@ -236,9 +237,9 @@ _[Check before Checkpoint 1: every area in your use case file appears in the fir
 
 ## 6. Runtime View
 
-_Due: Checkpoint 2. [One sequence diagram, for the use case your proving slice builds, from the user's action through every container and external system it touches. Leave this section empty until the slice exists; a sequence diagram of code nobody has written describes a guess._
+_Due: Checkpoint 2._
 
-_Draw it as a mermaid `sequenceDiagram`, and name the participants exactly as the containers in section 5.1 name them. If the use case calls an external system, show what happens when that system fails or does not answer; arc42 counts error scenarios among the most useful runtime views. Under the diagram, a sentence or two on anything a reader would not guess from it. Cite the use case by its `UC-*` identifier; do not restate its steps.]_
+The proving runtime is [UC-ACC-complete-assessment](../requirements/use-cases.md#uc-acc-complete-assessment-the-member-completes-the-health-and-wellness-assessment). The [ACC sequence](acc.md#uc-acc-complete-assessment) owns its step-labelled interactions: page-memory draft, backend validation, atomic protected save and general-feed transition. Its failure branches cover abandonment, refusal, rollback and lost-response reconciliation. This is a proposed design awaiting human review, not an observed run. Components remain provisional until the frontend/API/database flow is demonstrated and its tests pass.
 
 ## 7. Deployment View
 
@@ -281,7 +282,7 @@ Anonymity is a display feature, not an access control: the community sees only t
 
 **API conventions.** The browser and backend communicate over HTTPS using REST-style resource paths and JSON. Success and error responses use documented shared formats. Controllers handle HTTP concerns and delegate application behavior to services, where business rules are enforced. This gives the responsive web client a consistent interface and keeps business behavior independent of request handling (`CO-responsive-application`, `CO-maintainable-code`).
 
-**Code conventions.** Code is organized around the use-case areas in [use-cases.md](../requirements/use-cases.md). Each feature owns its business rules; cross-feature dependencies are explicit, and shared concerns are implemented once in shared components. This keeps changes localized and makes the application easier for future student teams to maintain (`CO-maintainable-code`).
+**Code conventions.** Source roots and planned build checks are recorded by the Checkpoint 2 decisions in section 9.3; these are planned locations, not existing builds.  Code is organized around the use-case areas in [use-cases.md](../requirements/use-cases.md). Each feature owns its business rules; cross-feature dependencies are explicit, and shared concerns are implemented once in shared components. This keeps changes localized and makes the application easier for future student teams to maintain (`CO-maintainable-code`).
 
 **Validation and authorization.** The backend validates all input before saving it or applying business rules; browser-side checks provide quicker feedback but are not authoritative. The backend checks identity and access before reading or changing protected data. Server-side enforcement is necessary because browser requests can be modified or sent without using the Well Live interface (`SEC-protected-data`, `UC-ACC-complete-assessment`, `UC-ACC-update-assessment`).
 
@@ -350,7 +351,33 @@ _A decision that turns out wrong is not deleted or rewritten. Mark it **Supersed
 - **Rejected:** React Native, because meeting `CO-responsive-application` would then need a second web codebase. Next.js or React alone, because they are web-only, so native apps would need a second codebase later. Ionic is the only option of the three that covers both from one codebase.
 - **Trade-off:** A hybrid app runs in a WebView, so it has a less native look and lower performance than React Native. That is acceptable for an app made mostly of content feeds and forms.
 
-<!-- TODO (team): The backend technology stack has not been recorded as a decision. Add it as its own KD-* entry, with a rejected alternative, once the team confirms it. -->
+
+### 9.3 Checkpoint 2 stack decisions
+
+**`KD-vue-client`: Ionic Vue frontend.** Accepted team selection, supplied by the owner and reflected on main in PR #43; this refines `KD-frontend-framework`.
+- **Drives:** `CO-responsive-application`, `OE-responsive-web`, `CO-maintainable-code`.
+- **Choice:** Vue and TypeScript in `frontend/src/`, with views grouped by area. Framework versions and package identities require the charter's human dependency check before installation.
+- **Rejected:** a second React/Angular client, because the team selected Vue and maintaining two clients adds no requirement coverage.
+- **Trade-off:** the team must maintain the Vue/Ionic integration and type checking; no device build is required for the proving slice.
+
+**`KD-spring-boot`: Spring Boot backend API.** Accepted team selection, supplied by the owner and reflected on main in PR #43.
+- **Drives:** `CO-standard-services`, `SEC-protected-data`, `CO-maintainable-code`.
+- **Choice:** one Spring Boot application; area packages under `backend/src/main/java/com/welllive/backend/`. The package root aligns with the teammate's unmerged backend draft; none of that branch is claimed as reused or approved.
+- **Rejected:** a separate Node backend or custom authentication service, because they introduce a second backend approach without serving another requirement.
+- **Trade-off:** JVM/build maintenance and standard Spring security/persistence dependencies still require package/version checks. Java 21 is the proposed runtime from the teammate draft, pending review of supported versions before installation.
+
+**`KD-assessment-mysql`: MySQL for the proving slice.** Proposed, not accepted.
+- **Drives:** `DE-database-service`, `OE-database-storage`, `SEC-protected-data`.
+- **Proposal:** local MySQL for development/tests; MySQL on Aiven's free plan for a hosted demonstration only if the team confirms [OI-2](../requirements/OPEN-ISSUES.md#open). Check current limits/TLS/backups before provisioning; no paid service is authorized.
+- **Alternative:** the teammate draft uses PostgreSQL and H2; neither is the agreed substitute for MySQL. SQLite/in-memory-only persistence would not prove the required integrated database/concurrency behavior.
+- **Trade-off:** database-engine compatibility must be tested on real MySQL; host selection, availability, retention and production responsibilities remain open. This proposal blocks implementation until settled.
+
+**`KD-checking-tools`: read-only checks in each build.** Accepted tool selection supplied by the owner on 2026-11-06.
+- **Drives:** `CO-maintainable-code`, `MNT-maintainability`.
+- **Choice:** frontend Prettier, ESLint with Vue/TypeScript support and vue-tsc; backend Spotless/google-java-format, Checkstyle and Java compilation. The [checking plan](../planning/assessment-checks-and-ci.md) defines the proposed command/report contract.
+- **Rejected:** automatic source repair in analysis/CI, report-only success, or adopting Project Pulse's additional analyzers without team selection. Findings must remain visible for human triage.
+- **Trade-off:** formatting and compilation do not establish behavioral or security correctness; the design's real-database and UI tests are separate.
+
 
 ## 10. Quality Requirements
 
@@ -360,29 +387,24 @@ _[Section 9 of your [specification](../requirements/software-requirements-specif
 
 ### 10.2 Quality scenarios
 
-_Due: one scenario at Checkpoint 2; one per top-ranked requirement in section 9.1 by Checkpoint 3._
-
-_[A quality attribute says how good; a scenario says how you will know. Each one is: a **source** does a **stimulus** in an **environment**, the system gives a **response**, and a **measure** tells you it worked. The measure cites the specification's attribute for its number; it never introduces one._
-
-_**Verified by** names the test, or the repeatable manual check, that shows the measure holds. Leave it empty until that test exists; an empty cell is an honest "not yet verified".]_
+_Due: Checkpoint 2._
 
 | ID | Source and stimulus | Environment | Response | Measure | Verified by |
 |---|---|---|---|---|---|
-| _`QS-cross-employee-order-denied`_ | _A signed-on patron requests another patron's order by its ID_ | _Normal operation_ | _Refused before any order data is read_ | _Every such request is refused and returns no order fields (`SEC-employee-own-orders`)_ | _An integration test that signs in as one patron and requests another patron's order_ |
+| `QS-assessment-owner-only` | Another member, moderator or administrator requests protected assessment answers | Normal API operation and tampered requests | Refuse before decrypting or returning another member's answers | No nonowner receives protected answers, under `SEC-protected-data` and section 8.1 | |
+
+No test exists yet. Planned authorization tests are in [ACC](acc.md#tests); the empty verification cell is intentional.
 
 ## 11. Risks and Technical Debt
 
-_Due: Checkpoint 2, kept current after._
-
-_[**Technical** risks and debt only. Business risks are `RI-*` in [vision and scope](../requirements/vision-and-scope.md); do not copy them here. Project risks, such as a teammate dropping the course, belong in neither document. Seed this list from the technical `RI-*` items and from any [OPEN-ISSUES.md](../requirements/OPEN-ISSUES.md) entry whose answer could change the architecture._
-
-_A **risk** might happen: an external system you have never called, a client dataset you have never seen. **Debt** has already happened: a shortcut you took on purpose and intend to pay back. Each row says how you would find out, or how you would fix it._
-
-_A risk written as a category ("security", "performance") is not a risk. Write the mechanism: what fails, and what that breaks.]_
-
-| ID | Type | What could go wrong, and what it breaks | Mitigation or fix | Cites |
+| ID | Type | Mechanism / effect | Mitigation | Cites |
 |---|---|---|---|---|
-| _`RISK-payroll-api-unavailable`_ | _Risk_ | _Nobody has seen the Payroll System's interface. If it only accepts a nightly batch file, ordering cannot confirm payment at order time._ | _Ask for the interface document at the next client meeting; build Payment against a stub until then._ | _`DE-payroll-integration`, `OI-4`_ |
+| `RISK-database-unconfirmed` | Risk | MySQL/Aiven proposal conflicts with PostgreSQL/H2 in an unmerged draft; choosing silently breaks shared persistence | Settle database decision; prove unique constraints, transaction rollback and races on real MySQL | `KD-assessment-mysql`, OI-2 |
+| `RISK-sensitive-collection-unsettled` | Risk | Questionnaire wording alone does not establish allowed real collection, retention or response | Fictitious data only until client decisions and privacy review; no real-data demonstration | OI-4 through OI-7, `SEC-protected-data` |
+| `RISK-host-and-key-ownership` | Risk | Unknown backend host/key operator can prevent secure startup, recovery or continued operation | Name operators and secret/TLS/backup mechanisms before hosted demonstration | OI-3, `AS-continuous-maintenance` |
+| `RISK-unproven-foundations` | Risk | No merged runtime exists to enforce identity, encryption and atomic writes | Trunk review before leaves; real security/MySQL integration tests; keep provisional status | `SEC-protected-data`, `DE-authentication-service` |
+
+No implementation shortcut is yet recorded as accepted technical debt. Do not label an unbuilt feature as debt or a completed mitigation.
 
 ## 12. Glossary
 
