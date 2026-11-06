@@ -1,0 +1,43 @@
+# Pull request checks: backend format, compile, lint, tests, build, and bytecode analysis.
+# Actions are pinned to commit SHAs (the tag in the comment), so a moved tag cannot change what runs.
+# Add a frontend job in the pull request that creates the frontend.
+
+name: Pull request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up JDK 21
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: maven
+      - name: Check formatting with Spotless
+        run: mvn --batch-mode spotless:check
+      - name: Compile with javac, failing on any lint warning
+        run: mvn --batch-mode test-compile -Dmaven.compiler.failOnWarning=true
+      - name: Lint with PMD
+        run: mvn --batch-mode pmd:check
+      - name: Run the tests
+        run: mvn --batch-mode test
+      - name: Build the package
+        run: mvn --batch-mode package -DskipTests
+      - name: Analyze bytecode with SpotBugs and FindSecBugs
+        run: mvn --batch-mode spotbugs:check
