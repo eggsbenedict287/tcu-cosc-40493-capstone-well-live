@@ -23,47 +23,47 @@ const questions = [
     text: "Trouble concentrating on tasks or conversations?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-03",
     text: "Mood swings or changes in personality?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-04",
     text: "Feeling tired or lacking energy?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-05",
     text: "Muscle Tension or stiffness?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-06",
     text: "Tremors or involuntary movements?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-07",
     text: "Weakness or loss of strength in any part of the body?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-08",
     text: "Dizziness or balance problems?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-09",
     text: "Vertigo or spinning sensation?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-10",
     text: "Ringing in the ears (tinnitus)?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-11",
     text: "Breathing difficulties or shortness of breath?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-12",
     text: "Swelling in any part of the body?",
   },
    {
-    id: "wellbeing-02",
+    id: "wellbeing-13",
     text: "Changes in skin or nails(Color, texture, or appearance)?",
   },
 ];
