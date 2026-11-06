@@ -1,1 +1,7 @@
 .idea
+.claude/worktrees/
+**/.env
+**/.env.*
+**/secrets/
+*.pem
+*.key

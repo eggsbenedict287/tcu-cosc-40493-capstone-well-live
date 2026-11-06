@@ -46,6 +46,25 @@ Several documents end with a **"Working this document with your agent"** section
 - **Do not fill gaps with guesses.** When the documents do not answer a question, list the question for the user rather than assuming. Open questions belong in [open issues](docs/requirements/OPEN-ISSUES.md), added by a team member.
 - **Do not commit or push** unless the user asks. When asked, follow the workflow in the team contract.
 - **Never put secrets in the repository.** The architectural design says where they live.
+- **No dependency is added until a person confirms it exists and is the one we meant.** Record the package, source, version and human check in the issue or PR before installation.
+- **Never remove a `Co-Authored-By` trailer from a commit.** Preserve existing attribution; new agent-assisted commits identify the assisting agent.
+
+## Parallel-agent workflow
+
+For parallel implementation, follow the [course workflow](https://washingtonwei.github.io/cosc-40943/agent-setup/#10-your-team-repository):
+
+- One agent per sub-issue, each in its own worktree and branch and ending in its own pull request.
+- Fan out only after the shared code the leaves depend on is merged.
+- Never split one use case's layers across agents.
+- No more agents running than pull requests you will review that day.
+
+Read-only research and fresh-context review may be delegated without parallel file edits. Follow the [design](.claude/commands/design.md) and [implementation](.claude/commands/implement.md) human stops.
+
+## Agent settings and secrets
+
+[Claude project settings](.claude/settings.json) deny reads of environment files, secret directories and private-key files. Planned local secret mounts belong under `backend/secrets/` (ignored); deployment secrets remain in the server environment or hosting secret store under [architecture section 8](docs/design/architectural-design.md#8-crosscutting-concepts). Inventory paths only; never inspect secret contents to locate them.
+
+These are Claude Code rules, not Codex settings or an operating-system lock. Codex separately uses its filesystem sandbox and approval checks. Keep both enabled. After changing secret paths, update the deny patterns and verify refusal in Claude with a harmless sentinel, never real credentials. Settings and branch protection require human review; two nonowner approvals remain required by [the team contract](docs/team-contract.md#5-git-workflow-and-review).
 
 ## Coding conventions
 
