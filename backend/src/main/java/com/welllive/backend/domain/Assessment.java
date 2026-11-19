@@ -27,6 +27,15 @@ public class Assessment {
     @Column(name = "completed_at", nullable = false)
     private Instant completedAt;
 
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
+    @Column(name = "revision", nullable = false)
+    private long revision;
+
+    @Column(name = "last_update_id")
+    private UUID lastUpdateId;
+
     protected Assessment() {
     }
 
@@ -36,6 +45,7 @@ public class Assessment {
         this.submissionId = submissionId;
         this.encryptedAnswers = encryptedAnswers.clone();
         this.completedAt = completedAt;
+        this.updatedAt = completedAt;
     }
 
     public UUID getSubmissionId() {
@@ -56,5 +66,16 @@ public class Assessment {
 
     public Instant getCompletedAt() {
         return completedAt;
+    }
+
+    public Instant getUpdatedAt() { return updatedAt == null ? completedAt : updatedAt; }
+    public long getRevision() { return revision; }
+    public UUID getLastUpdateId() { return lastUpdateId; }
+
+    public void replaceAnswers(byte[] protectedAnswers, Instant now, UUID updateId) {
+        encryptedAnswers = protectedAnswers.clone();
+        updatedAt = now;
+        lastUpdateId = updateId;
+        revision++;
     }
 }

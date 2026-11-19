@@ -41,6 +41,17 @@ export interface AssessmentForm {
 export interface Member {
   memberId: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+export interface SavedAssessment {
+  formVersion: number;
+  completedAt: string;
+  updatedAt?: string;
+  revision?: number;
+  answers: Answers;
+  sectionFollowUps: Record<string, string>;
 }
 
 export type Answers = Record<string, AssessmentAnswer>;
@@ -81,6 +92,7 @@ async function request<T>(
   path: string,
   init: RequestInit = {},
   csrfProtected = false,
+  requireJson = false,
 ): Promise<T> {
   const headers = new Headers(init.headers);
   if (init.body) {
@@ -125,7 +137,11 @@ async function request<T>(
     );
   }
 
-  if (response.status === 204 || !responseBody) {
+  if (response.status === 204) {
+    return undefined as T;
+  }
+  if (!responseBody) {
+    if (requireJson) throw new ApiError('The server returned an empty response. Please retry.');
     return undefined as T;
   }
   try {
@@ -151,6 +167,8 @@ export function register(
   password: string,
   ageEligibilityConfirmed: boolean,
   termsAccepted: boolean,
+  firstName: string,
+  lastName: string,
 ): Promise<Member> {
   return request<Member>(
     '/api/auth/register',
@@ -161,6 +179,8 @@ export function register(
         password,
         ageEligibilityConfirmed,
         termsAccepted,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
       }),
     },
     true,
@@ -181,6 +201,31 @@ export function logout(): Promise<void> {
 
 export function getAssessmentForm(): Promise<AssessmentForm> {
   return request<AssessmentForm>('/api/assessment/form');
+}
+
+export async function getSavedAssessment(): Promise<SavedAssessment | null> {
+  // Only 204 means no completed assessment. Network/server failures must remain errors.
+  const saved = await request<SavedAssessment | undefined>('/api/assessment', { cache: 'no-store' }, false, true);
+  if (saved === undefined) return null;
+  if (!saved || typeof saved.completedAt !== 'string' || !saved.answers
+    || typeof saved.answers !== 'object' || Array.isArray(saved.answers)) {
+    throw new ApiError('The server returned an invalid saved assessment. Please retry.');
+  }
+  return saved;
+}
+
+export function updateAssessment(
+  formVersion: number,
+  updateId: string,
+  expectedRevision: number,
+  answers: Answers,
+  sectionFollowUps: Record<string, string>,
+  confirmClearAll: boolean,
+): Promise<SavedAssessment> {
+  return request<SavedAssessment>('/api/assessment', {
+    method: 'PUT',
+    body: JSON.stringify({ formVersion, updateId, expectedRevision, answers, sectionFollowUps, confirmClearAll }),
+  }, true, true);
 }
 
 export function validateSection(

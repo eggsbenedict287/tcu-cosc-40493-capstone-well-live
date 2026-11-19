@@ -6,10 +6,13 @@ import com.welllive.backend.error.ApiException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +33,22 @@ public class AssessmentController {
         this.definition = definition;
         this.service = service;
         this.enabled = enabled;
+    }
+
+    @GetMapping
+    public ResponseEntity<SavedAssessmentResponse> saved(@AuthenticationPrincipal MemberPrincipal member) {
+        ensureEnabled();
+        return service.findCompleted(member.memberId())
+                .map(saved -> ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(saved))
+                .orElseGet(() -> ResponseEntity.noContent().cacheControl(CacheControl.noStore()).build());
+    }
+
+    @PutMapping
+    public ResponseEntity<SavedAssessmentResponse> update(
+            @AuthenticationPrincipal MemberPrincipal member,
+            @Valid @RequestBody AssessmentUpdate request) {
+        ensureEnabled();
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.update(member.memberId(), request));
     }
 
     @GetMapping("/form")

@@ -1,0 +1,2 @@
+ALTER TABLE members ADD COLUMN first_name VARCHAR(100);
+ALTER TABLE members ADD COLUMN last_name VARCHAR(100);

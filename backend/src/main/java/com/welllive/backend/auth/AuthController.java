@@ -62,7 +62,7 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken.unauthenticated(principal.email(), request.password()));
         establishSession(authentication, servletRequest, servletResponse);
-        return new AuthResponse(principal.memberId(), principal.email());
+        return authService.currentMember(principal.memberId());
     }
 
     @PostMapping("/login")
@@ -80,12 +80,12 @@ public class AuthController {
         }
         establishSession(authentication, servletRequest, servletResponse);
         MemberPrincipal principal = (MemberPrincipal) authentication.getPrincipal();
-        return new AuthResponse(principal.memberId(), principal.email());
+        return authService.currentMember(principal.memberId());
     }
 
     @GetMapping("/me")
     public AuthResponse currentMember(@AuthenticationPrincipal MemberPrincipal principal) {
-        return new AuthResponse(principal.memberId(), principal.email());
+        return authService.currentMember(principal.memberId());
     }
 
     @PostMapping("/logout")
