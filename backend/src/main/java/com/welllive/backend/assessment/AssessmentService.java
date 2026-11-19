@@ -19,8 +19,10 @@ import java.math.RoundingMode;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -49,6 +51,59 @@ public class AssessmentService {
         this.protector = protector;
         this.objectMapper = objectMapper;
         this.clock = clock;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<SavedAssessmentResponse> findCompleted(UUID memberId) {
+        return assessments.findByMemberId(memberId).map(assessment -> {
+            NormalizedAssessment stored = readStoredAnswers(memberId, assessment);
+            return savedResponse(assessment, stored);
+        });
+    }
+
+    @Transactional
+    public SavedAssessmentResponse update(UUID memberId, AssessmentUpdate request) {
+        checkVersion(request.formVersion());
+        // Use the same member lock as first submission so updates and submits cannot race.
+        members.findByIdForUpdate(memberId)
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "UNAUTHENTICATED", "Sign in is required."));
+        Assessment existing = assessments.findByMemberId(memberId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "ASSESSMENT_NOT_FOUND",
+                        "Complete an assessment before editing it."));
+        NormalizedAssessment normalized = normalize(request.answers(), request.sectionFollowUps(), null);
+        NormalizedAssessment previous = readStoredAnswers(memberId, existing);
+        if (request.updateId().equals(existing.getLastUpdateId())) {
+            if (existing.getRevision() == request.expectedRevision() + 1 && previous.equals(normalized)) {
+                return savedResponse(existing, previous);
+            }
+            throw new ApiException(HttpStatus.CONFLICT, "UPDATE_ID_REUSED",
+                    "This update identifier was already used with different answers.");
+        }
+        if (existing.getRevision() != request.expectedRevision()) {
+            throw new ApiException(HttpStatus.CONFLICT, "ASSESSMENT_CHANGED",
+                    "Your assessment changed in another session. Cancel your edits and reload the saved answers before editing again.");
+        }
+        if (hasDisclosures(previous) && !hasDisclosures(normalized) && !request.confirmClearAll()) {
+            throw new ApiException(HttpStatus.UNPROCESSABLE_ENTITY, "CLEAR_CONFIRMATION_REQUIRED",
+                    "Confirm that all previously saved answers will be removed before saving.");
+        }
+        // Replace the encrypted payload rather than keep a history of old answers.
+        existing.replaceAnswers(protect(memberId, normalized), clock.instant().truncatedTo(ChronoUnit.MICROS),
+                request.updateId());
+        assessments.saveAndFlush(existing);
+        return savedResponse(existing, normalized);
+    }
+
+    private static SavedAssessmentResponse savedResponse(Assessment assessment, NormalizedAssessment stored) {
+        return new SavedAssessmentResponse(assessment.getFormVersion(), assessment.getCompletedAt(),
+                assessment.getUpdatedAt(), assessment.getRevision(), stored.answers(), stored.sectionFollowUps());
+    }
+
+    private static boolean hasDisclosures(NormalizedAssessment assessment) {
+        return assessment.answers().values().stream().anyMatch(answer ->
+                (answer.status() != null && answer.status() != AnswerStatus.SKIPPED)
+                        || answer.value() != null || answer.followUpText() != null)
+                || !assessment.sectionFollowUps().isEmpty();
     }
 
     public void validateSection(SectionValidationRequest request) {
@@ -80,7 +135,8 @@ public class AssessmentService {
                     "An assessment has already been completed for this account.");
         }
 
-        Instant completedAt = clock.instant();
+        // Both database schemas persist microseconds; return the same value on save and restore/retry.
+        Instant completedAt = clock.instant().truncatedTo(ChronoUnit.MICROS);
         assessments.saveAndFlush(new Assessment(memberId, definition.version(), request.submissionId(),
                 protect(memberId, normalized), completedAt));
         return new AssessmentResponse(definition.version(), completedAt);

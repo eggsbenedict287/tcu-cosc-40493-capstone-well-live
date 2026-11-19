@@ -152,6 +152,8 @@ class AssessmentApiIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "firstName": "Test",
+                                  "lastName": "Member",
                                   "email": "csrf@example.test",
                                   "password": "correct-horse-battery-staple",
                                   "ageEligibilityConfirmed": true,
@@ -289,6 +291,8 @@ class AssessmentApiIntegrationTest {
     private MockHttpSession registerMember() throws Exception {
         String request = """
                 {
+                  "firstName": "Test",
+                  "lastName": "Member",
                   "email": "%s",
                   "password": "%s",
                   "ageEligibilityConfirmed": true,

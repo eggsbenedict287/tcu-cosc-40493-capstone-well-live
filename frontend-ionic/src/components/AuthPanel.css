@@ -1,0 +1,40 @@
+.wl-auth-content { --background: #f3f7f4; }
+.wl-auth-shell { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 48px 20px; background: radial-gradient(ellipse at 20% 10%, #e5f0e9 0%, transparent 60%); color: #193c36; }
+.wl-auth-shell *, .wl-auth-shell *::before, .wl-auth-shell *::after { box-sizing: border-box; }
+.wl-auth-card { width: 100%; max-width: 480px; padding: 36px; background: #fff; border: 1px solid #d7e5df; border-radius: 24px; box-shadow: 0 18px 56px #173d3510; }
+.wl-auth-card--signup { max-width: 600px; }
+.wl-auth-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+.wl-auth-mark { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: #245e4c; color: #fff; font-size: 15px; font-weight: 700; letter-spacing: 1px; flex-shrink: 0; }
+.wl-auth-wordmark { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -.02em; }
+.wl-auth-kicker { margin: 4px 0 0; text-transform: uppercase; letter-spacing: .14em; font-size: 10px; color: #52665e; }
+.wl-auth-heading h2 { margin: 0 0 10px; font-size: clamp(1.8rem, 5vw, 2.2rem); line-height: 1.15; font-weight: 700; letter-spacing: -.03em; color: #193c36; }
+.wl-auth-heading > p { margin: 0 0 28px; color: #52665e; line-height: 1.65; font-size: 15px; }
+.wl-auth-name-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.wl-auth-field { display: flex; flex-direction: column; min-width: 0; gap: 8px; margin-bottom: 20px; }
+.wl-auth-field label { font-size: 14px; font-weight: 600; }
+.wl-auth-field input { width: 100%; min-width: 0; min-height: 50px; padding: 12px 14px; border: 1px solid #b8c8bf; border-radius: 10px; background: #fff; color: #193c36; font: inherit; font-size: 16px; line-height: 1.4; }
+.wl-auth-field input::placeholder { color: #64756d; }
+.wl-auth-field input:focus { outline: 3px solid #b6d6c5; outline-offset: 2px; border-color: #245e4c; }
+.wl-auth-field input:disabled { background: #f3f6f4; color: #52665e; }
+.wl-auth-agreements { margin: 4px 0 24px; padding: 18px; border: 1px solid #e0e9e3; border-radius: 12px; background: #f8fbf9; min-width: 0; }
+.wl-auth-agreements legend { padding: 0 6px; font-size: 13px; font-weight: 600; color: #52665e; }
+.wl-auth-agreements label { display: flex; align-items: flex-start; gap: 12px; font-size: 13px; line-height: 1.6; cursor: pointer; }
+.wl-auth-agreements label + label { margin-top: 14px; }
+.wl-auth-agreements input { accent-color: #245e4c; width: 19px; height: 19px; flex-shrink: 0; margin: 1px 0 0; }
+.wl-auth-submit { display: block; width: 100%; min-height: 50px; padding: 12px 18px; border: 1px solid #245e4c; border-radius: 10px; background: #245e4c; color: #fff; font: inherit; font-weight: 600; font-size: 16px; cursor: pointer; }
+.wl-auth-submit:hover:not(:disabled) { background: #194634; }
+.wl-auth-submit:disabled { opacity: .65; cursor: wait; }
+.wl-auth-switch { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 5px 8px; margin-top: 24px; font-size: 14px; }
+.wl-auth-switch p { margin: 0; color: #52665e; }
+.wl-auth-switch button { min-height: 44px; padding: 4px; background: transparent; color: #245e4c; border: 0; font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.wl-auth-switch button:disabled { opacity: .6; cursor: default; }
+.wl-auth-submit:focus-visible, .wl-auth-switch button:focus-visible, .wl-auth-agreements input:focus-visible { outline: 3px solid #337aca; outline-offset: 4px; }
+.wl-auth-footnote { border-top: 1px solid #e0e9e3; padding-top: 22px; margin: 22px 0 0; text-align: center; font-size: 12px; line-height: 1.7; color: #52665e; }
+.wl-auth-error { padding: 14px 16px; border: 1px solid #e5b4b3; border-radius: 10px; background: #fff4f3; color: #8b2626; margin-bottom: 20px; font-size: 14px; line-height: 1.5; }
+.wl-auth-error p { margin: 0; }
+.wl-auth-error ul { margin: 8px 0 0; padding-left: 20px; }
+@media (max-width: 520px) {
+  .wl-auth-shell { padding: 24px 12px; align-items: flex-start; }
+  .wl-auth-card { padding: 26px 22px; border-radius: 18px; }
+  .wl-auth-name-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}

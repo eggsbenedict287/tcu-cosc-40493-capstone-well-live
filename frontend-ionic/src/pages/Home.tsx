@@ -1,13 +1,11 @@
-import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   IonButton,
-  IonCheckbox,
   IonContent,
   IonHeader,
   IonInput,
   IonItem,
   IonLabel,
-  IonList,
   IonLoading,
   IonPage,
   IonRadio,
@@ -27,6 +25,9 @@ import {
   AssessmentSection,
   getAssessmentForm,
   getCurrentMember,
+  getSavedAssessment,
+  SavedAssessment,
+  updateAssessment,
   login,
   logout,
   Member,
@@ -35,6 +36,13 @@ import {
   validateSection,
 } from '../api';
 import './Home.css';
+import ArticleLibrary from '../components/ArticleLibrary';
+import { loadMemberHome } from '../memberHome';
+import MemberSidebar, { DashboardView } from '../components/MemberSidebar';
+import SavedAssessmentView from '../components/SavedAssessmentView';
+import { displayAnswer, hasDisclosedAnswers } from '../assessmentDisplay';
+import './MemberDashboard.css';
+import AuthPanel, { AuthValues } from '../components/AuthPanel';
 
 function createSubmissionId(): string {
   if (!window.crypto?.getRandomValues) {
@@ -91,20 +99,6 @@ function allAnswers(form: AssessmentForm, answers: Answers): Answers {
   );
 }
 
-function displayAnswer(item: AssessmentItem, answer?: Answers[string]): string {
-  if (!answer) {
-    return 'Skip';
-  }
-  if (item.inputType === 'CONCERN') {
-    const option = item.options.find((candidate) => candidate.value === answer.status);
-    if (answer.status === 'OTHER') {
-      return `${option?.label ?? 'Others'}: ${answer.value ?? ''}`;
-    }
-    return option?.label ?? 'Skip';
-  }
-  return `${answer.value ?? ''}${answer.unit ? ` ${answer.unit}` : ''}`;
-}
-
 const Home: React.FC = () => {
   const [member, setMember] = useState<Member | null>(null);
   const [form, setForm] = useState<AssessmentForm | null>(null);
@@ -113,11 +107,18 @@ const Home: React.FC = () => {
   const [sectionIndex, setSectionIndex] = useState(0);
   const [reviewing, setReviewing] = useState(false);
   const [completedAt, setCompletedAt] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [savedAssessment, setSavedAssessment] = useState<SavedAssessment | null>(null);
+  const [dashboardView, setDashboardView] = useState<DashboardView>('articles');
+  const [editingAssessment, setEditingAssessment] = useState(false);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
+  const [notice, setNotice] = useState('');
+  const updateId = useRef(createSubmissionId());
+  const [welcomeName, setWelcomeName] = useState('');
+  const [restoring, setRestoring] = useState(false);
+  const [restoreFailed, setRestoreFailed] = useState(false);
+  const contentRef = useRef<HTMLIonContentElement>(null);
   const [registerMode, setRegisterMode] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState('');
@@ -130,6 +131,46 @@ const Home: React.FC = () => {
     return Boolean(familySection?.items.some((item) => answers[item.id]?.status === 'CONCERN'));
   }, [answers, form]);
 
+  const restoreMember = useCallback(async (currentMember: Member, isActive: () => boolean = () => true) => {
+    setRestoring(true);
+    setRestoreFailed(false);
+    setError('');
+    setForm(null);
+    setSavedAssessment(null);
+    setEditingAssessment(false);
+    setDashboardView('articles');
+    setConfirmClearAll(false);
+    setNotice('');
+    setAnswers({});
+    setSectionFollowUps({});
+    setCompletedAt(null);
+    setShowWelcome(false);
+    setReviewing(false);
+    setSectionIndex(0);
+    setWelcomeName([currentMember.firstName, currentMember.lastName].filter(Boolean).join(' '));
+    submissionId.current = createSubmissionId();
+    try {
+      const state = await loadMemberHome();
+      if (!isActive()) return;
+      if (state.saved) {
+        setSavedAssessment(state.saved);
+        setAnswers(state.saved.answers);
+        setSectionFollowUps(state.saved.sectionFollowUps ?? {});
+        setCompletedAt(state.saved.completedAt);
+        setShowWelcome(true);
+      } else {
+        setForm(state.form);
+      }
+    } catch (requestError) {
+      if (isActive()) {
+        setRestoreFailed(true);
+        setError(requestError instanceof Error ? requestError.message : 'Could not restore your account.');
+      }
+    } finally {
+      if (isActive()) setRestoring(false);
+    }
+  }, []);
+
   useEffect(() => {
     let active = true;
     const initialize = async () => {
@@ -140,10 +181,7 @@ const Home: React.FC = () => {
         }
         setMember(currentMember);
         if (currentMember) {
-          const questionnaire = await getAssessmentForm();
-          if (active) {
-            setForm(questionnaire);
-          }
+          await restoreMember(currentMember, () => active);
         }
       } catch (requestError) {
         if (active) {
@@ -159,7 +197,17 @@ const Home: React.FC = () => {
     return () => {
       active = false;
     };
-  }, []);
+  }, [restoreMember]);
+
+  // Ionic retains IonContent scroll position between sections unless reset explicitly.
+  useEffect(() => {
+    const content = contentRef.current;
+    if (initializing || !content) return;
+    const frame = requestAnimationFrame(() => {
+      void content.scrollToTop(0).catch(() => undefined);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [sectionIndex, reviewing, completedAt, showWelcome, initializing, restoring, registerMode, dashboardView, editingAssessment]);
 
   const clearErrors = () => {
     setError('');
@@ -187,21 +235,24 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleAuthentication = async (event: FormEvent) => {
-    event.preventDefault();
+  const handleAuthentication = async (values: AuthValues) => {
+    const { firstName, lastName, email, password, ageConfirmed, termsAccepted } = values;
     clearErrors();
     if (registerMode && (!ageConfirmed || !termsAccepted)) {
       setError('Confirm age eligibility and accept the terms and educational disclaimer to create an account.');
       return;
     }
+    if (registerMode && (!firstName.trim() || !lastName.trim())) {
+      setError('Enter your first and last name to create an account.');
+      return;
+    }
     setBusy(true);
     try {
       const authenticatedMember = registerMode
-        ? await register(email, password, ageConfirmed, termsAccepted)
+        ? await register(email, password, ageConfirmed, termsAccepted, firstName, lastName)
         : await login(email, password);
       setMember(authenticatedMember);
-      const questionnaire = await getAssessmentForm();
-      setForm(questionnaire);
+      await restoreMember(authenticatedMember);
     } catch (requestError) {
       handleError(requestError);
     } finally {
@@ -215,18 +266,78 @@ const Home: React.FC = () => {
     try {
       await logout();
       setMember(null);
+      setRegisterMode(false);
+      setSavedAssessment(null);
+      setEditingAssessment(false);
+      setDashboardView('articles');
+      setConfirmClearAll(false);
+      setNotice('');
       setForm(null);
       setAnswers({});
       setSectionFollowUps({});
       setSectionIndex(0);
       setReviewing(false);
       setCompletedAt(null);
+      setShowWelcome(false);
+      setWelcomeName('');
+      setRestoreFailed(false);
     } catch (requestError) {
       handleError(requestError);
     } finally {
       setBusy(false);
     }
   };
+
+  const navigateDashboard = async (view: DashboardView) => {
+    if (busy || editingAssessment) return;
+    clearErrors();
+    setNotice('');
+    if (view !== 'assessment') { setDashboardView(view); return; }
+    setBusy(true);
+    try {
+      const [saved, questionnaire] = await Promise.all([getSavedAssessment(), getAssessmentForm()]);
+      if (!saved) throw new Error('No saved assessment was found. Refresh your account before continuing.');
+      if (saved.formVersion !== questionnaire.version) {
+        throw new Error('The questionnaire has changed. Editing this version is not available yet.');
+      }
+      setSavedAssessment(saved);
+      setAnswers(saved.answers);
+      setSectionFollowUps(saved.sectionFollowUps ?? {});
+      setForm(questionnaire);
+      setDashboardView('assessment');
+    } catch (requestError) { handleError(requestError); }
+    finally { setBusy(false); }
+  };
+
+  const startEditing = () => {
+    if (!savedAssessment || !form) return;
+    clearErrors();
+    setNotice('');
+    setAnswers(savedAssessment.answers);
+    setSectionFollowUps(savedAssessment.sectionFollowUps ?? {});
+    setSectionIndex(0);
+    setReviewing(false);
+    setConfirmClearAll(false);
+    updateId.current = createSubmissionId();
+    setEditingAssessment(true);
+  };
+
+  const cancelEditing = () => {
+    if (!savedAssessment || busy) return;
+    setAnswers(savedAssessment.answers);
+    setSectionFollowUps(savedAssessment.sectionFollowUps ?? {});
+    setEditingAssessment(false);
+    setReviewing(false);
+    setSectionIndex(0);
+    setConfirmClearAll(false);
+    clearErrors();
+    setDashboardView('assessment');
+  };
+
+    const clearingAll = editingAssessment && savedAssessment !== null
+    && hasDisclosedAnswers(savedAssessment.answers)
+    && !hasDisclosedAnswers(answers)
+    && !(hasFamilyConcern && Object.values(sectionFollowUps).some((value) => value.trim()));
 
   const updateAnswer = (itemId: string, answer: Answers[string]) => {
     setAnswers((current) => ({ ...current, [itemId]: answer }));
@@ -277,13 +388,28 @@ const Home: React.FC = () => {
       ? { [familyFollowUp.id]: rawFamilyFollowUp }
       : {};
     try {
-      const response = await submitAssessment(
-        form.version,
-        submissionId.current,
-        allAnswers(form, answers),
-        followUps,
-      );
-      setCompletedAt(response.completedAt);
+      if (editingAssessment && savedAssessment) {
+        if (clearingAll && !confirmClearAll) {
+          setError('Confirm that all saved answers will be removed before saving.');
+          return;
+        }
+        const saved = await updateAssessment(form.version, updateId.current, savedAssessment.revision ?? 0,
+          allAnswers(form, answers), followUps, confirmClearAll);
+        setSavedAssessment(saved);
+        setAnswers(saved.answers);
+        setSectionFollowUps(saved.sectionFollowUps ?? {});
+        setCompletedAt(saved.completedAt);
+        setEditingAssessment(false);
+        setReviewing(false);
+        setConfirmClearAll(false);
+        setDashboardView('assessment');
+        setNotice('Your assessment changes were saved. Your articles now use the updated answers.');
+      } else {
+        const response = await submitAssessment(form.version, submissionId.current, allAnswers(form, answers), followUps);
+        setCompletedAt(response.completedAt);
+        setSavedAssessment({ formVersion: form.version, completedAt: response.completedAt,
+          updatedAt: response.completedAt, revision: 0, answers: allAnswers(form, answers), sectionFollowUps: followUps });
+      }
     } catch (requestError) {
       handleError(requestError);
     } finally {
@@ -394,16 +520,16 @@ const Home: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Well Live Assessment</IonTitle>
-          {member && (
-            <IonButton slot="end" fill="clear" onClick={handleLogout} disabled={busy}>
+          <IonTitle>Well Live</IonTitle>
+          {member && (!completedAt || !showWelcome || editingAssessment) && (
+            <IonButton slot="end" fill="clear" onClick={handleLogout} disabled={busy || restoring || editingAssessment}>
               Sign out
             </IonButton>
           )}
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">
-        {error && (
+      <IonContent ref={contentRef} className={member ? 'ion-padding' : 'wl-auth-content'}>
+        {member && error && (
           <IonText color="danger">
             <p role="alert">{error}</p>
             {Object.entries(fieldErrors).length > 0 && (
@@ -417,67 +543,25 @@ const Home: React.FC = () => {
         )}
 
         {!member && (
-          <form onSubmit={handleAuthentication}>
-            <h2>{registerMode ? 'Create your account' : 'Sign in'}</h2>
-            <IonItem>
-              <IonLabel position="stacked">Email</IonLabel>
-              <IonInput
-                type="email"
-                required
-                autocomplete="email"
-                value={email}
-                onIonInput={(event) => setEmail(String(event.detail.value ?? ''))}
-              />
-            </IonItem>
-            <IonItem>
-              <IonLabel position="stacked">Password</IonLabel>
-              <IonInput
-                type="password"
-                required
-                autocomplete={registerMode ? 'new-password' : 'current-password'}
-                value={password}
-                onIonInput={(event) => setPassword(String(event.detail.value ?? ''))}
-              />
-            </IonItem>
-            {registerMode && (
-              <IonList>
-                <IonItem>
-                  <IonCheckbox
-                    checked={ageConfirmed}
-                    onIonChange={(event) => setAgeConfirmed(event.detail.checked)}
-                  >
-                    I confirm that I meet the age eligibility requirement.
-                  </IonCheckbox>
-                </IonItem>
-                <IonItem>
-                  <IonCheckbox
-                    checked={termsAccepted}
-                    onIonChange={(event) => setTermsAccepted(event.detail.checked)}
-                  >
-                    I accept the terms and educational disclaimer.
-                  </IonCheckbox>
-                </IonItem>
-              </IonList>
-            )}
-            <IonButton expand="block" type="submit" disabled={busy}>
-              {registerMode ? 'Create account' : 'Sign in'}
-            </IonButton>
-            <IonButton
-              expand="block"
-              fill="clear"
-              type="button"
-              disabled={busy}
-              onClick={() => {
-                clearErrors();
-                setRegisterMode((current) => !current);
-              }}
-            >
-              {registerMode ? 'Already have an account? Sign in' : 'Create an account'}
-            </IonButton>
-          </form>
+          <AuthPanel key={registerMode ? 'register' : 'signin'} registerMode={registerMode}
+            busy={busy} error={error} fieldErrors={fieldErrors} onSubmit={handleAuthentication}
+            onSwitch={() => { clearErrors(); setRegisterMode((current) => !current); }} />
         )}
 
-        {member && form && !completedAt && !reviewing && currentSection && (
+        {member && editingAssessment && (
+          <section className="wl-edit-banner" aria-label="Assessment editing">
+            <h2>Editing your assessment</h2>
+            <p>Changes stay private to this screen until you review and save. Cancel editing to navigate or sign out.</p>
+            <div className="wl-edit-controls">
+              <button type="button" className="wl-button wl-button--outline" disabled={busy} onClick={cancelEditing}>Cancel changes</button>
+              <button type="button" className="wl-button wl-button--outline" disabled={busy} onClick={() => {
+                clearErrors(); setAnswers({}); setSectionFollowUps({}); setConfirmClearAll(false); setReviewing(true);
+              }}>Clear all answers</button>
+            </div>
+          </section>
+        )}
+
+        {member && !restoring && !restoreFailed && form && (!completedAt || editingAssessment) && !reviewing && currentSection && (
           <section>
             <p>{member.email}</p>
             <h2>{currentSection.title}</h2>
@@ -518,7 +602,15 @@ const Home: React.FC = () => {
           </section>
         )}
 
-        {member && !form && !completedAt && (
+        {member && !restoring && restoreFailed && (
+          <section>
+            <h2>Could not restore your account</h2>
+            <p>Your saved assessment has not been changed. Retry loading it before continuing.</p>
+            <IonButton disabled={busy} onClick={() => { void restoreMember(member); }}>Retry restoring account</IonButton>
+          </section>
+        )}
+
+        {member && !restoring && !restoreFailed && !form && !completedAt && (
           <section>
             <h2>Assessment form unavailable</h2>
             <p>You are signed in, but the questionnaire could not be loaded.</p>
@@ -526,7 +618,7 @@ const Home: React.FC = () => {
           </section>
         )}
 
-        {member && form && reviewing && !completedAt && (
+        {member && form && reviewing && (!completedAt || editingAssessment) && (
           <section>
             <h2>Review your answers</h2>
             <p>{form.explanation}</p>
@@ -554,24 +646,73 @@ const Home: React.FC = () => {
                 )}
               </div>
             ))}
+            {clearingAll && (
+              <div className="wl-clear-confirmation">
+                <label><input type="checkbox" checked={confirmClearAll}
+                  onChange={(event) => setConfirmClearAll(event.target.checked)} />
+                  I confirm that all previously saved answers will be removed and my articles will return to general content.
+                </label>
+              </div>
+            )}
             <div className="assessment-actions">
               <IonButton fill="outline" disabled={busy} onClick={() => setReviewing(false)}>
                 Back to answers
               </IonButton>
-              <IonButton disabled={busy} onClick={submit}>Submit assessment</IonButton>
+              <IonButton disabled={busy || (clearingAll && !confirmClearAll)} onClick={submit}>
+                {editingAssessment ? 'Save changes' : 'Submit assessment'}
+              </IonButton>
             </div>
           </section>
         )}
 
-        {completedAt && (
+                {completedAt && !showWelcome && !editingAssessment && (
           <section>
             <h2>Assessment submitted</h2>
             <p>Your assessment was saved successfully.</p>
             <p>Completed at: {new Date(completedAt).toLocaleString()}</p>
+            <IonButton onClick={() => setShowWelcome(true)}>
+              Continue to home
+            </IonButton>
           </section>
         )}
+
+        {member && completedAt && showWelcome && !editingAssessment && (
+          <div className="wl-dashboard">
+            <div className="wl-dashboard-main">
+              {notice && <p className="wl-save-notice" role="status">{notice}</p>}
+              {dashboardView === 'articles' && (
+                <>
+                  <section className="wl-dashboard-welcome" aria-labelledby="welcome-heading">
+                    <p className="wl-eyebrow">Well Live</p>
+                    <h1 id="welcome-heading">{welcomeName.trim() ? `Welcome, ${welcomeName.trim()}!` : 'Welcome to Well Live'}</h1>
+                    <p>Your space for wellness education and support.</p>
+                  </section>
+                  <ArticleLibrary answers={savedAssessment?.answers ?? answers} />
+                </>
+              )}
+              {dashboardView === 'profile' && (
+                <section className="wl-account-panel" aria-labelledby="profile-heading">
+                  <p className="wl-eyebrow">Your account</p>
+                  <h1 id="profile-heading">My profile</h1>
+                  <dl className="wl-profile-data">
+                    <div><dt>Name</dt><dd>{welcomeName || 'Not provided'}</dd></div>
+                    <div><dt>Email</dt><dd>{member.email}</dd></div>
+                    <div><dt>Health assessment</dt><dd>Completed</dd></div>
+                    <div><dt>Last updated</dt><dd>{new Date(savedAssessment?.updatedAt ?? completedAt).toLocaleString()}</dd></div>
+                  </dl>
+                  <button type="button" className="wl-button" disabled={busy} onClick={() => { void navigateDashboard('assessment'); }}>View my assessment</button>
+                </section>
+              )}
+              {dashboardView === 'assessment' && savedAssessment && form && (
+                <SavedAssessmentView saved={savedAssessment} form={form} onEdit={startEditing} busy={busy} />
+              )}
+            </div>
+            <MemberSidebar member={member} active={dashboardView} busy={busy || restoring}
+              onNavigate={(view) => { void navigateDashboard(view); }} onLogout={() => { void handleLogout(); }} />
+          </div>
+        )}
       </IonContent>
-      <IonLoading isOpen={busy} message="Please wait..." />
+      <IonLoading isOpen={busy || restoring} message={restoring ? 'Restoring your account...' : 'Please wait...'} />
     </IonPage>
   );
 };

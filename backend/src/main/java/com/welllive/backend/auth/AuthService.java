@@ -47,7 +47,8 @@ public class AuthService {
         }
 
         Instant now = clock.instant();
-        Member member = new Member(UUID.randomUUID(), email, passwordEncoder.encode(request.password()),
+        Member member = new Member(UUID.randomUUID(), email, request.firstName(), request.lastName(),
+                passwordEncoder.encode(request.password()),
                 now, now, termsVersion, now);
         try {
             members.saveAndFlush(member);
@@ -55,6 +56,14 @@ public class AuthService {
             throw accountConflict();
         }
         return new MemberPrincipal(member.getId(), member.getEmail(), member.getPasswordHash());
+    }
+
+    @Transactional(readOnly = true)
+    public AuthResponse currentMember(UUID memberId) {
+        Member member = members.findById(memberId)
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "UNAUTHENTICATED",
+                        "Sign in is required."));
+        return new AuthResponse(member.getId(), member.getEmail(), member.getFirstName(), member.getLastName());
     }
 
     private static ApiException accountConflict() {
