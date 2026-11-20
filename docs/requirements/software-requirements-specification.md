@@ -465,6 +465,16 @@ The system should use HTTPS for browser-to-server communication and secure conne
 
 `AVL-uptime`: The application shall be available at least 99% of the time outside scheduled maintenance windows.
 
+**Measured objective (SLO) for `AVL-uptime` and `PER-feed-load`, Checkpoint 3:**
+
+- **SLI:** good requests / all requests to `GET /api/assessment`, the request the article homepage (`UC-CON-browse-feed`) needs to load. A request is good if the server answers without an error (not 5xx, not refused) in under 3 seconds (`PER-feed-load`).
+- **Window:** 4 hours, 2026-11-19 5:58 pm to 9:58 pm CT (480 requests, one every 30 seconds).
+- **Target:** 99% of requests are good (`AVL-uptime`).
+- **Error budget:** 1% of requests, which is 4.8 bad requests in this window.
+- **Measured value:** 480 of 480 good (100%); 0 of the budget used. Median 12 ms, 95th percentile 15 ms, slowest 35 ms.
+- **Source:** [`tools/slo/measure_slo.py`](../../tools/slo/measure_slo.py) signs in as a fictitious test member and sends the request every 30 seconds; raw results in [`docs/evidence/slo_log.csv`](../evidence/slo_log.csv).
+- **What it misses:** It ran against the backend on a developer laptop, not a deployed server, so it cannot see hosting, network, or database outages, and almost nothing could make it fail. It uses one test account and test traffic only, and it times the backend request, not the full page load in a browser. It should be re-run against the deployed system over a longer window.
+
 ### 9.6 Robustness
 
 `ROB-data-preservation`: User profile changes and content submissions shall be saved reliably so that brief network interruptions do not cause major data loss.
