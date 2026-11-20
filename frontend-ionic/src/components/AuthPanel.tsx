@@ -37,7 +37,14 @@ const AuthPanel: React.FC<Props> = ({ registerMode, busy, error, fieldErrors, on
   return (
     <div className="wl-auth-shell">
       <section className={`wl-auth-card ${registerMode ? 'wl-auth-card--signup' : ''}`} aria-labelledby={`${mode}-heading`}>
-        <div className="wl-auth-brand"><span className="wl-auth-mark" aria-hidden="true">WL</span>
+        <div className="wl-auth-brand"><div className="wl-auth-brand">
+  <img
+    src="/assets/image.png"
+    alt="Well Live dove with branch logo"
+    className="wl-auth-logo"
+  />
+
+</div>
           <div><p className="wl-auth-wordmark">Well Live</p><p className="wl-auth-kicker">Wellness education</p></div>
         </div>
         <header className="wl-auth-heading">
