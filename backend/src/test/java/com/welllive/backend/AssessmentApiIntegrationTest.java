@@ -77,10 +77,20 @@ class AssessmentApiIntegrationTest {
         MockHttpSession session = registerMember();
         mockMvc.perform(get("/api/assessment/form").session(session))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.version").value(1))
+                .andExpect(jsonPath("$.version").value(2))
                 .andExpect(jsonPath("$.sections[0].id").value("review_of_systems"))
                 .andExpect(jsonPath("$.sections[0].items[0].inputType").value("NUMBER"))
+                .andExpect(jsonPath("$.sections[0].items[2].inputType").value("SELECT"))
+                .andExpect(jsonPath("$.sections[0].items[2].options[0].label").value("Female"))
+                .andExpect(jsonPath("$.sections[0].items[2].options[1].label").value("Male"))
+                .andExpect(jsonPath("$.sections[0].items[2].options[2].label").value("Other"))
+                .andExpect(jsonPath("$.sections[0].items[2].options[2].requiresShortAnswer").value(true))
                 .andExpect(jsonPath("$.sections[0].items[4].inputType").value("INTEGER"))
+                .andExpect(jsonPath("$.sections[0].items[5].options[1].label").value("Middle school"))
+                .andExpect(jsonPath("$.sections[0].items[5].options[8].label").value("Other"))
+                .andExpect(jsonPath("$.sections[0].items[6].options[0].label").value("English"))
+                .andExpect(jsonPath("$.sections[0].items[6].options[1].label").value("Spanish"))
+                .andExpect(jsonPath("$.sections[0].items[6].options[2].label").value("Other"))
                 .andExpect(jsonPath("$.sections[1].items[0].id").value("memory_difficulties"))
                 .andExpect(jsonPath("$.sections[1].items[0].options[0].label").value("Concern"))
                 .andExpect(jsonPath("$.sections[1].items[0].options[1].label").value("No concern"))
@@ -90,12 +100,60 @@ class AssessmentApiIntegrationTest {
     }
 
     @Test
+    void selectedOtherValuesRequireTextAndOnlyListedOptionsAreAccepted() throws Exception {
+        MockHttpSession session = registerMember();
+        String invalidRequest = """
+                {
+                  "formVersion": 2,
+                  "submissionId": "%s",
+                  "answers": {
+                    "biological_sex": { "value": "UNLISTED" },
+                    "language": { "value": "OTHER" }
+                  }
+                }
+                """.formatted(UUID.randomUUID());
+
+        mockMvc.perform(withCsrf(post("/api/assessment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest), session))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.fieldErrors['answers.biological_sex.value']").exists())
+                .andExpect(jsonPath("$.fieldErrors['answers.language.followUpText']").exists());
+        assertThat(assessments.count()).isZero();
+
+        String validRequest = """
+                {
+                  "formVersion": 2,
+                  "submissionId": "%s",
+                  "answers": {
+                    "biological_sex": {
+                      "value": "OTHER",
+                      "followUpText": "Self-described"
+                    },
+                    "education_level": { "value": "BACHELORS_DEGREE" },
+                    "language": {
+                      "value": "OTHER",
+                      "followUpText": "Korean"
+                    }
+                  }
+                }
+                """.formatted(UUID.randomUUID());
+
+        mockMvc.perform(withCsrf(post("/api/assessment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validRequest), session))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.formVersion").value(2));
+        assertThat(assessments.count()).isEqualTo(1);
+    }
+
+    @Test
     void othersRequiresShortAnswerAndStoresItEncrypted() throws Exception {
         MockHttpSession session = registerMember();
         UUID submissionId = UUID.randomUUID();
         String request = """
                 {
-                  "formVersion": 1,
+                  "formVersion": 2,
                   "submissionId": "%s",
                   "answers": {
                     "age": { "value": "34" },
@@ -121,7 +179,7 @@ class AssessmentApiIntegrationTest {
         MockHttpSession session = registerMember();
         String request = """
                 {
-                  "formVersion": 1,
+                  "formVersion": 2,
                   "submissionId": "%s",
                   "answers": {
                     "memory_difficulties": { "status": "OTHER" }
@@ -173,7 +231,7 @@ class AssessmentApiIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(initialRequest), session))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.formVersion").value(1))
+                .andExpect(jsonPath("$.formVersion").value(2))
                 .andReturn();
 
         JsonNode firstResponse = objectMapper.readTree(first.getResponse().getContentAsString());
@@ -210,7 +268,7 @@ class AssessmentApiIntegrationTest {
         UUID submissionId = UUID.randomUUID();
         mockMvc.perform(withCsrf(post("/api/assessment")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"formVersion\":2,\"submissionId\":\"" + submissionId
+                        .content("{\"formVersion\":1,\"submissionId\":\"" + submissionId
                                 + "\",\"answers\":{}}"), session))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("FORM_CHANGED"));
@@ -228,7 +286,7 @@ class AssessmentApiIntegrationTest {
         MockHttpSession session = registerMember();
         String request = """
                 {
-                  "formVersion": 1,
+                  "formVersion": 2,
                   "sectionId": "physical_concerns",
                   "answers": {
                     "pain": { "status": "NO_CONCERN" }
@@ -244,7 +302,7 @@ class AssessmentApiIntegrationTest {
 
         String wrongSection = """
                 {
-                  "formVersion": 1,
+                  "formVersion": 2,
                   "sectionId": "physical_concerns",
                   "answers": {
                     "age": { "value": "34" }
@@ -263,7 +321,7 @@ class AssessmentApiIntegrationTest {
     void concurrentRetriesWithTheSameSubmissionIdReconcileToOneAssessment() throws Exception {
         registerMember();
         UUID memberId = members.findByEmailIgnoreCase(EMAIL).orElseThrow().getId();
-        AssessmentSubmission submission = new AssessmentSubmission(1, UUID.randomUUID(),
+        AssessmentSubmission submission = new AssessmentSubmission(2, UUID.randomUUID(),
                 Map.of("pain", new AssessmentAnswer(AnswerStatus.NO_CONCERN, null, null, null)), Map.of());
         CountDownLatch ready = new CountDownLatch(2);
         CountDownLatch start = new CountDownLatch(1);
@@ -334,7 +392,7 @@ class AssessmentApiIntegrationTest {
         String followUp = detail == null ? "" : ",\"followUpText\":\"" + detail + "\"";
         return """
                 {
-                  "formVersion": 1,
+                  "formVersion": 2,
                   "submissionId": "%s",
                   "answers": {
                     "age": { "value": "%s" },

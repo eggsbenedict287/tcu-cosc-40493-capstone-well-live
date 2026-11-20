@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class AssessmentDefinition {
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
     private static final List<AnswerOption> CONCERN_OPTIONS = List.of(
             new AnswerOption("CONCERN", "Concern", false),
             new AnswerOption("NO_CONCERN", "No concern", false),
@@ -25,11 +25,27 @@ public class AssessmentDefinition {
         definition.add(section("review_of_systems", "Review of Systems",
                 measure("height", "Height", List.of("cm", "in")),
                 measure("weight", "Weight", List.of("kg", "lb")),
-                text("biological_sex", "Biological sex"),
+                select("biological_sex", "Biological sex", List.of(
+                        new AnswerOption("FEMALE", "Female", false),
+                        new AnswerOption("MALE", "Male", false),
+                        new AnswerOption("OTHER", "Other", true))),
                 text("ethnicity", "Ethnicity"),
                 integer("age", "Age", 0, 150),
-                text("education_level", "Education level"),
-                text("language", "Language")));
+                select("education_level", "Education level", List.of(
+                        new AnswerOption("LESS_THAN_MIDDLE_SCHOOL", "Less than middle school", false),
+                        new AnswerOption("MIDDLE_SCHOOL", "Middle school", false),
+                        new AnswerOption("HIGH_SCHOOL", "High school or GED", false),
+                        new AnswerOption("SOME_COLLEGE", "Some college", false),
+                        new AnswerOption("ASSOCIATE_DEGREE", "Associate degree", false),
+                        new AnswerOption("BACHELORS_DEGREE", "Bachelor's degree", false),
+                        new AnswerOption("MASTERS_DEGREE", "Master's degree", false),
+                        new AnswerOption("DOCTORAL_OR_PROFESSIONAL_DEGREE",
+                                "Doctoral or professional degree", false),
+                        new AnswerOption("OTHER", "Other", true))),
+                select("language", "Language", List.of(
+                        new AnswerOption("ENGLISH", "English", false),
+                        new AnswerOption("SPANISH", "Spanish", false),
+                        new AnswerOption("OTHER", "Other", true)))));
         definition.add(section("physical_concerns", "Physical concerns",
                 concerns("memory_difficulties", "Memory difficulties"),
                 concerns("trouble_concentrating", "Trouble concentrating"),
@@ -191,6 +207,10 @@ public class AssessmentDefinition {
         return new AssessmentItem(id, label, InputType.TEXT, List.of(), List.of(), null, null);
     }
 
+    private static AssessmentItem select(String id, String label, List<AnswerOption> options) {
+        return new AssessmentItem(id, label, InputType.SELECT, List.of(), options, null, null);
+    }
+
     private static AssessmentItem integer(String id, String label, int min, int max) {
         return new AssessmentItem(id, label, InputType.INTEGER, List.of(), List.of(), min + ".." + max, null);
     }
@@ -203,6 +223,7 @@ public class AssessmentDefinition {
     public enum InputType {
         CONCERN,
         TEXT,
+        SELECT,
         NUMBER,
         INTEGER
     }

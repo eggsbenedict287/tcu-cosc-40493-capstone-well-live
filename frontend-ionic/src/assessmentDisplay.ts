@@ -7,6 +7,11 @@ export function displayAnswer(item: AssessmentItem, answer?: Answers[string]): s
     if (answer.status === 'OTHER') return `${option?.label ?? 'Others'}: ${answer.value ?? ''}`;
     return option?.label ?? 'Skipped';
   }
+  if (item.inputType === 'SELECT') {
+    return item.options.find((candidate) => candidate.value === answer.value)?.label
+      ?? answer.value
+      ?? 'Skipped';
+  }
   return `${answer.value ?? ''}${answer.unit ? ` ${answer.unit}` : ''}`;
 }
 

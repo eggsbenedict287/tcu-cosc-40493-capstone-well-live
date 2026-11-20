@@ -252,19 +252,47 @@ public class AssessmentService {
         if (answer.status() != null && answer.status() != AnswerStatus.SKIPPED) {
             errors.put(field + ".status", "This answer uses a value rather than a concern response.");
         }
-        if (answer.followUpText() != null) {
-            errors.put(field + ".followUpText", "This answer does not accept follow-up text.");
-        }
         String value = trimToNull(answer.value());
         if (value == null) {
             if (answer.unit() != null) {
                 errors.put(field + ".unit", "A unit requires an answer value.");
+            }
+            if (answer.followUpText() != null) {
+                String message = item.inputType() == InputType.SELECT
+                        ? "Choose an option before entering a short answer."
+                        : "This answer does not accept follow-up text.";
+                errors.put(field + ".followUpText", message);
             }
             return new AssessmentAnswer(AnswerStatus.SKIPPED, null, null, null);
         }
         if (value.codePointCount(0, value.length()) > MAX_TEXT_CODE_POINTS) {
             errors.put(field + ".value", "Text must be 500 characters or fewer.");
             return new AssessmentAnswer(AnswerStatus.SKIPPED, null, null, null);
+        }
+        String followUpText = null;
+        if (item.inputType() == InputType.SELECT) {
+            String selectedValue = value;
+            AssessmentDefinition.AnswerOption selectedOption = item.options().stream()
+                    .filter(option -> option.value().equals(selectedValue))
+                    .findFirst()
+                    .orElse(null);
+            if (selectedOption == null) {
+                errors.put(field + ".value", "Choose one of the listed options.");
+            } else if (selectedOption.requiresShortAnswer()) {
+                followUpText = trimToNull(answer.followUpText());
+                if (followUpText == null) {
+                    errors.put(field + ".followUpText", "Enter a short answer for Other.");
+                } else if (followUpText.codePointCount(0, followUpText.length()) > MAX_TEXT_CODE_POINTS) {
+                    errors.put(field + ".followUpText", "Text must be 500 characters or fewer.");
+                }
+            } else if (answer.followUpText() != null) {
+                errors.put(field + ".followUpText", "This option does not accept a short answer.");
+            }
+            if (answer.unit() != null) {
+                errors.put(field + ".unit", "This answer does not accept a unit.");
+            }
+        } else if (answer.followUpText() != null) {
+            errors.put(field + ".followUpText", "This answer does not accept follow-up text.");
         }
         if (item.inputType() == InputType.INTEGER) {
             try {
@@ -308,7 +336,7 @@ public class AssessmentService {
             errors.put(field + ".unit", "This answer does not accept a unit.");
         }
         return new AssessmentAnswer(null, value,
-                item.inputType() == InputType.NUMBER ? answer.unit() : null, null);
+                item.inputType() == InputType.NUMBER ? answer.unit() : null, followUpText);
     }
 
     private NormalizedAssessment readStoredAnswers(UUID memberId, Assessment assessment) {

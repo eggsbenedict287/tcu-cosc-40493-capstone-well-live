@@ -73,6 +73,17 @@ function answerForItem(item: AssessmentItem, answer?: Answers[string]): Answers[
       ...(answer.status === 'CONCERN' && answer.followUpText ? { followUpText: answer.followUpText } : {}),
     };
   }
+  if (item.inputType === 'SELECT') {
+    if (!answer.value) {
+      return undefined;
+    }
+    return {
+      value: answer.value,
+      ...(answer.value === 'OTHER' && answer.followUpText
+        ? { followUpText: answer.followUpText }
+        : {}),
+    };
+  }
   if (!answer.value?.trim()) {
     return undefined;
   }
@@ -466,6 +477,50 @@ const Home: React.FC = () => {
                 onIonInput={(event) =>
                   updateAnswer(item.id, {
                     ...answer,
+                    followUpText: String(event.detail.value ?? ''),
+                  })
+                }
+              />
+            </IonItem>
+          )}
+        </div>
+      );
+    }
+
+    if (item.inputType === 'SELECT') {
+      return (
+        <div key={item.id} className="assessment-question">
+          <IonItem>
+            <IonLabel position="stacked">{item.question}</IonLabel>
+            <IonSelect
+              value={answer?.value}
+              placeholder="Select an option"
+              onIonChange={(event) =>
+                updateAnswer(item.id, {
+                  value: event.detail.value,
+                  ...(event.detail.value === 'OTHER' && answer?.followUpText
+                    ? { followUpText: answer.followUpText }
+                    : {}),
+                })
+              }
+            >
+              {item.options.map((option) => (
+                <IonSelectOption key={option.value} value={option.value}>
+                  {option.label}
+                </IonSelectOption>
+              ))}
+            </IonSelect>
+          </IonItem>
+          {item.options.some((option) => option.value === answer?.value && option.requiresShortAnswer) && (
+            <IonItem>
+              <IonLabel position="stacked">Please specify (required)</IonLabel>
+              <IonTextarea
+                maxlength={500}
+                value={answer?.followUpText ?? ''}
+                onIonInput={(event) =>
+                  updateAnswer(item.id, {
+                    ...answer,
+                    value: answer?.value,
                     followUpText: String(event.detail.value ?? ''),
                   })
                 }

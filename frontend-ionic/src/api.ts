@@ -10,7 +10,7 @@ export interface AssessmentAnswer {
 }
 
 export interface AssessmentOption {
-  value: AnswerStatus;
+  value: string;
   label: string;
   requiresShortAnswer: boolean;
 }
@@ -18,7 +18,7 @@ export interface AssessmentOption {
 export interface AssessmentItem {
   id: string;
   question: string;
-  inputType: 'CONCERN' | 'TEXT' | 'NUMBER' | 'INTEGER';
+  inputType: 'CONCERN' | 'TEXT' | 'SELECT' | 'NUMBER' | 'INTEGER';
   units: string[];
   options: AssessmentOption[];
   validationHint: string | null;
