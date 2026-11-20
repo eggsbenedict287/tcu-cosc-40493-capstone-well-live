@@ -1,9 +1,9 @@
 # Traceability Matrix
 
-**Project:** _[Your project name]_
-**Team:** _[Team NN]_
+**Project:** Well Live
+**Team:** Team 7
 **Version:** 0.1
-**Last checked:** _[YYYY-MM-DD, by whom]_
+**Last checked:** 2026-11-20, Angelette Munoz
 
 ---
 
@@ -25,12 +25,14 @@ _[Your vision and scope lists product **features** (`FEAT-<slug>`), each a capab
 
 _Features and areas are deliberately many-to-many. A feature that lands on exactly one area is probably too narrow, and a feature that reads "create, edit, and delete X" is a list of use cases wearing a feature's clothes._
 
-_Worked example, from Project Pulse:]_
-
 | Feature | Business objectives | Use case areas |
 |---|---|---|
-| `FEAT-performance-tracking` | `BO-PERF-instructor-efficiency`, `BO-PERF-student-participation` | `WAR`, `EVA` |
-| `FEAT-administration` | (enabling, serves no objective directly) | `SEC`, `TEA`, `STU`, `INS`, `ACC`, `RUB` |
+| `FEAT-account-profile` | `BO-intake-completion`, `BO-retention-rate` | `ACC ` |
+| `FEAT-personalized-content` | `BO-health-literacy`, `BO-content-credibility` | `CON` |
+| `FEAT-community-discussions` | `BO-peer-engagement`, `BO-retention-rate` | `CON` |
+| `FEAT-content-moderation` | `BO-content-credibility`, `BO-peer-engagement` | `CON` |
+| `FEAT-subscriptions` | `BO-retention-rate` | `ACC` |
+| `FEAT-administration` | (enabling, serves no objective directly) | `ACC`. `CON` |
 
 _[An enabling feature that serves no measurable objective on its own says so, as the second row does. That is different from forgetting to fill the column in.]_
 
@@ -47,12 +49,22 @@ _[A business rule is a property of your client's business, so it has no implemen
 
 _The **Source** column is duplicated here from `business-rules.md` on purpose, and it is the one exception in this file. It is the column reviewers and clients actually read, and a rule whose source is one click away is a rule nobody checks._
 
-_Worked example, from Project Pulse:]_
 
 | Business rule | Source | Enforced by |
 |---|---|---|
-| `BR-evaluation-submission-window` | Not recorded | `UC-EVA-submit-evaluation` step 7 and extension 1b |
-| `BR-section-admin-only` | Not recorded | `UC-RUB-assign-rubric`, `UC-SEC-create-section`, `UC-SEC-edit-section`, `UC-SEC-setup-active-weeks` |
+| `BR-non-diagnostic` | `napkin.md` | `UC-CON-browse-feed`, `UC-CON-read-content` |
+| `BR-no-clinical-services` | `business-rules.md` | `OPEN-ISSUES.md`|
+| `BR-content-review	Technical assessment` | `napkin.md` | `UC-CON-browse-feed`, `UC-CON-read-content` |
+| `BR-five-pillars` | `napkin.md` | `UC-ACC-complete-assessment`, `UC-CON-browse-feed`, `UC-CON-read-content` |
+| `BR-ad-free` | `vision-and-scope.md §2.1` `Business Opportunity Statement — Candidate` |	`UC-CON-browse-feed`, `UC-CON-read-content` |
+| `BR-subscription-model`| `napkin.md` | `UC-ACC-create-account, UC-ACC-sign-in` |
+| `BR-account-required`| `well-live-pitch-summary.md` | `UC-ACC-create-account, UC-ACC-sign-in, UC-CON-browse-feed, UC-CON-read-content` |
+| `BR-health-data-protection`| `napkin.md, vision-and-scope.md` | `UC-ACC-create-account, UC-ACC-sign-in, UC-ACC-complete-assessment` |
+| `BR-no-mandatory-health-disclosure`| `well-live-pitch-summary.md` | `UC-ACC-complete-assessment` |
+| `BR-pseudonymous-option`| `vision-and-scope.md` | `UC-ACC-set-display-identity` |
+| `BR-not-medical-device` | `napkin.md` | `UC-CON-browse-feed, UC-CON-read-content` |
+
+**1st row is missing steps
 
 **Checks.**
 
@@ -67,8 +79,16 @@ _[Leave this section as it is until week 8. It says what the two tables above gr
 
 _In week 8 the spine extends past the use case: **business objective → feature → use case area → use case → design → code → test.** A third table arrives with one row per use case and columns for the design element, the source files, and the tests, tracked as two separate states, built and verified, so that a use case which is built but untested stays visibly unverified rather than being absorbed into a single "done".]_
 
----
+| Use Case | Design | Code | Build | Main-flow test | Extension Tests | Verify |
+|---|---|---|---|---|---|---|
+| UC-ACC-complete-assessment | [ACC — Account, Profile, and Assessment](docs/design/architectural-design.md#52-use-case-areas-and-components) | `frontend-ionic/src/pages/Home.tsx` |✅ Built| `frontend-ionic/src/pages/Home.test.tsx` | `[profile and saved answers are accessible from the named sidebar]frontend-ionic/src/pages/Home.test.tsx#188` |✅ Verified|
+| UC-ACC-create-account | [ACC — Account, Profile, and Assessment](docs/design/architectural-design.md#52-use-case-areas-and-components) | `frontend-ionic/src/components/AuthPanel.tsx` |✅ Built| `frontend-ionic/src/components/AuthPanel.test.tsx` | `[names and agreement selections reset when leaving registration]frontend-ionic/src/components/AuthPanel.test.tsx#25` |✅ Verified|
+| UC-ACC-sign-in | [ACC — Account, Profile, and Assessment](docs/design/architectural-design.md#52-use-case-areas-and-components) | `frontend-ionic/src/components/AuthPanel.tsx` |✅ Built| `frontend-ionic/src/components/AuthPanel.test.tsx` |`[Email or password is incorrect]frontend-ionic/src/components/AuthPanel.test.tsx#60`|✅ Verified|
+| UC-CON-browse-feed | [CON — Educational Content](docs/design/architectural-design.md#52-use-case-areas-and-components) |🟡 Not built|🟡 Not built| | |🟡 Partial(Not Verified)|
+| UC-CON-read-content | [CON — Educational Content](docs/design/architectural-design.md#52-use-case-areas-and-components) | `frontend-ionic/src/components/ArticleLibrary.tsx` |✅ Built| `frontend-ionic/src/components/ArticleLibrary.test.tsx` | `[skipped assessments show general resources instead if a diagnostic claim]frontend-ionic/src/components/ArticleLibrary.test.tsx#20` |✅ Verified|
+| UC-ACC-set-display-identity | [ACC — Account, Profile, and Assessment](docs/design/architectural-design.md#52-use-case-areas-and-components) |🟡 Not built|🟡 Not built| | |🟡 Partial(Not Verified)|
 
+docs/design/architectural-design.md
 ## Working this document with your agent
 
 _[Delegate: running both checks and reporting what fails; finding every `BR-`, `FEAT-`, and `UC-` identifier cited anywhere in `docs/` and listing the ones with no definition; regenerating the second table from the Business Rules fields of your use cases after you have edited them._
